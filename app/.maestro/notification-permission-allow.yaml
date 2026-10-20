@@ -1,0 +1,17 @@
+# Reminders are explained first; the OS prompt appears only after "Turn on reminders".
+appId: to.plank.app
+---
+- runFlow:
+    file: helpers/launch.yaml
+    env:
+      SCENARIO: empty
+      NOTIFICATION_PERM: unset
+- assertVisible: 'Reminders'
+- assertVisible: '.*Reminders are optional.*'
+- tapOn: 'Turn on reminders'
+- tapOn: 'Allow'
+- assertNotVisible: 'Turn on reminders'
+- tapOn: 'Settings and profile'
+- scrollUntilVisible:
+    element: 'Reminders are allowed on this device.'
+    centerElement: true

@@ -1,0 +1,29 @@
+# Device location through the real iOS prompt: asking is explained first, the prompt appears only
+# after the button, and allowing it shows the stubbed forecast (simulator location is set by the runner).
+appId: to.plank.app
+---
+- runFlow:
+    file: helpers/launch.yaml
+    env:
+      SCENARIO: seeded
+      LOCATION_PERM: unset
+- tapOn: 'Settings and profile'
+- scrollUntilVisible:
+    element: 'Reset reminder settings'
+- scrollUntilVisible:
+    element: 'Show weather'
+    centerElement: true
+- tapOn: 'Show weather'
+- scrollUntilVisible:
+    element: 'Plank has not asked for location permission.'
+    centerElement: true
+- tapOn: 'Use my device location'
+- tapOn: 'Allow While Using App'
+- scrollUntilVisible:
+    element: 'Using your approximate device location.'
+    direction: UP
+    centerElement: true
+- tapOn: 'Today'
+- extendedWaitUntil:
+    visible: '.*Rain, 12.*'
+    timeout: 30000

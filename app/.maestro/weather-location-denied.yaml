@@ -1,0 +1,43 @@
+# Location permission denied at the OS level: Settings explains it and hides the device option,
+# and choosing a place (stubbed search) brings weather back. Tasks stay usable throughout.
+appId: to.plank.app
+---
+- runFlow:
+    file: helpers/launch.yaml
+    env:
+      SCENARIO: seeded
+      LOCATION_PERM: never
+- tapOn: 'Settings and profile'
+- scrollUntilVisible:
+    element: 'Reset reminder settings'
+- scrollUntilVisible:
+    element: 'Show weather'
+    centerElement: true
+- tapOn: 'Show weather'
+- scrollUntilVisible:
+    element: 'Location is blocked in your device settings.*'
+    centerElement: true
+- assertVisible: 'Open device settings'
+- assertNotVisible: 'Use my device location'
+- tapOn: 'Today'
+- assertVisible: '.*Pay rent.*'
+- tapOn: 'Settings and profile'
+# Manual fallback.
+- tapOn: 'Settings and profile'
+- scrollUntilVisible:
+    element: 'Search for a city or postcode'
+    centerElement: true
+- tapOn:
+    id: 'weather-search'
+- inputText: 'Testville'
+- hideKeyboard
+- tapOn: 'Search'
+- scrollUntilVisible:
+    element: 'Testville, Testshire, Testland'
+    centerElement: true
+- tapOn: 'Testville, Testshire, Testland'
+- hideKeyboard
+- tapOn: 'Today'
+- extendedWaitUntil:
+    visible: '.*Rain, 12.*'
+    timeout: 30000

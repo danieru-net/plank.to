@@ -1,0 +1,32 @@
+# Smoke flow: the app launches, shows Today's empty state, and navigates between tabs.
+# Requires Metro running on port 8081 (`npm start`) because the app is a development build.
+appId: to.plank.app
+---
+- launchApp:
+    clearState: true
+- openLink: 'plank://expo-development-client/?url=http%3A%2F%2Flocalhost%3A8081'
+# The first "Open in Plank?" prompt only appears when the dev client is not already connected.
+- runFlow:
+    when:
+      visible: 'Open'
+    commands:
+      - tapOn:
+          point: '68%,54%'
+# The development client may ask for confirmation a second time once the bundle loads.
+- runFlow:
+    when:
+      visible: 'Open in “Plank”?'
+    commands:
+      - tapOn:
+          point: '68%,54%'
+- extendedWaitUntil:
+    visible: 'Nothing planned for today'
+    timeout: 90000
+- tapOn: 'Settings and profile'
+- assertVisible: 'Settings'
+- tapOn: 'Today'
+- assertVisible: 'Nothing planned for today'
+- scrollUntilVisible:
+    element: 'Add a task or routine'
+- tapOn: 'Add a task or routine'
+- assertVisible: 'What would you like to do?'

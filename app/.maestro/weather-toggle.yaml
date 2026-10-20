@@ -1,0 +1,52 @@
+# Turn weather on with a searched place (stubbed, no network), see it on Today, then turn it off.
+appId: to.plank.app
+---
+- runFlow:
+    file: helpers/launch.yaml
+    env:
+      SCENARIO: seeded
+- assertVisible: 'Weather is off.'
+- tapOn: 'Settings and profile'
+# Long Settings page: stop at the reminder card first so the next scroll is short.
+- scrollUntilVisible:
+    element: 'Reset reminder settings'
+- scrollUntilVisible:
+    element: 'Show weather'
+    centerElement: true
+- tapOn: 'Show weather'
+- assertVisible: 'No location chosen yet.'
+- scrollUntilVisible:
+    element:
+      id: 'weather-search'
+    centerElement: true
+- tapOn:
+    id: 'weather-search'
+- inputText: 'Testville'
+- hideKeyboard
+- tapOn: 'Search'
+- scrollUntilVisible:
+    element: 'Testville, Testshire, Testland'
+    centerElement: true
+- tapOn: 'Testville, Testshire, Testland'
+- scrollUntilVisible:
+    element: 'Using Testville, Testshire, Testland.'
+    direction: UP
+    centerElement: true
+- assertVisible: 'Using Testville, Testshire, Testland.'
+- tapOn: 'Today'
+- extendedWaitUntil:
+    visible: '.*Rain, 12.*'
+    timeout: 30000
+- assertVisible: '.*High 14.*low 8.*'
+- assertNotVisible: 'Weather is off.'
+# Turn it off again.
+- tapOn: 'Settings and profile'
+- scrollUntilVisible:
+    element: 'Show weather'
+    direction: UP
+    centerElement: true
+- tapOn: 'Show weather'
+- assertNotVisible: 'Location'
+- tapOn: 'Today'
+- assertVisible: 'Weather is off.'
+- assertNotVisible: '.*Rain, 12.*'

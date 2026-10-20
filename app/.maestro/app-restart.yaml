@@ -1,0 +1,37 @@
+# Data survives killing and relaunching the app: a new task, a completed task, a changed setting,
+# and the chosen weather place are all still there after stopApp + launchApp.
+appId: to.plank.app
+---
+- runFlow:
+    file: helpers/launch.yaml
+    env:
+      SCENARIO: seeded-weather
+- extendedWaitUntil:
+    visible: '.*Rain, 12.*'
+    timeout: 30000
+- scrollUntilVisible:
+    element: 'Add a task'
+    centerElement: true
+- tapOn: 'Add a task'
+- tapOn: 'What would you like to do?'
+- inputText: 'Maestro survives restart'
+- hideKeyboard
+- scrollUntilVisible:
+    element: 'Save task'
+    centerElement: true
+- tapOn: 'Save task'
+- assertVisible: '.*Maestro survives restart.*'
+- tapOn: 'Complete Maestro survives restart'
+- assertVisible: 'Undo done for Maestro survives restart'
+- stopApp
+- launchApp
+- runFlow:
+    file: helpers/connect.yaml
+    env:
+      READY: '.*Rain, 12.*'
+- scrollUntilVisible:
+    element: '.*Pay rent.*'
+    centerElement: true
+- scrollUntilVisible:
+    element: 'Undo done for Maestro survives restart'
+    centerElement: true

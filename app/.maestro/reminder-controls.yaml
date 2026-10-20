@@ -1,0 +1,68 @@
+# Reminder controls in Settings. Nothing here triggers the iOS permission prompt.
+appId: to.plank.app
+---
+- runFlow:
+    file: helpers/launch.yaml
+    env:
+      SCENARIO: seeded
+- tapOn: 'Settings and profile'
+- scrollUntilVisible:
+    element: 'Reminder settings'
+    centerElement: true
+# Suggested notice and snooze are single-choice groups.
+- scrollUntilVisible:
+    element: '30 minutes before'
+    centerElement: true
+- tapOn: '30 minutes before'
+- assertVisible:
+    text: '30 minutes before'
+    selected: true
+- scrollUntilVisible:
+    element: '15 minutes'
+    centerElement: true
+- assertVisible:
+    text: '15 minutes'
+    selected: false
+- tapOn: '15 minutes'
+- assertVisible:
+    text: '15 minutes'
+    selected: true
+# Quiet hours reveal start and end times only while on.
+- scrollUntilVisible:
+    element: 'Hold reminders during quiet hours'
+    centerElement: true
+- assertNotVisible: 'Quiet hours start'
+- tapOn: 'Hold reminders during quiet hours'
+- assertVisible: 'Quiet hours start'
+- assertVisible: 'Quiet hours end'
+- tapOn: 'Hold reminders during quiet hours'
+- assertNotVisible: 'Quiet hours start'
+# Sound and vibration are on/off choices.
+- scrollUntilVisible:
+    element: 'Play a sound'
+    centerElement: true
+# iOS reports a checkbox's state in its value ("checkbox, checked"), not in the checked flag, so the
+# row is found by position: between the "Sound and vibration" heading and the "Vibrate" row.
+- assertVisible:
+    text: 'checkbox, checked'
+    below: 'Sound and vibration'
+    above: 'Vibrate'
+- tapOn: 'Play a sound'
+- assertVisible:
+    text: 'checkbox, unchecked'
+    below: 'Sound and vibration'
+    above: 'Vibrate'
+- tapOn: 'Settings and profile'
+# Reset restores the defaults (sound on again).
+- scrollUntilVisible:
+    element: 'Reset reminder settings'
+    centerElement: true
+- tapOn: 'Reset reminder settings'
+- scrollUntilVisible:
+    element: 'Play a sound'
+    direction: UP
+    centerElement: true
+- assertVisible:
+    text: 'checkbox, checked'
+    below: 'Sound and vibration'
+    above: 'Vibrate'

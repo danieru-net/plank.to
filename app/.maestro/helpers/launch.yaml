@@ -1,0 +1,20 @@
+# Shared start: fresh app, dev client connected to Metro, then reset and seed with ${SCENARIO}.
+# Needs Metro started with `npm run start:test` (test mode on). Not a test on its own.
+# Optional env: NETWORK (ok|offline|error, stubbed weather network), LOCATION_PERM
+# (inuse|never|unset; default inuse) and NOTIFICATION_PERM (allow|deny|unset; default allow).
+appId: to.plank.app
+---
+- launchApp:
+    clearState: true
+    permissions:
+      location: '${LOCATION_PERM || "inuse"}'
+      notifications: '${NOTIFICATION_PERM || "allow"}'
+- runFlow: connect.yaml
+- openLink: 'plank://test-seed?scenario=${SCENARIO}&network=${NETWORK || "ok"}'
+# The seed screen shows this marker, then opens Today; wait for both so taps do not race the redirect.
+- extendedWaitUntil:
+    visible: 'Test data ready'
+    timeout: 30000
+- extendedWaitUntil:
+    notVisible: 'Test data ready'
+    timeout: 10000

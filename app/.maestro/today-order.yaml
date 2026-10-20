@@ -1,0 +1,41 @@
+# Today screen order: weather card, then clothing ideas, then tasks (scheduled, any time), then routines.
+appId: to.plank.app
+---
+- runFlow:
+    file: helpers/launch.yaml
+    env:
+      SCENARIO: seeded-weather
+- extendedWaitUntil:
+    visible: '.*Rain, 12.*'
+    timeout: 30000
+- assertVisible:
+    text: 'Clothing ideas'
+    below: '.*Rain, 12.*'
+- scrollUntilVisible:
+    element: 'Scheduled'
+- assertVisible:
+    text: 'Scheduled'
+    below: 'Comfort varies.*'
+- scrollUntilVisible:
+    element: '.*Pay rent.*'
+- assertVisible:
+    text: '.*Pay rent.*'
+    below: 'Scheduled'
+- scrollUntilVisible:
+    element: 'Any time'
+- assertVisible:
+    text: 'Any time'
+    below: '.*Pack gym bag.*'
+- scrollUntilVisible:
+    element: '.*Call the dentist.*'
+- assertVisible:
+    text: 'Routines'
+    below: '.*Call the dentist.*'
+- scrollUntilVisible:
+    element: '.*Morning stretch.*'
+- assertVisible:
+    text: '.*Morning stretch.*'
+    below: 'Routines'
+- assertVisible:
+    text: '.*Weekday standup.*'
+    below: '.*Morning stretch.*'

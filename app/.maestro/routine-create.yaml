@@ -1,0 +1,46 @@
+# Create a daily routine and a weekday routine from the empty state, then check Today and the list.
+appId: to.plank.app
+---
+- runFlow:
+    file: helpers/launch.yaml
+    env:
+      SCENARIO: empty
+- assertVisible: 'Nothing planned for today'
+# Daily routine
+- scrollUntilVisible:
+    element: 'Add a routine'
+    centerElement: true
+- tapOn: 'Add a routine'
+- assertVisible: 'New routine'
+- tapOn: 'What would you like to repeat?'
+- inputText: 'Maestro daily walk'
+- tapOn: '19:00'
+- inputText: '08:15'
+- hideKeyboard
+- tapOn: 'Every day'
+- scrollUntilVisible:
+    element: 'Save routine'
+    centerElement: true
+- tapOn: 'Save routine'
+- assertVisible: 'Maestro daily walk, routine, 08:15. Change'
+# Weekday routine (Monday to Friday), added from the routines list
+- tapOn: 'Routines'
+- assertVisible: '08:15, every day'
+- tapOn: 'Add a routine'
+- tapOn: 'What would you like to repeat?'
+- inputText: 'Maestro weekday review'
+- tapOn: '19:00'
+- inputText: '16:45'
+- hideKeyboard
+- tapOn: 'Monday'
+- tapOn: 'Tuesday'
+- tapOn: 'Wednesday'
+- tapOn: 'Thursday'
+- tapOn: 'Friday'
+- scrollUntilVisible:
+    element: 'Save routine'
+    centerElement: true
+- tapOn: 'Save routine'
+- assertVisible: 'Maestro weekday review'
+- assertVisible: '16:45, Monday, Tuesday, Wednesday, Thursday, Friday'
+- assertVisible: 'Maestro daily walk'

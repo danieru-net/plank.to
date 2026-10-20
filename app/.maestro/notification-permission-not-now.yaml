@@ -1,0 +1,16 @@
+# "Not now" hides the invitation without any OS prompt; Settings still offers it later.
+appId: to.plank.app
+---
+- runFlow:
+    file: helpers/launch.yaml
+    env:
+      SCENARIO: empty
+      NOTIFICATION_PERM: unset
+- assertVisible: 'Not now'
+- tapOn: 'Not now'
+- assertNotVisible: 'Turn on reminders'
+- tapOn: 'Settings and profile'
+- scrollUntilVisible:
+    element: 'Reminders are off. Plank has not asked for permission yet.'
+    centerElement: true
+- assertVisible: 'Turn on reminders'

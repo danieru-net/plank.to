@@ -1,0 +1,41 @@
+# No connection (stubbed): weather says so calmly and the planner works fully offline.
+appId: to.plank.app
+---
+- runFlow:
+    file: helpers/launch.yaml
+    env:
+      SCENARIO: seeded-weather
+      NETWORK: offline
+- extendedWaitUntil:
+    visible: 'No connection'
+    timeout: 30000
+- assertVisible: 'Weather needs an internet connection. Your tasks are not affected.'
+- assertVisible: '.*Pay rent.*'
+# Create and complete a task while offline.
+- scrollUntilVisible:
+    element: 'Add a task'
+    centerElement: true
+- tapOn: 'Add a task'
+- tapOn: 'What would you like to do?'
+- inputText: 'Maestro offline task'
+- hideKeyboard
+- scrollUntilVisible:
+    element: 'Save task'
+    centerElement: true
+- tapOn: 'Save task'
+- assertVisible: '.*Maestro offline task.*'
+- tapOn: 'Complete Maestro offline task'
+- assertVisible: 'Undo done for Maestro offline task'
+# Place search fails with a visible, calm error instead of hanging.
+- tapOn: 'Settings and profile'
+- scrollUntilVisible:
+    element: 'Reset reminder settings'
+- scrollUntilVisible:
+    element: 'Search for a city or postcode'
+    centerElement: true
+- tapOn:
+    id: 'weather-search'
+- inputText: 'Testville'
+- hideKeyboard
+- tapOn: 'Search'
+- assertVisible: '.*Error.*'

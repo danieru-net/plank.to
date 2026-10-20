@@ -1,0 +1,59 @@
+# Change one day of a routine, then the whole routine; the single-day change must survive.
+appId: to.plank.app
+---
+- runFlow:
+    file: helpers/launch.yaml
+    env:
+      SCENARIO: seeded
+- scrollUntilVisible:
+    element: 'Seed: Morning stretch, routine, 07:30. Change'
+    centerElement: true
+- tapOn: 'Seed: Morning stretch, routine, 07:30. Change'
+- assertVisible: 'Change this day'
+- assertVisible: 'Only this day'
+# The routine name is also a heading on this screen, so the field has a testID.
+- tapOn:
+    id: 'occurrence-title'
+- eraseText: 40
+- inputText: 'Stretch today only'
+- hideKeyboard
+- scrollUntilVisible:
+    element: 'Save for this day only'
+    centerElement: true
+- tapOn: 'Save for this day only'
+# Today shows the one-day change.
+- scrollUntilVisible:
+    element: 'Stretch today only, routine.*Change'
+    centerElement: true
+# The series itself is unchanged.
+- tapOn: 'Routines'
+- assertVisible: 'Seed: Morning stretch'
+- assertNotVisible: 'Stretch today only'
+- assertVisible: '07:30, every day'
+# Now change the series: new time. The single-day title stays.
+- tapOn: 'Edit Seed: Morning stretch'
+- assertVisible: 'Edit routine'
+- tapOn: '07:30'
+- eraseText: 10
+- inputText: '06:45'
+- hideKeyboard
+- scrollUntilVisible:
+    element: 'Save routine'
+    centerElement: true
+- tapOn: 'Save routine'
+- assertVisible: '06:45, every day'
+- assertVisible: 'Seed: Morning stretch'
+# Skip one day: the whole-routine list still has it, Today shows it as skipped.
+- tapOn: 'Today'
+- scrollUntilVisible:
+    element: 'Stretch today only, routine.*Change'
+    centerElement: true
+- tapOn: 'Stretch today only, routine.*Change'
+- scrollUntilVisible:
+    element: 'Skip this day'
+    centerElement: true
+- tapOn: 'Skip this day'
+- scrollUntilVisible:
+    element: '.*Stretch today only.*Skipped.*'
+    centerElement: true
+- assertVisible: 'Seed: Weekday standup.*'

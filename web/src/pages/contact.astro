@@ -1,0 +1,46 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { supportContact } from '../config';
+---
+
+<BaseLayout
+  title="Contact"
+  description="How to reach plank.to for support, accessibility feedback, or privacy questions."
+>
+  <div class="container">
+    <h1>Contact</h1>
+    <p class="lede">Questions, problems, or accessibility feedback are welcome.</p>
+
+    <h2 id="route">Support route</h2>
+    {supportContact.isPlaceholder && (
+      <p class="note">
+        <strong>Placeholder.</strong> A maintained contact route has not been chosen yet. The value
+        below is not a working address, so please do not send messages to it.
+      </p>
+    )}
+    <p>
+      Contact:
+      {supportContact.href ? (
+        <a href={supportContact.href}>{supportContact.value}</a>
+      ) : (
+        <strong>{supportContact.value}</strong>
+      )}
+    </p>
+
+    <h2 id="what">What to include</h2>
+    <ul>
+      <li>What you were trying to do and what happened instead.</li>
+      <li>Your device, operating system version, and the app text size setting, if relevant.</li>
+      <li>For accessibility issues, any assistive technology you use.</li>
+    </ul>
+    <p>
+      Please do not send planner contents or personal details you do not want to share. The website
+      cannot see your planner data.
+    </p>
+
+    <p>
+      See also <a href="/help/">Help</a>, <a href="/accessibility/">Accessibility</a>, and the{' '}
+      <a href="/privacy/">privacy policy</a>.
+    </p>
+  </div>
+</BaseLayout>

@@ -1,0 +1,39 @@
+---
+interface Props {
+  currentPath: string;
+}
+
+const { currentPath } = Astro.props;
+
+const links = [
+  { href: '/', label: 'Overview' },
+  { href: '/help/', label: 'Help' },
+  { href: '/accessibility/', label: 'Accessibility' },
+  { href: '/privacy/', label: 'Privacy' },
+  { href: '/contact/', label: 'Contact' },
+];
+
+const normalize = (path: string) => (path.endsWith('/') ? path : `${path}/`);
+---
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="/">
+      plank.to
+    </a>
+    <nav aria-label="Main">
+      <ul>
+        {links.map((link) => (
+          <li>
+            <a
+              href={link.href}
+              aria-current={normalize(currentPath) === link.href ? 'page' : undefined}
+            >
+              {link.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  </div>
+</header>

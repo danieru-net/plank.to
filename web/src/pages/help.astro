@@ -1,0 +1,251 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Help"
+  description="How to use plank.to: first-run setup, tasks, weekly routines, optional reminders, weather and location controls, and clothing preferences."
+>
+  <div class="container">
+    <h1>Help</h1>
+    <p class="lede">
+      plank.to is a daily planner. Everything is optional except the things you write down yourself.
+      This page explains each part in plain language.
+    </p>
+
+    <nav class="toc" aria-labelledby="toc-heading">
+      <h2 id="toc-heading">On this page</h2>
+      <ul>
+        <li>
+          <a href="#first-run">First-run setup</a>
+        </li>
+        <li>
+          <a href="#tasks">Tasks</a>
+        </li>
+        <li>
+          <a href="#routines">Weekly routines</a>
+        </li>
+        <li>
+          <a href="#reminders">Optional reminders</a>
+        </li>
+        <li>
+          <a href="#weather">Weather and location</a>
+        </li>
+        <li>
+          <a href="#clothing">Clothing preferences</a>
+        </li>
+        <li>
+          <a href="#appearance">Text size and colors</a>
+        </li>
+      </ul>
+    </nav>
+
+    <h2 id="first-run">First-run setup</h2>
+    <p>
+      There is no account to create and no sign-in. When you open the app you land on{' '}
+      <strong>Today</strong>, which is ready to use straight away. The app has two tabs:{' '}
+      <strong>Today</strong> and
+      <strong>Settings</strong>.
+    </p>
+    <ul>
+      <li>
+        Your tasks and routines are saved on your device, and the app works without a network. Your
+        phone's own backup (iCloud or Google) may also keep a copy, so they can come back if you
+        move to a new phone. See the <a href="/privacy/#backups">privacy page</a>.
+      </li>
+      <li>
+        Reminders and weather are both off until you choose them. The app asks for notification
+        permission only after you tap "Turn on reminders", and asks for location permission only
+        after you turn on weather and pick "Use my device location".
+      </li>
+      <li>
+        If you are not ready to decide about reminders, tap "Not now" on the reminders card. It does
+        not keep coming back, and you can turn reminders on later in Settings.
+      </li>
+      <li>
+        You can change text size, spacing, and colors in Settings at any time. See
+        <a href="#appearance">Text size and colors</a>.
+      </li>
+    </ul>
+
+    <h2 id="tasks">Tasks</h2>
+    <p>
+      A task is something you want to do on a particular day. Today lists the day's tasks, with
+      timed tasks in time order first and tasks without a time under "Any time".
+    </p>
+    <h3>Add or edit a task</h3>
+    <ul>
+      <li>
+        Only the title is required. You can also add a time (24-hour, for example 07:00), a date,
+        notes, a few steps, and a simple symbol.
+      </li>
+      <li>The date starts as today. Tap a task on Today to edit or delete it.</li>
+      <li>Deleting a task asks you to confirm first.</li>
+    </ul>
+    <h3>Things you can do from Today</h3>
+    <ul>
+      <li>
+        <strong>Complete</strong> marks a task done. You can undo it.
+      </li>
+      <li>
+        <strong>Tomorrow</strong> moves the task to the next day.
+      </li>
+      <li>
+        <strong>Dismiss</strong> sets a task aside without completing it. You can undo this too.
+      </li>
+    </ul>
+    <p>
+      The app does not count streaks or show scores. If something cannot be saved, the app shows a
+      message instead of failing quietly.
+    </p>
+
+    <h2 id="routines">Weekly routines</h2>
+    <p>
+      A routine repeats on a schedule, such as "Shower, 19:00, every day". Choose "Add a routine" on
+      Today.
+    </p>
+    <ul>
+      <li>Enter a title, a time, a start date, and optional notes.</li>
+      <li>
+        Choose the weekdays it repeats on, or tap "Every day". Each day button shows a check mark
+        and a label, so it does not rely on color. You need at least one day.
+      </li>
+      <li>
+        A routine keeps the same local clock time, for example 19:00, when daylight-saving time
+        changes or you change time zones.
+      </li>
+      <li>A routine appears under "Routines" on Today on the days it applies.</li>
+    </ul>
+    <h3>Managing your routines</h3>
+    <p>
+      Choose "Manage routines" on Today or in Settings to see every routine with its time and
+      weekdays.
+    </p>
+    <ul>
+      <li>"Edit" opens the whole routine.</li>
+      <li>
+        "Pause" hides a routine from Today and stops its reminders; "Resume" brings it back from
+        today on. Days missed while paused are not filled in.
+      </li>
+      <li>
+        "Delete" asks you to confirm first. It removes the routine and the changes you made to
+        single days, and it cannot be undone.
+      </li>
+    </ul>
+    <h3>Changing one day or the whole routine</h3>
+    <p>When you tap a routine on Today, the two kinds of change are kept apart:</p>
+    <ul>
+      <li>
+        <strong>This day only.</strong> Change the title, time, date, or notes with "Save for this
+        day only", or choose "Skip this day". "Restore this day" and "Undo changes for this day"
+        bring it back. The routine itself stays the same.
+      </li>
+      <li>
+        <strong>The whole routine.</strong> "Edit the whole routine" opens the routine. Days you
+        changed individually keep their changes.
+      </li>
+    </ul>
+    <h2 id="reminders">Optional reminders</h2>
+    <p>
+      Reminders are local notifications created by the app on your device. They are off by default
+      and do not need an account.
+    </p>
+    <ul>
+      <li>
+        Turn reminders on for the device with "Turn on reminders" (on Today, once, or in Settings).
+        Your phone then asks for permission. If you decline, the planner still works, and Settings
+        shows the status and a button to open your device settings.
+      </li>
+      <li>
+        Then choose per item: a task or routine has a "Remind me" checkbox, off unless you tick it.
+        A task needs a time to have a reminder. You can pick "At the time" or up to 1 hour before.
+      </li>
+      <li>
+        In Settings you can set the suggested notice for new items, the snooze length (5 minutes to
+        1 hour), quiet hours, sound, and vibration. A reminder that falls in quiet hours is delayed
+        until they end, or skipped if that would be after the task. On iPhone, vibration follows
+        your device settings.
+      </li>
+      <li>
+        A notification has a Snooze button that reminds you once more. Editing or deleting a task or
+        routine updates its scheduled reminders.
+      </li>
+    </ul>
+
+    <h2 id="weather">Weather and location</h2>
+    <p>
+      Weather is optional and <strong>off by default</strong>. Until you turn it on, the app makes
+      no weather requests and shows "Weather is off". The planner never waits for weather.
+    </p>
+    <h3>Turning it on</h3>
+    <ul>
+      <li>
+        In Settings, the Weather card explains what is shared before anything is requested. Then
+        choose one of two ways to give a place:
+      </li>
+      <li>
+        <strong>Use my device location.</strong> The app asks for location permission while it is in
+        use, never in the background. It takes one approximate fix when a forecast is needed.
+      </li>
+      <li>
+        <strong>Search for a city or postcode.</strong> Type at least three characters and press
+        Search. Only your search text is sent, and no device location is needed.
+      </li>
+      <li>
+        Coordinates are rounded to about 1 km before they are saved or sent. "Remove location" or
+        turning weather off deletes the saved place and forecast from the device.
+      </li>
+    </ul>
+    <h3>What Today shows</h3>
+    <p>
+      At the top of Today: an icon, conditions and temperature (including feels like, the day's high
+      and low, and chance of precipitation), with a link crediting Open-Meteo.com. The clothing
+      ideas come next, then your tasks. If the forecast is old, the app says so and shows how old.
+      If there is no connection, no permission, or the provider has a problem, a short message
+      explains it with a Try again or settings option, and your tasks stay available.
+    </p>
+    <p>
+      Forecasts come from <a href="https://open-meteo.com/">Open-Meteo</a>, which receives the
+      rounded coordinates (or your search text) and, like any website, your device's network
+      address. The <a href="/privacy/">Privacy</a> page has more.
+    </p>
+
+    <h2 id="clothing">Clothing preferences</h2>
+    <p>
+      Clothing ideas appear on Today only when weather is on and a forecast is available. They are
+      informational suggestions, not advice, and they use choices you make yourself.
+    </p>
+    <ul>
+      <li>
+        In Settings, the "Clothing suggestions" card lists items grouped as Tops, Bottoms,
+        One-piece, Outerwear, Footwear, and Accessories.
+      </li>
+      <li>
+        For each item choose "May suggest" or "Never suggest". "Never suggest" takes priority.
+        "Reset clothing choices" returns everything to "May suggest".
+      </li>
+      <li>
+        The app does not guess anything about you. Items are described by name only, and your
+        choices stay on your device.
+      </li>
+      <li>
+        Each idea comes with a short reason, such as the day's forecast high or the chance of rain.
+        Tap Dismiss to hide an idea for the rest of that day.
+      </li>
+    </ul>
+    <p class="note">
+      Comfort varies. Suggestions may not reflect indoor conditions or what you personally need.
+    </p>
+
+    <h2 id="appearance">Text size and colors</h2>
+    <p>
+      In Settings, Appearance lets you pick the text size (four steps), compact or comfortable
+      spacing, and a color theme: match your device, light, dark, or sage, plum, or clay accents.
+      "Reset" restores the defaults. These choices are saved on your device.
+    </p>
+
+    <p class="note">
+      plank.to is a planning tool. It does not provide medical, therapeutic, or safety advice.
+    </p>
+  </div>
+</BaseLayout>

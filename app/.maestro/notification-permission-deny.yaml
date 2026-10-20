@@ -1,0 +1,29 @@
+# Denying the OS prompt leaves the app fully usable and Settings explains how to change it.
+appId: to.plank.app
+---
+- runFlow:
+    file: helpers/launch.yaml
+    env:
+      SCENARIO: empty
+      NOTIFICATION_PERM: unset
+- tapOn: 'Turn on reminders'
+- tapOn: 'Don.t Allow'
+- tapOn: 'Settings and profile'
+- scrollUntilVisible:
+    element: 'Reminders are blocked in your device settings.*'
+    centerElement: true
+- assertVisible: 'Open device settings'
+- tapOn: 'Today'
+- scrollUntilVisible:
+    element: 'Add a task or routine'
+    centerElement: true
+- tapOn: 'Add a task or routine'
+- assertVisible: 'New task'
+- tapOn: 'What would you like to do?'
+- inputText: 'Maestro no reminders'
+- hideKeyboard
+- scrollUntilVisible:
+    element: 'Save task'
+    centerElement: true
+- tapOn: 'Save task'
+- assertVisible: '.*Maestro no reminders.*'

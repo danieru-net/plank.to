@@ -1,0 +1,82 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Accessibility"
+  description="Accessibility features and known considerations for plank.to."
+>
+  <div class="container">
+    <h1>Accessibility</h1>
+    <p class="lede">We want plank.to to work for people with varied needs and preferences.</p>
+    <p>
+      This statement describes what has been built and, just as important, what has not yet been
+      checked. It will change as testing happens.
+    </p>
+
+    <h2 id="built">What is built in</h2>
+    <h3>The app</h3>
+    <ul>
+      <li>Controls have at least a 48-point touch target, including in compact spacing.</li>
+      <li>
+        Text size can be changed in Settings (four steps), along with spacing and color theme (match
+        device, light, dark, or accent themes).
+      </li>
+      <li>
+        Every color pair in every theme is checked automatically against WCAG AA contrast, in light
+        and dark.
+      </li>
+      <li>Screens have titles, and controls carry accessibility labels.</li>
+      <li>
+        Weather, reminders, and location are optional and off by default. Nothing prompts you
+        without a request.
+      </li>
+    </ul>
+    <h3>This website</h3>
+    <ul>
+      <li>A skip link, page landmarks, and a marked current page in the navigation.</li>
+      <li>Visible focus styles and 48-pixel link targets in the navigation.</li>
+      <li>Light and dark themes that follow your device, and reduced motion respected.</li>
+      <li>Plain-language content with headings in order.</li>
+    </ul>
+
+    <h2 id="known">Known considerations</h2>
+    <p>
+      These are honest gaps, not promises. Please do not assume the app meets a given standard
+      beyond what is stated here.
+    </p>
+    <ul>
+      <li>
+        <strong>Screen readers are not yet tested on devices.</strong> Labels were written from the
+        code, but VoiceOver on iOS and TalkBack on Android have not been used to check reading
+        order, announcements, or the task editor.
+      </li>
+      <li>
+        <strong>Android is unverified.</strong> The app has not yet been run on an Android emulator
+        or physical device, so layout, text scaling, and behavior there are unconfirmed.
+      </li>
+      <li>
+        <strong>Large text and display scaling</strong> have not been checked in the running app, so
+        some text may clip or overlap at the largest sizes.
+      </li>
+      <li>
+        <strong>Weather and clothing hints</strong> use emoji and short text. How these read aloud
+        is untested.
+      </li>
+      <li>
+        <strong>This website</strong> has not yet been reviewed with a screen reader, on a phone, or
+        by keyboard alone in a full audit.
+      </li>
+      <li>
+        <strong>No formal conformance claim.</strong> There has been no external accessibility audit
+        and no testing with disabled users.
+      </li>
+    </ul>
+
+    <h2 id="feedback">Tell us what does not work</h2>
+    <p>
+      If something is hard to use, please <a href="/contact/">contact us</a>. Say what you were
+      doing and which assistive technology you use, if any.
+    </p>
+  </div>
+</BaseLayout>

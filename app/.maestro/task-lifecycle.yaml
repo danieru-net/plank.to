@@ -1,0 +1,38 @@
+# Create a task, edit it, then complete it. Starts from the seeded state.
+appId: to.plank.app
+---
+- runFlow:
+    file: helpers/launch.yaml
+    env:
+      SCENARIO: seeded
+- assertVisible: '.*Pay rent.*'
+# Create
+- scrollUntilVisible:
+    element: 'Add a task'
+    centerElement: true
+- tapOn: 'Add a task'
+- assertVisible: 'New task'
+- tapOn: 'What would you like to do?'
+- inputText: 'Maestro water plants'
+- hideKeyboard
+- scrollUntilVisible:
+    element: 'Save task'
+    centerElement: true
+- tapOn: 'Save task'
+- assertVisible: '.*Maestro water plants.*'
+# Edit: rename it through the editor
+- tapOn: 'Maestro water plants, any time. Edit'
+- tapOn: 'Maestro water plants'
+- eraseText: 40
+- inputText: 'Maestro water herbs'
+- hideKeyboard
+- scrollUntilVisible:
+    element: 'Save task'
+    centerElement: true
+- tapOn: 'Save task'
+- assertVisible: '.*Maestro water herbs.*'
+- assertNotVisible: '.*Maestro water plants.*'
+# Complete
+- tapOn: 'Complete Maestro water herbs'
+- assertVisible: 'Undo done for Maestro water herbs'
+- assertVisible: '.*Done.*'

@@ -1,0 +1,21 @@
+# Connects the dev client to Metro (after launchApp) and waits for the app to load.
+# Not a test on its own. Env: READY (text that proves the app loaded; default Today's empty state).
+appId: to.plank.app
+---
+- openLink: 'plank://expo-development-client/?url=http%3A%2F%2Flocalhost%3A8081'
+# The "Open in Plank?" prompt hides its button label from text matching, so tap by position.
+- runFlow:
+    when:
+      visible: 'Open'
+    commands:
+      - tapOn:
+          point: '68%,54%'
+- runFlow:
+    when:
+      visible: 'Open in “Plank”?'
+    commands:
+      - tapOn:
+          point: '68%,54%'
+- extendedWaitUntil:
+    visible: '${READY || "Nothing planned for today"}'
+    timeout: 90000

@@ -1,0 +1,79 @@
+# Change text size, spacing and colors in Settings; choices stay selected after leaving the tab.
+appId: to.plank.app
+---
+- runFlow:
+    file: helpers/launch.yaml
+    env:
+      SCENARIO: seeded
+- tapOn: 'Settings and profile'
+- assertVisible: 'Appearance'
+# The seed uses Standard / Comfortable / Light.
+- assertVisible:
+    text: 'Standard'
+    selected: true
+- assertVisible:
+    text: 'Comfortable'
+    selected: true
+- scrollUntilVisible:
+    element: 'Light'
+    centerElement: true
+- assertVisible:
+    text: 'Light'
+    selected: true
+- scrollUntilVisible:
+    element: 'Largest'
+    direction: UP
+    centerElement: true
+- tapOn: 'Largest'
+- assertVisible:
+    text: 'Largest'
+    selected: true
+- assertVisible:
+    text: 'Standard'
+    selected: false
+- scrollUntilVisible:
+    element: 'Compact'
+    centerElement: true
+- tapOn: 'Compact'
+- assertVisible:
+    text: 'Compact'
+    selected: true
+- scrollUntilVisible:
+    element: 'Dark'
+    centerElement: true
+- tapOn: 'Dark'
+- assertVisible:
+    text: 'Dark'
+    selected: true
+- assertVisible:
+    text: 'Light'
+    selected: false
+# The choices apply to other screens and are still selected on return.
+- tapOn: 'Today'
+- assertVisible: '.*Pay rent.*'
+- takeScreenshot: today-dark-largest-compact
+- tapOn: 'Settings and profile'
+- assertVisible:
+    text: 'Largest'
+    selected: true
+- assertVisible:
+    text: 'Dark'
+    selected: true
+# Reset appearance returns to the app defaults.
+- scrollUntilVisible:
+    element: 'Reset appearance'
+    centerElement: true
+- tapOn: 'Reset appearance'
+- scrollUntilVisible:
+    element: 'Standard'
+    direction: UP
+    centerElement: true
+- assertVisible:
+    text: 'Standard'
+    selected: true
+- assertVisible:
+    text: 'Largest'
+    selected: false
+- assertVisible:
+    text: 'Dark'
+    selected: false

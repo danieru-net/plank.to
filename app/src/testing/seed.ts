@@ -1,0 +1,95 @@
+import { createPreferenceRepository } from '@/db/preferenceRepository';
+import { createRoutineRepository } from '@/db/routineRepository';
+import { createTaskRepository, type TaskDb } from '@/db/taskRepository';
+import { createWeatherSettingsRepository } from '@/db/weatherSettingsRepository';
+import { STUB_PLACE } from './stubFetch';
+
+export const SCENARIOS = ['empty', 'seeded', 'seeded-weather'] as const;
+export type Scenario = (typeof SCENARIOS)[number];
+
+export function parseScenario(value: unknown): Scenario {
+  return SCENARIOS.find((s) => s === value) ?? 'seeded';
+}
+
+/** Local `YYYY-MM-DD` for a date (not UTC). */
+export function toLocalDate(d: Date): string {
+  const p = (n: number) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+}
+
+/** Deletes all user data and restores the first-run state (weather off, all clothing allowed). */
+export async function resetData(db: TaskDb): Promise<void> {
+  await db.withTransactionAsync(async () => {
+    // Steps and overrides go with their task or routine (ON DELETE CASCADE).
+    for (const table of ['tasks', 'routines', 'preferences']) {
+      await db.runAsync(`DELETE FROM ${table}`, []);
+    }
+    await db.runAsync('UPDATE clothing_options SET allowed = 1, excluded = 0, updated_at = ?', [
+      Date.now(),
+    ]);
+    await db.runAsync(
+      `UPDATE weather_location_settings SET mode = 'off', manual_label = NULL,
+         manual_latitude = NULL, manual_longitude = NULL, updated_at = ?`,
+      [Date.now()],
+    );
+  });
+}
+
+/** Fixed content relative to `today`. Titles are stable so flows can assert on them. */
+export async function seedData(db: TaskDb, scenario: Scenario, today = new Date()): Promise<void> {
+  if (scenario === 'empty') return;
+  const date = toLocalDate(today);
+  const tasks = createTaskRepository(db);
+  const routines = createRoutineRepository(db);
+  const prefs = createPreferenceRepository(db);
+
+  await tasks.createTask({ title: 'Seed: Pay rent', date, time: '09:00', symbol: '🧹' });
+  await tasks.createTask({
+    title: 'Seed: Pack gym bag',
+    date,
+    time: '17:30',
+    steps: ['Shoes', 'Towel', 'Water bottle'],
+  });
+  await tasks.createTask({ title: 'Seed: Call the dentist', date });
+  await tasks.createTask({ title: 'Seed: Tomorrow only', date: toLocalDate(addDays(today, 1)) });
+
+  await routines.createRoutine({
+    title: 'Seed: Morning stretch',
+    time: '07:30',
+    weekdays: [0, 1, 2, 3, 4, 5, 6],
+    startDate: date,
+    steps: ['Neck', 'Shoulders', 'Hamstrings'],
+  });
+  await routines.createRoutine({
+    title: 'Seed: Weekday standup',
+    time: '10:00',
+    weekdays: [1, 2, 3, 4, 5],
+    startDate: date,
+  });
+
+  await prefs.set('display.textScale', 1);
+  await prefs.set('display.density', 'comfortable');
+  await prefs.set('display.colorTheme', 'light');
+  await prefs.set('reminders.promptDismissed', true);
+
+  if (scenario === 'seeded-weather') {
+    await prefs.set('weather.enabled', true);
+    await prefs.set('weather.units', 'metric');
+    await createWeatherSettingsRepository(db).setManual({
+      label: `${STUB_PLACE.name}, ${STUB_PLACE.admin1}, ${STUB_PLACE.country}`,
+      latitude: STUB_PLACE.latitude,
+      longitude: STUB_PLACE.longitude,
+    });
+  }
+}
+
+function addDays(d: Date, n: number): Date {
+  const out = new Date(d);
+  out.setDate(out.getDate() + n);
+  return out;
+}
+
+export async function resetAndSeed(db: TaskDb, scenario: Scenario): Promise<void> {
+  await resetData(db);
+  await seedData(db, scenario);
+}

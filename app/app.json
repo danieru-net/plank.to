@@ -1,0 +1,53 @@
+{
+  "expo": {
+    "name": "Plank",
+    "slug": "plank",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "to.plank.app",
+      "buildNumber": "1",
+      "config": {
+        "usesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "allowBackup": true,
+      "predictiveBackGestureEnabled": false,
+      "package": "to.plank.app",
+      "versionCode": 1,
+      "blockedPermissions": [
+        "android.permission.ACCESS_FINE_LOCATION"
+      ]
+    },
+    "scheme": "plank",
+    "plugins": [
+      "expo-router",
+      "expo-sqlite",
+      "expo-notifications",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Plank uses your approximate location, only while the app is open, to find a nearby weather forecast.",
+          "locationAlwaysAndWhenInUsePermission": false,
+          "locationAlwaysPermission": false,
+          "motionUsagePermission": false,
+          "isIosReducedAccuracyByDefault": true
+        }
+      ],
+      "@react-native-community/datetimepicker"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

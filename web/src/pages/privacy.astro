@@ -1,0 +1,215 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+import { supportContact } from '../config';
+
+const lastUpdated = '2026-10-19';
+---
+
+<BaseLayout
+  title="Privacy"
+  description="How plank.to handles your data: local storage, device backups, notifications, optional weather and location sharing with Open-Meteo, and what is not collected."
+>
+  <div class="container">
+    <h1>Privacy policy</h1>
+    <p class="lede">
+      plank.to is a daily planner that keeps your plans on your device. It has no accounts, no cloud
+      sync, no analytics, and no ads.
+    </p>
+    <p>
+      <strong>Last updated:</strong>
+      <time datetime={lastUpdated}>19 October 2026</time>
+    </p>
+    <p role="note">
+      <strong>Draft.</strong> This policy has not yet been reviewed by a lawyer for the countries
+      where the app will be released. It describes how the app works today and may change after that
+      review.
+    </p>
+
+    <nav class="toc" aria-labelledby="toc-heading">
+      <h2 id="toc-heading">On this page</h2>
+      <ul>
+        <li>
+          <a href="#summary">Summary</a>
+        </li>
+        <li>
+          <a href="#local-data">Data stored on your device</a>
+        </li>
+        <li>
+          <a href="#backups">Device backups</a>
+        </li>
+        <li>
+          <a href="#notifications">Notifications</a>
+        </li>
+        <li>
+          <a href="#weather">Weather and location</a>
+        </li>
+        <li>
+          <a href="#attribution">Attribution</a>
+        </li>
+        <li>
+          <a href="#retention">Caching and retention</a>
+        </li>
+        <li>
+          <a href="#not-collected">What we do not do</a>
+        </li>
+        <li>
+          <a href="#website">This website</a>
+        </li>
+        <li>
+          <a href="#changes">Changes and contact</a>
+        </li>
+      </ul>
+    </nav>
+
+    <h2 id="summary">Summary</h2>
+    <ul>
+      <li>Your tasks, routines, notes, and settings are saved on your device.</li>
+      <li>
+        Plank does not run a server for the app, so it cannot see your plans or your location.
+      </li>
+      <li>
+        Weather is off by default. If you turn it on, the app contacts Open-Meteo, a third party,
+        with an approximate location.
+      </li>
+      <li>Reminders are off by default and are created on your device.</li>
+    </ul>
+
+    <h2 id="local-data">Data stored on your device</h2>
+    <p>
+      The app saves what you enter in a database on your device: tasks, weekly routines, steps,
+      notes, reminder settings, clothing preferences, display settings, and, if you use weather,
+      your saved place and the last forecast. This data is not sent to Plank or to anyone else by
+      the app. Deleting the app removes this data from the device, subject to the backup note below.
+    </p>
+    <p>
+      You can clear the saved weather place at any time ("Remove location" or turning weather off).
+      The reset buttons in Settings only restore appearance, reminder, and clothing choices to their
+      defaults; they do not delete your tasks, routines, or saved weather place.
+    </p>
+
+    <h2 id="backups">Device backups</h2>
+    <p>
+      Plank keeps your data in one database file in the app's storage on your phone, and it does not
+      opt out of your phone's backups. If iCloud Backup, a computer backup, or Android's Google
+      backup is turned on, your phone may include that file: your tasks, routines, notes, settings,
+      saved weather place, and the last forecast. A copy may then be stored by Apple or Google under
+      their terms, and it can be restored to a new phone. Plank does not control, see, or delete
+      those backups. For this reason we do not promise that your data never leaves your device. To
+      avoid it, turn off backup in your phone's settings (on iPhone you can switch it off for Plank
+      alone).
+    </p>
+
+    <h2 id="notifications">Notifications</h2>
+    <p>
+      Reminders are optional. The app asks for notification permission only after you choose to turn
+      reminders on. Reminders are local notifications scheduled on your device; they do not go
+      through a Plank server or a push service run by Plank. If you decline permission, the planner
+      still works. You can change the permission at any time in your device settings.
+    </p>
+
+    <h2 id="weather">Weather and location</h2>
+    <p>
+      Weather is optional and off by default. Until you turn it on, the app makes no weather or
+      place-search requests. If you turn it on, you choose how to give a place:
+    </p>
+    <ul>
+      <li>
+        <strong>Device location.</strong> The app asks for location permission only at that point,
+        while the app is in use, and never in the background. It takes a single approximate fix when
+        a forecast is needed and rounds it to two decimal places (about 1 km) before saving or
+        sending it. The precise position is discarded.
+      </li>
+      <li>
+        <strong>Search for a place.</strong> You type a city or postcode. The search text is sent to
+        Open-Meteo's place-search service. The text is not saved; only the place you pick is saved,
+        with rounded coordinates.
+      </li>
+    </ul>
+    <h3>What is sent to Open-Meteo</h3>
+    <ul>
+      <li>
+        For a forecast: the rounded latitude and longitude, which weather details to return (such as
+        temperature, precipitation, and wind), a request for the local time zone, and unit choices.
+      </li>
+      <li>For a place search: your search text and the app's display language.</li>
+      <li>
+        Like any internet request, Open-Meteo also sees your device's network (IP) address and the
+        time of the request.
+      </li>
+    </ul>
+    <h3>What is never sent</h3>
+    <p>
+      Your tasks, routines, notes, reminder content, clothing preferences, settings, precise
+      location, or any account, device, or advertising identifier. The app sets no cookies for these
+      requests and contains no analytics or crash-reporting tools that would pass your location on.
+    </p>
+    <p>
+      Open-Meteo handles these requests under its own terms and privacy policy, which apply to its
+      handling of them. See <a href="https://open-meteo.com/en/terms">open-meteo.com/en/terms</a>.
+      Plank does not receive a copy of your requests.
+    </p>
+
+    <h2 id="attribution">Attribution</h2>
+    <p>
+      Weather data is provided by <a href="https://open-meteo.com/">Open-Meteo.com</a> and used
+      under the Creative Commons Attribution 4.0 license (CC BY 4.0). The app shows a link crediting
+      Open-Meteo.com with the forecast on Today.
+    </p>
+
+    <h2 id="retention">Caching and retention</h2>
+    <ul>
+      <li>
+        The app keeps only the most recent forecast for your one saved place, on your device. It
+        refreshes at most about every 30 minutes while the app is open and the forecast is visible,
+        and never in the background.
+      </li>
+      <li>
+        A forecast older than about 3 hours is shown as out of date, with its age. A cached forecast
+        is discarded after 24 hours.
+      </li>
+      <li>
+        Your saved place and forecast stay until you remove the location, turn weather off, change
+        how you set your place, or delete the app. No search history or previous locations are kept.
+      </li>
+      <li>Your planner data stays on the device until you delete it or delete the app.</li>
+      <li>
+        Plank keeps no copy on a server, so there is nothing on our side to retain or delete.
+        Open-Meteo's own retention is described in its policy, and device backups are covered above.
+      </li>
+    </ul>
+
+    <h2 id="not-collected">What we do not do</h2>
+    <ul>
+      <li>No account, sign-in, or profile.</li>
+      <li>No cloud sync of your planner data.</li>
+      <li>No analytics, tracking, or advertising, and no advertising identifiers.</li>
+      <li>No selling or sharing of your data. Plank has none to sell or share.</li>
+      <li>No background location tracking.</li>
+    </ul>
+    <p>
+      The app is free and stays non-commercial. This is also a condition of using Open-Meteo's free
+      service; if that ever changes, this policy will be updated first.
+    </p>
+
+    <h2 id="website">This website</h2>
+    <p>
+      This website is a static site with product information. It does not collect or display your
+      planner data and does not connect to your planner. It sets no cookies and has no analytics.
+      Like any website, the host that serves it may keep standard technical server logs.
+    </p>
+
+    <h2 id="changes">Changes and contact</h2>
+    <p>
+      If this policy changes, the date above will change and significant changes will be described
+      here.
+    </p>
+    <p>
+      <strong>Contact{supportContact.isPlaceholder ? ' (placeholder)' : ''}:</strong>{' '}
+      {supportContact.value}.
+      {supportContact.isPlaceholder &&
+        ' A maintained support route has not been chosen yet, so this is not a working address.'}
+      See the <a href="/contact/">contact page</a>.
+    </p>
+  </div>
+</BaseLayout>

@@ -1,0 +1,26 @@
+# The weather provider answers 503: Today shows a calm note, tasks stay usable, and Try again
+# recovers once the provider is back. Stubbed network, no real requests.
+appId: to.plank.app
+---
+- runFlow:
+    file: helpers/launch.yaml
+    env:
+      SCENARIO: seeded-weather
+      NETWORK: error
+- extendedWaitUntil:
+    visible: 'Weather is unavailable'
+    timeout: 30000
+- assertVisible: 'The weather service could not be reached. Your tasks are not affected.'
+- assertVisible: '.*Pay rent.*'
+- assertNotVisible: '.*Rain, 12.*'
+# Try again while the provider is still down keeps the calm note.
+- tapOn: 'Try again'
+- extendedWaitUntil:
+    visible: 'Weather is unavailable'
+    timeout: 15000
+# Provider recovers; returning to Today fetches the stubbed forecast again.
+- openLink: 'plank://test-network?mode=ok'
+- extendedWaitUntil:
+    visible: '.*Rain, 12.*'
+    timeout: 30000
+- assertNotVisible: 'Weather is unavailable'
