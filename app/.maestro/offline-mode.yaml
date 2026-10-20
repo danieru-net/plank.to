@@ -25,11 +25,13 @@ appId: to.plank.app
 - tapOn: 'Save task'
 - assertVisible: '.*Maestro offline task.*'
 - tapOn: 'Complete Maestro offline task'
+- runFlow: helpers/show-done.yaml
 - assertVisible: 'Undo done for Maestro offline task'
 # Place search fails with a visible, calm error instead of hanging.
-- tapOn: 'Settings and profile'
-- scrollUntilVisible:
-    element: 'Reset reminder settings'
+- runFlow:
+    file: helpers/open-settings.yaml
+    env:
+      PAGE: Weather
 - scrollUntilVisible:
     element: 'Search for a city or postcode'
     centerElement: true

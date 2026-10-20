@@ -1,46 +1,39 @@
-# Create a daily routine and a weekday routine from the empty state, then check Today and the list.
+# Create a daily routine and a weekday routine from the Routines tab, then check the list and Today.
+# The time comes from the native picker; "Choose a time" sets its 09:00 starting value.
 appId: to.plank.app
 ---
 - runFlow:
     file: helpers/launch.yaml
     env:
       SCENARIO: empty
-- assertVisible: 'Nothing planned for today'
-# Daily routine
-- scrollUntilVisible:
-    element: 'Add a routine'
-    centerElement: true
-- tapOn: 'Add a routine'
+- tapOn:
+    id: 'tab-routines'
+- assertVisible: 'No routines yet'
+# Daily routine, from the empty state
+- tapOn:
+    text: 'Add a routine'
+    index: 1
 - assertVisible: 'New routine'
 - tapOn: 'What would you like to repeat?'
 - inputText: 'Maestro daily walk'
-- tapOn: '19:00'
-- inputText: '08:15'
 - hideKeyboard
+- tapOn: 'Choose a time for Time'
 - tapOn: 'Every day'
-- scrollUntilVisible:
-    element: 'Save routine'
-    centerElement: true
 - tapOn: 'Save routine'
-- assertVisible: 'Maestro daily walk, routine, 08:15. Change'
-# Weekday routine (Monday to Friday), added from the routines list
-- tapOn: 'Routines'
-- assertVisible: '08:15, every day'
-- tapOn: 'Add a routine'
+- assertVisible: 'Edit Maestro daily walk, 09:00, every day'
+# Weekday routine (Monday to Friday) with the Weekdays shortcut, from the header button
+- tapOn:
+    text: 'Add a routine'
+    index: 0
 - tapOn: 'What would you like to repeat?'
 - inputText: 'Maestro weekday review'
-- tapOn: '19:00'
-- inputText: '16:45'
 - hideKeyboard
-- tapOn: 'Monday'
-- tapOn: 'Tuesday'
-- tapOn: 'Wednesday'
-- tapOn: 'Thursday'
-- tapOn: 'Friday'
-- scrollUntilVisible:
-    element: 'Save routine'
-    centerElement: true
+- tapOn: 'Choose a time for Time'
+- tapOn: 'Weekdays'
 - tapOn: 'Save routine'
-- assertVisible: 'Maestro weekday review'
-- assertVisible: '16:45, Monday, Tuesday, Wednesday, Thursday, Friday'
-- assertVisible: 'Maestro daily walk'
+- assertVisible: 'Edit Maestro weekday review, 09:00, Monday, Tuesday, Wednesday, Thursday, Friday'
+- assertVisible: 'Edit Maestro daily walk.*'
+# The daily routine is on Today.
+- tapOn:
+    id: 'tab-today'
+- assertVisible: '.*Maestro daily walk.*'

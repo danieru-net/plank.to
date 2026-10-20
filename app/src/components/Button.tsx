@@ -1,45 +1,60 @@
 import { Ionicons } from '@expo/vector-icons';
-import * as Haptics from 'expo-haptics';
 import { Pressable, type PressableProps } from 'react-native';
 import Animated, { cubicBezier } from 'react-native-reanimated';
 import { useState } from 'react';
 
 import { Text } from './Text';
 import { useAppearance } from '@/features/appearance/context';
-import { minTouchTarget, radius } from '@/theme';
+import { useFeedback } from '@/features/appearance/feedback';
+import { minTouchTarget, radius, tint } from '@/theme';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 type Props = Omit<PressableProps, 'children' | 'style'> & {
   /** Visible text; also the accessible name unless `accessibilityLabel` is set. */
   label: string;
-  variant?: 'primary' | 'secondary' | 'danger';
+  /**
+   * primary: the one main action. secondary: soft accent fill. danger: filled, for confirming.
+   * plain / plainDanger: text only, for quiet or destructive actions that should not shout.
+   */
+  variant?: 'primary' | 'secondary' | 'danger' | 'plain' | 'plainDanger';
   /** Optional Ionicons name shown before the label; decorative, the label stays the name. */
   icon?: keyof typeof Ionicons.glyphMap;
+  /** Shrink to fit the label instead of stretching across the row. */
+  inline?: boolean;
 };
-
-/** Soft tint of a #rrggbb color, used for secondary buttons. */
-function tint(hex: string, alpha: number) {
-  const n = parseInt(hex.slice(1), 16);
-  return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${alpha})`;
-}
 
 export function Button({
   label,
   variant = 'primary',
   icon,
+  inline = false,
   disabled,
   onPressIn,
   onPressOut,
   onPress,
   ...rest
 }: Props) {
-  const { palette: theme, spacing } = useAppearance();
+  const { palette: theme, spacing, motion } = useAppearance();
+  const feedback = useFeedback();
   const [pressed, setPressed] = useState(false);
-  const filled = variant !== 'secondary';
-  const fill = variant === 'danger' ? theme.danger : theme.primary;
-  const textColor = variant === 'danger' ? theme.onDanger : theme.onPrimary;
-  const accent = theme.primary;
+  const plain = variant === 'plain' || variant === 'plainDanger';
+  const background =
+    variant === 'primary'
+      ? theme.primary
+      : variant === 'danger'
+        ? theme.danger
+        : variant === 'secondary'
+          ? tint(theme.primary, 0.12)
+          : 'transparent';
+  const foreground =
+    variant === 'primary'
+      ? theme.onPrimary
+      : variant === 'danger'
+        ? theme.onDanger
+        : variant === 'plainDanger'
+          ? theme.danger
+          : theme.primary;
 
   return (
     <AnimatedPressable
@@ -57,31 +72,32 @@ export function Button({
         onPressOut?.(e);
       }}
       onPress={(e) => {
-        if (process.env.EXPO_OS === 'ios')
-          void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        feedback.tap();
         onPress?.(e);
       }}
       style={{
         minHeight: minTouchTarget,
         minWidth: minTouchTarget,
+        alignSelf: inline ? 'flex-start' : undefined,
         paddingVertical: spacing.sm,
-        paddingHorizontal: spacing.md,
+        paddingHorizontal: plain ? spacing.sm : spacing.md,
         borderRadius: radius.md,
         borderCurve: 'continuous',
         flexDirection: 'row',
-        gap: 6,
+        gap: spacing.sm,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: filled ? fill : tint(accent, 0.12),
-        opacity: disabled ? 0.5 : 1,
-        transform: [{ scale: pressed ? 0.97 : 1 }],
+        backgroundColor: background,
+        opacity: disabled ? 0.5 : plain && pressed ? 0.6 : 1,
+        // Plain buttons dim instead of shrinking; filled ones scale a touch when motion is on.
+        transform: [{ scale: pressed && !plain && motion ? 0.97 : 1 }],
         transitionProperty: ['transform', 'opacity'],
-        transitionDuration: 120,
+        transitionDuration: motion ? 120 : 0,
         transitionTimingFunction: cubicBezier(0.23, 1, 0.32, 1),
       }}
     >
-      {icon ? <Ionicons name={icon} size={20} color={filled ? textColor : accent} /> : null}
-      <Text variant="bodyStrong" style={{ color: filled ? textColor : accent }}>
+      {icon ? <Ionicons name={icon} size={20} color={foreground} /> : null}
+      <Text variant="bodyStrong" style={{ color: foreground }}>
         {label}
       </Text>
     </AnimatedPressable>

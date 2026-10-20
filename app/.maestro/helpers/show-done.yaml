@@ -1,0 +1,13 @@
+# Today lists completed and dismissed tasks in a collapsed "Done" section; this expands it.
+appId: to.plank.app
+---
+- runFlow:
+    when:
+      visible:
+        text: 'Done, .*'
+        expanded: false
+    commands:
+      - scrollUntilVisible:
+          element: 'Done, .*'
+          centerElement: true
+      - tapOn: 'Done, .*'

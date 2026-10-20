@@ -1,21 +1,25 @@
+/** 4pt grid. Rows use sm, groups md, sections xl: related things sit closer together. */
 export const spacing = {
   xs: 4,
   sm: 8,
   md: 16,
   lg: 24,
   xl: 32,
+  xxl: 48,
 } as const;
 
 export const radius = {
   sm: 8,
-  md: 16,
-  lg: 22,
+  md: 12,
+  lg: 20,
 } as const;
 
+/** Four sizes, two weights (600 for emphasis, 700 only for the largest size). */
 export const typography = {
   body: { fontSize: 17, lineHeight: 24 },
   bodyStrong: { fontSize: 17, lineHeight: 24, fontWeight: '600' },
-  heading: { fontSize: 30, lineHeight: 36, fontWeight: '800', letterSpacing: -0.5 },
+  title: { fontSize: 22, lineHeight: 28, fontWeight: '600', letterSpacing: -0.2 },
+  heading: { fontSize: 28, lineHeight: 34, fontWeight: '700', letterSpacing: -0.4 },
   caption: { fontSize: 14, lineHeight: 20 },
 } as const;
 
@@ -30,4 +34,4 @@ export const maxFontSizeMultiplier = 2;
 export const borderWidth = 1.5;
 
 /** Soft elevation for cards; use via `boxShadow`, never legacy shadow props. */
-export const cardShadow = '0 1px 2px rgba(0, 0, 0, 0.06), 0 6px 16px rgba(0, 0, 0, 0.06)';
+export const cardShadow = '0 1px 2px rgba(48, 40, 24, 0.05), 0 4px 14px rgba(48, 40, 24, 0.06)';

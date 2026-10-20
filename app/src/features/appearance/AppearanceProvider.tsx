@@ -8,6 +8,7 @@ import {
   type ReactNode,
 } from 'react';
 import { useColorScheme } from 'react-native';
+import { useReducedMotion } from 'react-native-reanimated';
 
 import { useDatabase } from '@/db/DatabaseProvider';
 import { createPreferenceRepository } from '@/db/preferenceRepository';
@@ -33,6 +34,9 @@ const keyFor = {
   textScale: 'display.textScale',
   density: 'display.density',
   colorTheme: 'display.colorTheme',
+  motion: 'display.motion',
+  haptics: 'display.haptics',
+  taskActions: 'display.taskActions',
 } as const;
 
 /** Loads saved appearance settings, applies them app-wide, and saves changes locally. */
@@ -40,6 +44,7 @@ export function AppearanceProvider({ children }: { children: ReactNode }) {
   const db = useDatabase();
   const repo = useMemo(() => createPreferenceRepository(db), [db]);
   const scheme = useColorScheme() === 'dark' ? 'dark' : 'light';
+  const reducedMotion = useReducedMotion();
   const [settings, setSettings] = useState<AppearanceSettings>(defaultAppearance);
   const [error, setError] = useState<string | null>(null);
 
@@ -84,7 +89,10 @@ export function AppearanceProvider({ children }: { children: ReactNode }) {
     });
   }, [repo]);
 
-  const appearance = useMemo(() => buildAppearance(settings, scheme), [settings, scheme]);
+  const appearance = useMemo(
+    () => buildAppearance(settings, scheme, reducedMotion),
+    [settings, scheme, reducedMotion],
+  );
   const controls = useMemo(() => ({ update, reset, error }), [update, reset, error]);
 
   return (

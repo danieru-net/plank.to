@@ -7,9 +7,10 @@ appId: to.plank.app
     env:
       SCENARIO: seeded
       LOCATION_PERM: never
-- tapOn: 'Settings and profile'
-- scrollUntilVisible:
-    element: 'Reset reminder settings'
+- runFlow:
+    file: helpers/open-settings.yaml
+    env:
+      PAGE: Weather
 - scrollUntilVisible:
     element: 'Show weather'
     centerElement: true
@@ -19,11 +20,14 @@ appId: to.plank.app
     centerElement: true
 - assertVisible: 'Open device settings'
 - assertNotVisible: 'Use my device location'
-- tapOn: 'Today'
+- tapOn:
+    id: 'tab-today'
 - assertVisible: '.*Pay rent.*'
-- tapOn: 'Settings and profile'
 # Manual fallback.
-- tapOn: 'Settings and profile'
+- runFlow:
+    file: helpers/open-settings.yaml
+    env:
+      PAGE: Weather
 - scrollUntilVisible:
     element: 'Search for a city or postcode'
     centerElement: true
@@ -37,7 +41,8 @@ appId: to.plank.app
     centerElement: true
 - tapOn: 'Testville, Testshire, Testland'
 - hideKeyboard
-- tapOn: 'Today'
+- tapOn:
+    id: 'tab-today'
 - extendedWaitUntil:
     visible: '.*Rain, 12.*'
     timeout: 30000

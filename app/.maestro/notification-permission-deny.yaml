@@ -8,16 +8,20 @@ appId: to.plank.app
       NOTIFICATION_PERM: unset
 - tapOn: 'Turn on reminders'
 - tapOn: 'Don.t Allow'
-- tapOn: 'Settings and profile'
+- runFlow:
+    file: helpers/open-settings.yaml
+    env:
+      PAGE: Reminders
 - scrollUntilVisible:
     element: 'Reminders are blocked in your device settings.*'
     centerElement: true
 - assertVisible: 'Open device settings'
-- tapOn: 'Today'
+- tapOn:
+    id: 'tab-today'
 - scrollUntilVisible:
-    element: 'Add a task or routine'
+    element: 'Add a task'
     centerElement: true
-- tapOn: 'Add a task or routine'
+- tapOn: 'Add a task'
 - assertVisible: 'New task'
 - tapOn: 'What would you like to do?'
 - inputText: 'Maestro no reminders'

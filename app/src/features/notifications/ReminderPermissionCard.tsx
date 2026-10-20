@@ -1,9 +1,9 @@
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 
 import { Button } from '@/components/Button';
+import { InlineNotice } from '@/components/InlineNotice';
 import { Text } from '@/components/Text';
 import { useAppearance } from '@/features/appearance/context';
-import { borderWidth, radius } from '@/theme';
 import { permissionStatusText, reminderExplanation } from './permission';
 import { useReminderPermission } from './useReminderPermission';
 
@@ -14,7 +14,7 @@ type Props = {
 
 /** Explains reminders before the OS prompt, and shows status. Continuing without them is always fine. */
 export function ReminderPermissionCard({ placement }: Props) {
-  const { palette: theme, spacing } = useAppearance();
+  const { spacing } = useAppearance();
   const { permission, dismissed, error, request, dismiss, openSystemSettings } =
     useReminderPermission();
 
@@ -22,46 +22,45 @@ export function ReminderPermissionCard({ placement }: Props) {
   if (permission === null && !error) return null;
 
   return (
-    <View
-      style={[
-        styles.card,
-        {
-          borderColor: theme.border,
-          backgroundColor: theme.surface,
-          padding: spacing.md,
-          gap: spacing.sm,
-        },
-      ]}
-    >
-      <Text variant="bodyStrong">Reminders</Text>
-      {permission === 'undetermined' ? <Text>{reminderExplanation}</Text> : null}
-      {permission ? <Text muted>{permissionStatusText[permission]}</Text> : null}
-      {error ? (
-        <Text accessibilityRole="alert" style={{ color: theme.danger }}>
-          Error: {error}
-        </Text>
-      ) : null}
-      {permission === 'undetermined' ? (
-        <>
-          <Button label="Turn on reminders" onPress={() => void request()} />
-          {placement === 'today' ? (
-            <Button label="Not now" variant="secondary" onPress={() => void dismiss()} />
-          ) : (
-            <Text muted>You can skip this and keep using Plank without reminders.</Text>
-          )}
-        </>
-      ) : null}
-      {permission === 'denied' ? (
-        <Button
-          label="Open device settings"
-          variant="secondary"
-          onPress={() => void openSystemSettings()}
-        />
-      ) : null}
+    <View style={{ gap: spacing.sm }}>
+      <InlineNotice
+        title="Reminders"
+        message={
+          permission === 'undetermined'
+            ? reminderExplanation
+            : permission
+              ? permissionStatusText[permission]
+              : 'Plank could not check whether reminders are allowed.'
+        }
+      >
+        {permission === 'undetermined' ? (
+          <Text variant="caption" muted>
+            {permissionStatusText.undetermined}
+          </Text>
+        ) : null}
+        {permission === 'undetermined' ? (
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
+            <Button label="Turn on reminders" inline onPress={() => void request()} />
+            {placement === 'today' ? (
+              <Button label="Not now" variant="plain" inline onPress={() => void dismiss()} />
+            ) : null}
+          </View>
+        ) : null}
+        {permission === 'undetermined' && placement === 'settings' ? (
+          <Text variant="caption" muted>
+            You can skip this and keep using Plank without reminders.
+          </Text>
+        ) : null}
+        {permission === 'denied' ? (
+          <Button
+            label="Open device settings"
+            variant="secondary"
+            inline
+            onPress={() => void openSystemSettings()}
+          />
+        ) : null}
+      </InlineNotice>
+      {error ? <InlineNotice tone="error" message={error} /> : null}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  card: { borderWidth, borderRadius: radius.md },
-});

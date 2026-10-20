@@ -5,10 +5,10 @@ appId: to.plank.app
     file: helpers/launch.yaml
     env:
       SCENARIO: seeded
-- tapOn: 'Settings and profile'
-- scrollUntilVisible:
-    element: 'Reminder settings'
-    centerElement: true
+- runFlow:
+    file: helpers/open-settings.yaml
+    env:
+      PAGE: Reminders
 # Suggested notice and snooze are single-choice groups.
 - scrollUntilVisible:
     element: '30 minutes before'
@@ -41,18 +41,14 @@ appId: to.plank.app
 - scrollUntilVisible:
     element: 'Play a sound'
     centerElement: true
-# iOS reports a checkbox's state in its value ("checkbox, checked"), not in the checked flag, so the
-# row is found by position: between the "Sound and vibration" heading and the "Vibrate" row.
+# The switch rows report their state through the checked flag.
 - assertVisible:
-    text: 'checkbox, checked'
-    below: 'Sound and vibration'
-    above: 'Vibrate'
+    text: 'Play a sound'
+    checked: true
 - tapOn: 'Play a sound'
 - assertVisible:
-    text: 'checkbox, unchecked'
-    below: 'Sound and vibration'
-    above: 'Vibrate'
-- tapOn: 'Settings and profile'
+    text: 'Play a sound'
+    checked: false
 # Reset restores the defaults (sound on again).
 - scrollUntilVisible:
     element: 'Reset reminder settings'
@@ -63,6 +59,5 @@ appId: to.plank.app
     direction: UP
     centerElement: true
 - assertVisible:
-    text: 'checkbox, checked'
-    below: 'Sound and vibration'
-    above: 'Vibrate'
+    text: 'Play a sound'
+    checked: true

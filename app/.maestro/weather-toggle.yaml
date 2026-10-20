@@ -6,10 +6,10 @@ appId: to.plank.app
     env:
       SCENARIO: seeded
 - assertVisible: 'Weather is off.'
-- tapOn: 'Settings and profile'
-# Long Settings page: stop at the reminder card first so the next scroll is short.
-- scrollUntilVisible:
-    element: 'Reset reminder settings'
+- runFlow:
+    file: helpers/open-settings.yaml
+    env:
+      PAGE: Weather
 - scrollUntilVisible:
     element: 'Show weather'
     centerElement: true
@@ -33,20 +33,25 @@ appId: to.plank.app
     direction: UP
     centerElement: true
 - assertVisible: 'Using Testville, Testshire, Testland.'
-- tapOn: 'Today'
+- tapOn:
+    id: 'tab-today'
 - extendedWaitUntil:
     visible: '.*Rain, 12.*'
     timeout: 30000
 - assertVisible: '.*High 14.*low 8.*'
 - assertNotVisible: 'Weather is off.'
 # Turn it off again.
-- tapOn: 'Settings and profile'
+- runFlow:
+    file: helpers/open-settings.yaml
+    env:
+      PAGE: Weather
 - scrollUntilVisible:
     element: 'Show weather'
     direction: UP
     centerElement: true
 - tapOn: 'Show weather'
-- assertNotVisible: 'Location'
-- tapOn: 'Today'
+- assertNotVisible: 'No location chosen yet.'
+- tapOn:
+    id: 'tab-today'
 - assertVisible: 'Weather is off.'
 - assertNotVisible: '.*Rain, 12.*'

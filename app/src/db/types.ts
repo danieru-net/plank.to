@@ -96,6 +96,9 @@ export type PreferenceValues = {
   'display.textScale': number;
   'display.density': 'comfortable' | 'compact';
   'display.colorTheme': string;
+  'display.motion': 'system' | 'on' | 'off';
+  'display.haptics': boolean;
+  'display.taskActions': 'compact' | 'buttons';
   /** The user chose "Not now" on the reminder explanation shown on Today. */
   'reminders.promptDismissed': boolean;
   'reminders.defaultAdvanceMinutes': number;

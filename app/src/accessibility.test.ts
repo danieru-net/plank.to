@@ -106,7 +106,8 @@ describe('accessibility (static)', () => {
       'components/Button.tsx',
       'components/TextField.tsx',
       'features/appearance/OptionGroup.tsx',
-      'features/notifications/CheckboxRow.tsx',
+      'components/ToggleRow.tsx',
+      'components/SegmentedControl.tsx',
     ];
     for (const f of shared) {
       const text = files.find((x) => x.name === f)?.text ?? '';
@@ -121,12 +122,15 @@ describe('accessibility (static)', () => {
     expect(bad).toEqual([]);
   });
 
-  it('shows selected and checked state with a mark, not color alone', () => {
-    for (const f of [
-      'features/appearance/OptionGroup.tsx',
-      'features/notifications/CheckboxRow.tsx',
-    ]) {
-      expect(files.find((x) => x.name === f)?.text).toContain('checkmark');
-    }
+  it('shows selected and checked state with a mark or position, not color alone', () => {
+    expect(files.find((x) => x.name === 'features/appearance/OptionGroup.tsx')?.text).toContain(
+      'checkmark',
+    );
+    // A switch shows its state by the knob's position.
+    expect(files.find((x) => x.name === 'components/ToggleRow.tsx')?.text).toContain('<Switch');
+    // The selected segment is raised and bold, not only recolored.
+    expect(files.find((x) => x.name === 'components/SegmentedControl.tsx')?.text).toContain(
+      "selected ? 'bodyStrong'",
+    );
   });
 });

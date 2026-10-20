@@ -34,5 +34,6 @@ appId: to.plank.app
 - assertNotVisible: '.*Maestro water plants.*'
 # Complete
 - tapOn: 'Complete Maestro water herbs'
+- runFlow: helpers/show-done.yaml
 - assertVisible: 'Undo done for Maestro water herbs'
 - assertVisible: '.*Done.*'

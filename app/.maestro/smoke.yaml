@@ -22,11 +22,13 @@ appId: to.plank.app
 - extendedWaitUntil:
     visible: 'Nothing planned for today'
     timeout: 90000
-- tapOn: 'Settings and profile'
+- tapOn:
+    id: 'tab-settings'
 - assertVisible: 'Settings'
-- tapOn: 'Today'
+- tapOn:
+    id: 'tab-today'
 - assertVisible: 'Nothing planned for today'
 - scrollUntilVisible:
-    element: 'Add a task or routine'
-- tapOn: 'Add a task or routine'
+    element: 'Add a task'
+- tapOn: 'Add a task'
 - assertVisible: 'What would you like to do?'

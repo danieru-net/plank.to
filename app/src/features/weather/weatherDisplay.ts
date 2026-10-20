@@ -23,6 +23,10 @@ export type WeatherView =
   | {
       kind: 'conditions';
       icon: string;
+      /** The current temperature, such as "18°C", shown large on its own. */
+      temperature: string;
+      /** The plain-language conditions, such as "Partly cloudy". */
+      condition: string;
       summary: string;
       details: string[];
       /** Stale or error note shown with the data; null when the data is current. */
@@ -126,6 +130,8 @@ function conditionsView(
   return {
     kind: 'conditions',
     icon,
+    temperature,
+    condition: label,
     summary: `${label}, ${temperature}`,
     details,
     notice: stale ? `${notice} Last updated ${age} ago.` : null,

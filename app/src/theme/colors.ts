@@ -3,7 +3,10 @@ export type ColorScheme = 'light' | 'dark';
 export type Palette = {
   background: string;
   surface: string;
+  /** Outline for inputs and toggles that must be found by their edge (3:1). */
   border: string;
+  /** Decorative hairline between grouped rows; never the only cue for a control. */
+  separator: string;
   text: string;
   textMuted: string;
   primary: string;
@@ -15,9 +18,10 @@ export type Palette = {
 
 export const palettes: Record<ColorScheme, Palette> = {
   light: {
-    background: '#FAFAF7',
+    background: '#F3F2EE',
     surface: '#FFFFFF',
     border: '#767676',
+    separator: '#E2E0DA',
     text: '#1B1B1B',
     textMuted: '#525252',
     primary: '#2B5C8A',
@@ -30,6 +34,7 @@ export const palettes: Record<ColorScheme, Palette> = {
     background: '#121212',
     surface: '#1E1E1E',
     border: '#8C8C8C',
+    separator: '#333333',
     text: '#EDEDED',
     textMuted: '#B0B0B0',
     primary: '#8DB8E3',
@@ -70,6 +75,18 @@ const accents: Record<'sage' | 'plum' | 'clay', Record<ColorScheme, Accent>> = {
     dark: { primary: '#F0B48F', onPrimary: '#2E1606', focus: '#F0B48F' },
   },
 };
+
+/** Whether a color theme renders light or dark, given the device's setting. */
+export function schemeFor(theme: ColorTheme, systemScheme: ColorScheme): ColorScheme {
+  if (theme === 'light' || theme === 'dark') return theme;
+  return systemScheme;
+}
+
+/** A translucent version of a #rrggbb color, for soft fills such as secondary buttons. */
+export function tint(hex: string, alpha: number): string {
+  const n = parseInt(hex.slice(1), 16);
+  return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${alpha})`;
+}
 
 /** The palette for a chosen color theme; `systemScheme` is the device's light/dark setting. */
 export function resolvePalette(theme: ColorTheme, systemScheme: ColorScheme): Palette {

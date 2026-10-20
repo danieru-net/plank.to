@@ -1,69 +1,48 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Tabs } from 'expo-router';
+import { NativeTabs } from 'expo-router/native-tabs';
 
-import { useTheme } from '@/theme';
+import { useAppearance } from '@/features/appearance/context';
+import { tint } from '@/theme';
 
+/**
+ * The platform's own tab bar: Liquid Glass on recent iOS, Material navigation bar on Android.
+ * SF Symbols on iOS; Ionicons stand in on Android so no extra symbol package is needed.
+ */
 export default function TabsLayout() {
-  const theme = useTheme();
+  const { palette: theme } = useAppearance();
   return (
-    <Tabs
-      screenOptions={{
-        headerStyle: { backgroundColor: theme.background },
-        headerShadowVisible: false,
-        headerTitleStyle: { fontWeight: '700' },
-        headerTintColor: theme.text,
-        tabBarStyle: {
-          backgroundColor: theme.surface,
-          borderTopWidth: 0,
-          boxShadow: '0 -1px 12px rgba(0, 0, 0, 0.06)',
-        },
-        tabBarLabelStyle: { fontWeight: '600' },
-        tabBarActiveTintColor: theme.primary,
-        tabBarInactiveTintColor: theme.textMuted,
-      }}
+    <NativeTabs
+      tintColor={theme.primary}
+      iconColor={{ default: theme.textMuted, selected: theme.primary }}
+      labelStyle={{ default: { color: theme.textMuted }, selected: { color: theme.primary } }}
+      backgroundColor={process.env.EXPO_OS === 'android' ? theme.surface : undefined}
+      indicatorColor={tint(theme.primary, 0.16)}
     >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Today',
-          tabBarAccessibilityLabel: 'Today',
-          tabBarIcon: ({ focused, size }) => (
-            <Ionicons
-              name={focused ? 'today' : 'today-outline'}
-              color={focused ? theme.primary : theme.textMuted}
-              size={size}
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="routines"
-        options={{
-          title: 'Routines',
-          tabBarAccessibilityLabel: 'Routines',
-          tabBarIcon: ({ focused, size }) => (
-            <Ionicons
-              name={focused ? 'repeat' : 'repeat-outline'}
-              color={focused ? theme.primary : theme.textMuted}
-              size={size}
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
+      <NativeTabs.Trigger name="(today)" accessibilityLabel="Today" testID="tab-today">
+        <NativeTabs.Trigger.Icon
+          sf={{ default: 'sun.max', selected: 'sun.max.fill' }}
+          src={<NativeTabs.Trigger.VectorIcon family={Ionicons} name="today" />}
+        />
+        <NativeTabs.Trigger.Label>Today</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="routines" accessibilityLabel="Routines" testID="tab-routines">
+        <NativeTabs.Trigger.Icon
+          sf="arrow.triangle.2.circlepath"
+          src={<NativeTabs.Trigger.VectorIcon family={Ionicons} name="repeat" />}
+        />
+        <NativeTabs.Trigger.Label>Routines</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger
         name="settings"
-        options={{
-          title: 'Settings',
-          tabBarAccessibilityLabel: 'Settings and profile',
-          tabBarIcon: ({ focused, size }) => (
-            <Ionicons
-              name={focused ? 'settings' : 'settings-outline'}
-              color={focused ? theme.primary : theme.textMuted}
-              size={size}
-            />
-          ),
-        }}
-      />
-    </Tabs>
+        accessibilityLabel="Settings and profile"
+        testID="tab-settings"
+      >
+        <NativeTabs.Trigger.Icon
+          sf={{ default: 'gearshape', selected: 'gearshape.fill' }}
+          src={<NativeTabs.Trigger.VectorIcon family={Ionicons} name="settings" />}
+        />
+        <NativeTabs.Trigger.Label>Settings</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+    </NativeTabs>
   );
 }

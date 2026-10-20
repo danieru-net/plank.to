@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 import { Alert } from 'react-native';
 
 import { Button } from '@/components/Button';
+import { Card } from '@/components/Card';
+import { InlineNotice } from '@/components/InlineNotice';
 import { Screen } from '@/components/Screen';
 import { Text } from '@/components/Text';
 import { TextField } from '@/components/TextField';
@@ -18,6 +20,7 @@ import {
   type TaskFormValues,
 } from '@/features/tasks/taskForm';
 import { useReconcileReminders } from '@/features/notifications/useReminderReconciler';
+import { SymbolPicker } from '@/features/tasks/SymbolPicker';
 import { useTaskRepository } from '@/features/tasks/useTaskRepository';
 import { useAppearance } from '@/features/appearance/context';
 
@@ -26,7 +29,7 @@ type Params = { id?: string };
 export default function EditorScreen() {
   const { id } = useLocalSearchParams<Params>();
   const router = useRouter();
-  const { palette: theme } = useAppearance();
+  const { spacing } = useAppearance();
   const repo = useTaskRepository();
   const reconcile = useReconcileReminders();
   const editing = !!id;
@@ -113,53 +116,62 @@ export default function EditorScreen() {
   };
 
   const title = editing ? 'Edit task' : 'New task';
+  const header = (
+    <Stack.Screen
+      options={{
+        title,
+        headerLeft: () => (
+          <Button label="Cancel" variant="plain" inline onPress={() => router.back()} />
+        ),
+      }}
+    />
+  );
 
   if (loadError) {
     return (
       <Screen>
-        <Stack.Screen options={{ title }} />
-        <Text accessibilityRole="alert">Error: {loadError}</Text>
-        <Button label="Close" variant="secondary" onPress={() => router.back()} />
+        {header}
+        <InlineNotice tone="error" message={loadError} />
       </Screen>
     );
   }
   if (loading) {
     return (
       <Screen>
-        <Stack.Screen options={{ title }} />
+        {header}
         <Text muted>Loading task…</Text>
       </Screen>
     );
   }
 
   return (
-    <Screen keyboardDismissMode="on-drag">
-      <Stack.Screen options={{ title }} />
+    <Screen keyboardDismissMode="on-drag" contentContainerStyle={{ gap: spacing.lg }}>
+      {header}
       <TextField
         label="Title"
         value={values.title}
         onChangeText={(t) => set('title', t)}
         error={errors.title}
         placeholder="What would you like to do?"
-        returnKeyType="next"
+        returnKeyType="done"
       />
-      <TimeField
-        label="Time (optional)"
-        hint="Leave empty if it can happen any time."
-        value={values.time}
-        onChange={(t) => set('time', t)}
-        error={errors.time}
-        optional
-      />
+      <Card>
+        <TimeField
+          label="Time"
+          hint="Optional. Without a time, it goes under “Any time”."
+          value={values.time}
+          onChange={(t) => set('time', t)}
+          error={errors.time}
+          optional
+        />
+      </Card>
+      <SymbolPicker value={values.symbol} onChange={(symbol) => set('symbol', symbol)} />
 
-      {saveError ? (
-        <Text accessibilityRole="alert" style={{ color: theme.danger }}>
-          Error: {saveError}
-        </Text>
-      ) : null}
+      {saveError ? <InlineNotice tone="error" message={saveError} /> : null}
       <Button label={saving ? 'Saving…' : 'Save task'} onPress={onSave} disabled={saving} />
-      <Button label="Cancel" variant="secondary" onPress={() => router.back()} />
-      {editing ? <Button label="Delete task" variant="danger" onPress={onDelete} /> : null}
+      {editing ? (
+        <Button label="Delete task" icon="trash-outline" variant="plainDanger" onPress={onDelete} />
+      ) : null}
     </Screen>
   );
 }

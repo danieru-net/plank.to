@@ -33,3 +33,15 @@ export function statusText(status: Task['status']): string | null {
   if (status === 'dismissed') return 'Dismissed';
   return null;
 }
+
+/**
+ * The first timed task still to do at or after the current local time, or null. Takes the timed
+ * list already sorted by `groupAgenda`.
+ */
+export function nextTaskId(timed: Task[], now: Date): string | null {
+  const pad = (n: number) => String(n).padStart(2, '0');
+  const clock = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  return (
+    timed.find((t) => t.status === 'pending' && t.time !== null && t.time >= clock)?.id ?? null
+  );
+}

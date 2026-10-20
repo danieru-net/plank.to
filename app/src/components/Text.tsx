@@ -6,9 +6,11 @@ import { typography, type TextVariant } from '@/theme';
 type Props = RNTextProps & {
   variant?: TextVariant;
   muted?: boolean;
+  /** Equal-width digits, so times and temperatures line up in a column. */
+  tabular?: boolean;
 };
 
-export function Text({ variant = 'body', muted = false, style, ...rest }: Props) {
+export function Text({ variant = 'body', muted = false, tabular = false, style, ...rest }: Props) {
   const { palette: theme, settings, maxFontMultiplier } = useAppearance();
   const base = typography[variant];
   return (
@@ -23,6 +25,7 @@ export function Text({ variant = 'body', muted = false, style, ...rest }: Props)
           fontSize: base.fontSize * settings.textScale,
           lineHeight: base.lineHeight * settings.textScale,
         },
+        tabular ? { fontVariant: ['tabular-nums'] } : null,
         { color: muted ? theme.textMuted : theme.text },
         style,
       ]}

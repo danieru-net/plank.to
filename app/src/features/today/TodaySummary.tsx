@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { Linking, Pressable, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 
@@ -24,11 +25,12 @@ const actionLabels: Record<WeatherAction, string> = {
 };
 
 /**
- * Weather card, then the clothing ideas card, shown above the agenda.
- * Weather problems are shown as calm notes and never block the task list.
+ * One "at a glance" card above the agenda: weather first, then the clothing idea. Weather
+ * problems are calm notes and never block the task list. When weather is off, a single quiet row
+ * says so and links to its settings.
  */
 export function TodaySummary() {
-  const { spacing } = useAppearance();
+  const { spacing, palette: theme } = useAppearance();
   const router = useRouter();
   const { state, now, retry } = useTodayWeather();
   const view = describeWeather(state, now);
@@ -39,83 +41,126 @@ export function TodaySummary() {
 
   const onAction = (action: WeatherAction) => {
     if (action === 'retry') retry();
-    else if (action === 'settings') router.navigate('/settings');
+    else if (action === 'settings') router.navigate('/settings/weather');
     else Linking.openSettings().catch((e: unknown) => console.error(e));
   };
 
   const actionButton = (action: WeatherAction | null) =>
     action ? (
-      <Button label={actionLabels[action]} variant="secondary" onPress={() => onAction(action)} />
+      <Button
+        label={actionLabels[action]}
+        variant="secondary"
+        inline
+        onPress={() => onAction(action)}
+      />
     ) : null;
 
+  if (view.kind === 'off') {
+    return (
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Weather is off."
+        accessibilityHint="Opens weather settings"
+        onPress={() => router.navigate('/settings/weather')}
+        style={({ pressed }) => [
+          styles.offRow,
+          {
+            gap: spacing.sm,
+            paddingHorizontal: spacing.md,
+            opacity: pressed ? 0.6 : 1,
+          },
+        ]}
+      >
+        <Ionicons name="partly-sunny-outline" size={20} color={theme.textMuted} />
+        <Text variant="caption" muted style={styles.grow}>
+          Weather is off. You can turn it on later in Settings.
+        </Text>
+        <Ionicons name="chevron-forward" size={16} color={theme.textMuted} />
+      </Pressable>
+    );
+  }
+
+  const divider = (
+    <View
+      style={[styles.divider, { backgroundColor: theme.separator, marginVertical: spacing.xs }]}
+    />
+  );
+
   return (
-    <View style={{ gap: spacing.sm }}>
+    <Card style={{ gap: spacing.md }}>
       {view.kind === 'conditions' ? (
-        <Card>
-          <View accessible accessibilityLabel={view.label} style={{ gap: spacing.xs }}>
-            <Text variant="bodyStrong">Weather</Text>
-            <View style={[styles.row, { gap: spacing.md }]}>
-              <Text variant="heading" accessibilityElementsHidden importantForAccessibility="no">
-                {view.icon}
-              </Text>
-              <Text variant="bodyStrong" style={styles.grow}>
-                {view.summary}
-              </Text>
+        <View style={{ gap: spacing.sm }}>
+          <View
+            accessible
+            accessibilityLabel={view.label}
+            style={[styles.row, { gap: spacing.md }]}
+          >
+            <Text
+              variant="heading"
+              accessibilityElementsHidden
+              importantForAccessibility="no"
+              style={styles.icon}
+            >
+              {view.icon}
+            </Text>
+            <Text variant="heading" tabular>
+              {view.temperature}
+            </Text>
+            <View style={styles.grow}>
+              <Text variant="bodyStrong">{view.condition}</Text>
+              {view.details.length > 0 ? (
+                <Text variant="caption" muted>
+                  {view.details.join(' · ')}
+                </Text>
+              ) : null}
             </View>
-            {view.details.map((d) => (
-              <Text key={d} muted>
-                {d}
-              </Text>
-            ))}
-            {view.notice ? <Text>{view.notice}</Text> : null}
           </View>
+          {view.notice ? <Text variant="caption">{view.notice}</Text> : null}
           {actionButton(view.action)}
           <Attribution />
-        </Card>
+        </View>
       ) : (
-        <Card
-          accessible={view.kind !== 'message'}
-          accessibilityLabel={
-            view.kind === 'off'
-              ? 'Weather is off.'
-              : view.kind === 'loading'
-                ? 'Weather is loading.'
-                : undefined
-          }
+        <View
+          style={{ gap: spacing.xs }}
+          accessible={view.kind === 'loading'}
+          accessibilityLabel={view.kind === 'loading' ? 'Weather is loading.' : undefined}
         >
           <Text variant="bodyStrong">{view.kind === 'message' ? view.title : 'Weather'}</Text>
-          {view.kind === 'off' ? (
-            <Text muted>Weather is off. You can turn it on later in Settings.</Text>
-          ) : null}
           {view.kind === 'loading' ? <Text muted>Loading weather…</Text> : null}
-          {view.kind === 'message' ? (
-            <>
-              <Text muted>{view.body}</Text>
-              {actionButton(view.action)}
-            </>
-          ) : null}
-        </Card>
+          {view.kind === 'message' ? <Text muted>{view.body}</Text> : null}
+          {view.kind === 'message' ? actionButton(view.action) : null}
+        </View>
       )}
-      <Card>
-        <Text variant="bodyStrong">{clothingCopy.title}</Text>
-        {error ? <Text>Error: {error}</Text> : null}
+
+      {divider}
+
+      <View style={{ gap: spacing.xs }}>
+        <Text
+          variant="caption"
+          muted
+          accessibilityRole="header"
+          style={{ fontWeight: '600', letterSpacing: 0.6, textTransform: 'uppercase' }}
+        >
+          {clothingCopy.title}
+        </Text>
+        {error ? (
+          <Text variant="caption" style={{ color: theme.danger }}>
+            Error: {error}
+          </Text>
+        ) : null}
         {!outfit ? (
           <Text muted>{clothingCopy.noForecast}</Text>
         ) : dismissed ? (
           <Text muted>{clothingCopy.dismissedAll}</Text>
         ) : (
           <>
-            <Text muted>{clothingCopy.intro}</Text>
             <View
               accessible
-              accessibilityLabel={`${clothingCopy.top}: ${outfit.top}. ${clothingCopy.bottom}: ${outfit.bottom}.`}
+              accessibilityLabel={`${clothingCopy.intro} ${outfit.label}. ${clothingCopy.top}: ${outfit.top}. ${clothingCopy.bottom}: ${outfit.bottom}.`}
             >
               <Text variant="bodyStrong">{outfit.label}</Text>
               <Text>
-                {clothingCopy.top}: {outfit.top}
-              </Text>
-              <Text>
-                {clothingCopy.bottom}: {outfit.bottom}
+                {clothingCopy.top}: {outfit.top} · {clothingCopy.bottom}: {outfit.bottom}
               </Text>
             </View>
             <Text variant="caption" muted>
@@ -124,14 +169,15 @@ export function TodaySummary() {
             <Button
               label={clothingCopy.dismiss}
               accessibilityLabel={`${clothingCopy.dismiss} clothing ideas`}
-              variant="secondary"
               accessibilityHint="Hides clothing ideas for today"
+              variant="plain"
+              inline
               onPress={() => void dismiss()}
             />
           </>
         )}
-      </Card>
-    </View>
+      </View>
+    </Card>
   );
 }
 
@@ -156,5 +202,8 @@ function Attribution() {
 const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center' },
   grow: { flex: 1 },
-  link: { minHeight: minTouchTarget, justifyContent: 'center' },
+  icon: { width: 40, textAlign: 'center' },
+  divider: { height: StyleSheet.hairlineWidth },
+  link: { minHeight: minTouchTarget, justifyContent: 'center', alignSelf: 'flex-start' },
+  offRow: { minHeight: minTouchTarget, flexDirection: 'row', alignItems: 'center' },
 });

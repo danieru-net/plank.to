@@ -6,21 +6,18 @@ import { AppearanceProvider } from '@/features/appearance/AppearanceProvider';
 import { useAppearance } from '@/features/appearance/context';
 import { ReminderResponder } from '@/features/notifications/ReminderResponder';
 import { ReminderReconciler } from '@/features/notifications/useReminderReconciler';
-import { palettes } from '@/theme';
+import { useStackScreenOptions } from '@/theme/navigation';
 
 function Navigator() {
-  const { palette: theme } = useAppearance();
+  const { scheme } = useAppearance();
+  const options = useStackScreenOptions();
   return (
     <>
       <Stack
         screenOptions={{
+          ...options,
           // Without this the back button is named after the route group, "(tabs)".
           headerBackTitle: 'Back',
-          headerStyle: { backgroundColor: theme.background },
-          headerShadowVisible: false,
-          headerTitleStyle: { fontWeight: '700' },
-          headerTintColor: theme.text,
-          contentStyle: { backgroundColor: theme.background },
         }}
       >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -31,7 +28,7 @@ function Navigator() {
           options={{ title: 'Change this day', presentation: 'modal' }}
         />
       </Stack>
-      <StatusBar style={theme.background === palettes.dark.background ? 'light' : 'dark'} />
+      <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
     </>
   );
 }

@@ -26,7 +26,8 @@ appId: to.plank.app
     element: 'Stretch today only, routine.*Change'
     centerElement: true
 # The series itself is unchanged.
-- tapOn: 'Routines'
+- tapOn:
+    id: 'tab-routines'
 - assertVisible: 'Seed: Morning stretch'
 - assertNotVisible: 'Stretch today only'
 - assertVisible: '07:30, every day'
@@ -44,7 +45,8 @@ appId: to.plank.app
 - assertVisible: '06:45, every day'
 - assertVisible: 'Seed: Morning stretch'
 # Skip one day: the whole-routine list still has it, Today shows it as skipped.
-- tapOn: 'Today'
+- tapOn:
+    id: 'tab-today'
 - scrollUntilVisible:
     element: 'Stretch today only, routine.*Change'
     centerElement: true

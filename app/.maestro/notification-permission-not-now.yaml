@@ -9,7 +9,10 @@ appId: to.plank.app
 - assertVisible: 'Not now'
 - tapOn: 'Not now'
 - assertNotVisible: 'Turn on reminders'
-- tapOn: 'Settings and profile'
+- runFlow:
+    file: helpers/open-settings.yaml
+    env:
+      PAGE: Reminders
 - scrollUntilVisible:
     element: 'Reminders are off. Plank has not asked for permission yet.'
     centerElement: true

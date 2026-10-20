@@ -5,7 +5,10 @@ appId: to.plank.app
     file: helpers/launch.yaml
     env:
       SCENARIO: seeded
-- tapOn: 'Settings and profile'
+- runFlow:
+    file: helpers/open-settings.yaml
+    env:
+      PAGE: Appearance
 - assertVisible: 'Appearance'
 # The seed uses Standard / Comfortable / Light.
 - assertVisible:
@@ -49,10 +52,18 @@ appId: to.plank.app
     text: 'Light'
     selected: false
 # The choices apply to other screens and are still selected on return.
-- tapOn: 'Today'
+- tapOn:
+    id: 'tab-today'
 - assertVisible: '.*Pay rent.*'
 - takeScreenshot: today-dark-largest-compact
-- tapOn: 'Settings and profile'
+- runFlow:
+    file: helpers/open-settings.yaml
+    env:
+      PAGE: Appearance
+- scrollUntilVisible:
+    element: 'Largest'
+    direction: UP
+    centerElement: true
 - assertVisible:
     text: 'Largest'
     selected: true

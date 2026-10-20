@@ -22,6 +22,7 @@ appId: to.plank.app
 - tapOn: 'Save task'
 - assertVisible: '.*Maestro survives restart.*'
 - tapOn: 'Complete Maestro survives restart'
+- runFlow: helpers/show-done.yaml
 - assertVisible: 'Undo done for Maestro survives restart'
 - stopApp
 - launchApp
@@ -32,6 +33,7 @@ appId: to.plank.app
 - scrollUntilVisible:
     element: '.*Pay rent.*'
     centerElement: true
+- runFlow: helpers/show-done.yaml
 - scrollUntilVisible:
     element: 'Undo done for Maestro survives restart'
     centerElement: true

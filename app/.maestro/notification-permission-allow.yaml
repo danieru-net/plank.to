@@ -11,7 +11,10 @@ appId: to.plank.app
 - tapOn: 'Turn on reminders'
 - tapOn: 'Allow'
 - assertNotVisible: 'Turn on reminders'
-- tapOn: 'Settings and profile'
+- runFlow:
+    file: helpers/open-settings.yaml
+    env:
+      PAGE: Reminders
 - scrollUntilVisible:
     element: 'Reminders are allowed on this device.'
     centerElement: true

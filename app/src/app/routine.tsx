@@ -1,9 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Alert, Pressable, StyleSheet, View } from 'react-native';
 
 import { Button } from '@/components/Button';
+import { Card } from '@/components/Card';
+import { InlineNotice } from '@/components/InlineNotice';
 import { Screen } from '@/components/Screen';
 import { Text } from '@/components/Text';
 import { TextField } from '@/components/TextField';
@@ -14,7 +16,6 @@ import {
   allWeekdays,
   emptyRoutineForm,
   formToRoutineInput,
-  isEveryDay,
   routineErrorsFrom,
   routineToForm,
   toggleWeekday,
@@ -26,7 +27,7 @@ import { ReminderFields } from '@/features/notifications/ReminderFields';
 import { useReconcileReminders } from '@/features/notifications/useReminderReconciler';
 import { useRoutineRepository } from '@/features/routines/useRoutineRepository';
 import { toLocalDateString } from '@/features/tasks/taskForm';
-import { borderWidth, minTouchTarget, radius } from '@/theme';
+import { minTouchTarget, radius, tint } from '@/theme';
 
 export default function RoutineScreen() {
   const { id } = useLocalSearchParams<{ date?: string; id?: string }>();
@@ -75,8 +76,6 @@ export default function RoutineScreen() {
     setErrors((e) => ({ ...e, [key]: undefined }));
   };
 
-  const everyDay = isEveryDay(values.weekdays);
-
   const onSave = async () => {
     setSaving(true);
     setSaveError(null);
@@ -100,33 +99,77 @@ export default function RoutineScreen() {
     }
   };
 
+  const confirmDelete = () => {
+    if (!id) return;
+    Alert.alert(
+      `Delete “${values.title}”?`,
+      'This removes the routine and any changes you made to single days. This cannot be undone.',
+      [
+        { text: 'Keep routine', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => {
+            repo
+              .deleteRoutine(id)
+              .then(() => reconcile())
+              .then(
+                () => router.back(),
+                (e: unknown) =>
+                  setSaveError(
+                    e instanceof StorageError
+                      ? e.message
+                      : 'Something went wrong. Nothing was deleted.',
+                  ),
+              );
+          },
+        },
+      ],
+    );
+  };
+
   const title = editing ? 'Edit routine' : 'New routine';
+  const header = (
+    <Stack.Screen
+      options={{
+        title,
+        headerLeft: () => (
+          <Button label="Cancel" variant="plain" inline onPress={() => router.back()} />
+        ),
+      }}
+    />
+  );
 
   if (loadError) {
     return (
       <Screen>
-        <Stack.Screen options={{ title }} />
-        <Text accessibilityRole="alert">Error: {loadError}</Text>
-        <Button label="Close" variant="secondary" onPress={() => router.back()} />
+        {header}
+        <InlineNotice tone="error" message={loadError} />
       </Screen>
     );
   }
   if (loading) {
     return (
       <Screen>
-        <Stack.Screen options={{ title }} />
+        {header}
         <Text muted>Loading routine…</Text>
       </Screen>
     );
   }
 
+  const presets: { label: string; days: number[] }[] = [
+    { label: 'Every day', days: allWeekdays() },
+    { label: 'Weekdays', days: [1, 2, 3, 4, 5] },
+    { label: 'Weekends', days: [0, 6] },
+  ];
+  const sameDays = (a: readonly number[], b: readonly number[]) =>
+    a.length === b.length && a.every((d) => b.includes(d));
+
   return (
-    <Screen keyboardDismissMode="on-drag">
-      <Stack.Screen options={{ title }} />
+    <Screen keyboardDismissMode="on-drag" contentContainerStyle={{ gap: spacing.lg }}>
+      {header}
       {editing ? (
-        <Text muted>
-          Changes here apply to every day of this routine, except days you changed individually.
-        </Text>
+        <InlineNotice message="Changes here apply to every day of this routine, except days you changed individually." />
       ) : null}
       <TextField
         label="Title"
@@ -134,27 +177,48 @@ export default function RoutineScreen() {
         onChangeText={(t) => set('title', t)}
         error={errors.title}
         placeholder="What would you like to repeat?"
-        returnKeyType="next"
+        returnKeyType="done"
       />
-      <TimeField
-        label="Time"
-        value={values.time}
-        onChange={(t) => set('time', t)}
-        error={errors.time}
-      />
+      <Card>
+        <TimeField
+          label="Time"
+          value={values.time}
+          onChange={(t) => set('time', t)}
+          error={errors.time}
+        />
+      </Card>
 
       <View style={{ gap: spacing.sm }}>
-        <Text variant="bodyStrong">Days</Text>
-        <Button
-          label="Every day"
-          accessibilityRole="checkbox"
-          accessibilityLabel="Every day"
-          accessibilityState={{ checked: everyDay }}
-          variant={everyDay ? 'primary' : 'secondary'}
-          onPress={() => set('weekdays', everyDay ? [] : allWeekdays())}
-        />
+        <Text variant="bodyStrong">Repeats on</Text>
+        <View style={[styles.wrap, { gap: spacing.sm }]}>
+          {presets.map((p) => {
+            const on = sameDays(values.weekdays, p.days);
+            return (
+              <Pressable
+                key={p.label}
+                accessibilityRole="checkbox"
+                accessibilityLabel={p.label}
+                accessibilityState={{ checked: on }}
+                onPress={() => set('weekdays', on ? [] : p.days)}
+                style={[
+                  styles.chip,
+                  {
+                    paddingHorizontal: spacing.md,
+                    gap: spacing.xs,
+                    backgroundColor: on ? theme.primary : tint(theme.primary, 0.12),
+                  },
+                ]}
+              >
+                {on ? <Ionicons name="checkmark" size={16} color={theme.onPrimary} /> : null}
+                <Text variant="bodyStrong" style={{ color: on ? theme.onPrimary : theme.primary }}>
+                  {p.label}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
         <View
-          style={[styles.days, { gap: spacing.sm }]}
+          style={[styles.wrap, { gap: spacing.xs }]}
           accessibilityRole="group"
           accessibilityLabel="Days of the week"
         >
@@ -170,13 +234,17 @@ export default function RoutineScreen() {
                 style={[
                   styles.day,
                   {
+                    backgroundColor: selected ? theme.primary : theme.surface,
                     borderColor: selected ? theme.primary : theme.border,
-                    backgroundColor: theme.surface,
                   },
                 ]}
               >
-                <Text variant={selected ? 'bodyStrong' : 'body'}>{short}</Text>
-                {selected ? <Ionicons name="checkmark" size={16} color={theme.primary} /> : null}
+                <Text
+                  variant={selected ? 'bodyStrong' : 'body'}
+                  style={{ color: selected ? theme.onPrimary : theme.text }}
+                >
+                  {short}
+                </Text>
               </Pressable>
             );
           })}
@@ -188,30 +256,35 @@ export default function RoutineScreen() {
         ) : null}
       </View>
 
-      <View style={{ gap: spacing.sm }}>
+      <View style={{ gap: spacing.md }}>
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel="Advanced"
+          accessibilityLabel="More options"
           accessibilityState={{ expanded: advancedOpen }}
           onPress={() => setAdvancedOpen((o) => !o)}
           style={styles.advancedHeader}
         >
-          <Text variant="bodyStrong">Advanced</Text>
+          <Text variant="bodyStrong">More options</Text>
+          <Text variant="caption" muted style={styles.grow}>
+            {'  '}Start date, notes, reminder
+          </Text>
           <Ionicons
             name={advancedOpen ? 'chevron-up' : 'chevron-down'}
             size={20}
-            color={theme.text}
+            color={theme.textMuted}
           />
         </Pressable>
         {advancedOpen ? (
-          <View style={{ gap: spacing.md }}>
-            <DateField
-              label="Starts on"
-              hint="Earlier days are not filled in."
-              value={values.startDate}
-              onChange={(t) => set('startDate', t)}
-              error={errors.startDate}
-            />
+          <View style={{ gap: spacing.lg }}>
+            <Card>
+              <DateField
+                label="Starts on"
+                hint="Earlier days are not filled in."
+                value={values.startDate}
+                onChange={(t) => set('startDate', t)}
+                error={errors.startDate}
+              />
+            </Card>
             <TextField
               label="Notes (optional)"
               value={values.notes}
@@ -220,7 +293,6 @@ export default function RoutineScreen() {
               multiline
               textAlignVertical="top"
             />
-
             <ReminderFields
               enabled={values.reminderEnabled}
               advanceMinutes={advanceMinutes}
@@ -236,13 +308,16 @@ export default function RoutineScreen() {
         ) : null}
       </View>
 
-      {saveError ? (
-        <Text accessibilityRole="alert" style={{ color: theme.danger }}>
-          Error: {saveError}
-        </Text>
-      ) : null}
+      {saveError ? <InlineNotice tone="error" message={saveError} /> : null}
       <Button label={saving ? 'Saving…' : 'Save routine'} onPress={onSave} disabled={saving} />
-      <Button label="Cancel" variant="secondary" onPress={() => router.back()} />
+      {editing ? (
+        <Button
+          label="Delete routine"
+          icon="trash-outline"
+          variant="plainDanger"
+          onPress={confirmDelete}
+        />
+      ) : null}
     </Screen>
   );
 }
@@ -252,18 +327,24 @@ const styles = StyleSheet.create({
     minHeight: minTouchTarget,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
   },
-  days: { flexDirection: 'row', flexWrap: 'wrap' },
-  day: {
-    minWidth: minTouchTarget,
-    minHeight: minTouchTarget,
-    borderWidth,
-    borderRadius: radius.md,
+  grow: { flex: 1 },
+  wrap: { flexDirection: 'row', flexWrap: 'wrap' },
+  chip: {
+    minHeight: minTouchTarget - 8,
+    borderRadius: 999,
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    flexDirection: 'row',
-    gap: 4,
-    paddingHorizontal: 8,
+  },
+  day: {
+    flexGrow: 1,
+    minWidth: 44,
+    minHeight: minTouchTarget,
+    borderWidth: 1.5,
+    borderRadius: radius.md,
+    borderCurve: 'continuous',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

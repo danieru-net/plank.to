@@ -76,6 +76,8 @@ describe('describeWeather', () => {
     );
     expect(v).toMatchObject({
       kind: 'conditions',
+      temperature: '18°C',
+      condition: 'Partly cloudy',
       summary: 'Partly cloudy, 18°C',
       notice: null,
       action: null,

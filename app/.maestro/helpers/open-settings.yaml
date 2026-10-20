@@ -1,0 +1,13 @@
+# Opens one Settings page from its root list. Env: PAGE (Appearance, Reminders, or Weather).
+# Tapping the Settings tab while it is showing pops back to its root list first.
+appId: to.plank.app
+---
+- tapOn:
+    id: 'tab-settings'
+- runFlow:
+    when:
+      notVisible: '${PAGE}, .*'
+    commands:
+      - tapOn:
+          id: 'tab-settings'
+- tapOn: '${PAGE}, .*'

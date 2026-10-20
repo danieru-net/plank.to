@@ -1,9 +1,10 @@
 import { View } from 'react-native';
 
+import { Card } from '@/components/Card';
 import { Text } from '@/components/Text';
+import { ToggleRow } from '@/components/ToggleRow';
 import { useAppearance } from '@/features/appearance/context';
 import { OptionGroup } from '@/features/appearance/OptionGroup';
-import { CheckboxRow } from './CheckboxRow';
 import { advanceOptions } from './reminderSettings';
 
 type Props = {
@@ -30,12 +31,14 @@ export function ReminderFields({
     : [...advanceOptions, { value: advanceMinutes, label: `${advanceMinutes} minutes before` }];
   return (
     <View style={{ gap: spacing.sm }}>
-      <Text variant="bodyStrong">Reminder (optional)</Text>
-      <CheckboxRow
-        label="Remind me"
-        checked={enabled}
-        onChange={(checked) => onChange({ enabled: checked })}
-      />
+      <Card style={{ paddingVertical: spacing.xs }}>
+        <ToggleRow
+          label="Remind me"
+          description="Optional. A notification before the time you set."
+          checked={enabled}
+          onChange={(checked) => onChange({ enabled: checked })}
+        />
+      </Card>
       {enabled && unavailableReason ? <Text muted>{unavailableReason}</Text> : null}
       {enabled && !unavailableReason ? (
         <OptionGroup

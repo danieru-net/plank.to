@@ -3,9 +3,13 @@ import { useCallback, useState } from 'react';
 import { View } from 'react-native';
 
 import { Button } from '@/components/Button';
+import { Card } from '@/components/Card';
+import { InlineNotice } from '@/components/InlineNotice';
 import { Screen } from '@/components/Screen';
+import { SectionLabel } from '@/components/SectionLabel';
 import { Text } from '@/components/Text';
 import { TextField } from '@/components/TextField';
+import { DateField, TimeField } from '@/components/TimeField';
 import { StorageError } from '@/db/errors';
 import type { OccurrenceOverride, Routine } from '@/db/routineRepository';
 import {
@@ -31,7 +35,7 @@ type Params = { routineId?: string; date?: string };
 export default function OccurrenceScreen() {
   const { routineId, date: occurrenceDate } = useLocalSearchParams<Params>();
   const router = useRouter();
-  const { palette: theme, spacing } = useAppearance();
+  const { spacing } = useAppearance();
   const repo = useRoutineRepository();
   const reconcile = useReconcileReminders();
 
@@ -106,17 +110,29 @@ export default function OccurrenceScreen() {
     }
   };
 
+  const header = (
+    <Stack.Screen
+      options={{
+        title: 'Change this day',
+        headerLeft: () => (
+          <Button label="Cancel" variant="plain" inline onPress={() => router.back()} />
+        ),
+      }}
+    />
+  );
+
   if (loadError) {
     return (
       <Screen>
-        <Text accessibilityRole="alert">Error: {loadError}</Text>
-        <Button label="Close" variant="secondary" onPress={() => router.back()} />
+        {header}
+        <InlineNotice tone="error" message={loadError} />
       </Screen>
     );
   }
   if (!routine || !values || !routineId || !occurrenceDate) {
     return (
       <Screen>
+        {header}
         <Text muted>Loading…</Text>
       </Screen>
     );
@@ -125,14 +141,18 @@ export default function OccurrenceScreen() {
   const skipped = override?.status === 'dismissed';
 
   return (
-    <Screen keyboardDismissMode="on-drag">
-      <Stack.Screen options={{ title: 'Change this day' }} />
-      <Text variant="heading">{routine.title}</Text>
-      <Text muted>{formatDateHeading(occurrenceDate)}</Text>
+    <Screen keyboardDismissMode="on-drag" contentContainerStyle={{ gap: spacing.lg }}>
+      {header}
+      <View style={{ gap: spacing.xs }}>
+        <Text variant="heading">{routine.title}</Text>
+        <Text muted>{formatDateHeading(occurrenceDate)}</Text>
+      </View>
 
       <View style={{ gap: spacing.sm }} accessibilityRole="summary">
-        <Text variant="bodyStrong">Only this day</Text>
-        <Text muted>The routine and its other days stay the same.</Text>
+        <SectionLabel>Only this day</SectionLabel>
+        <Text muted style={{ paddingHorizontal: spacing.md }}>
+          The routine and its other days stay the same.
+        </Text>
       </View>
       <TextField
         label="Title"
@@ -141,24 +161,21 @@ export default function OccurrenceScreen() {
         onChangeText={(t) => set('title', t)}
         error={errors.title}
       />
-      <TextField
-        label="Time"
-        hint="Use 24-hour time, like 19:00."
-        value={values.time}
-        onChangeText={(t) => set('time', t)}
-        error={errors.time}
-        keyboardType="numbers-and-punctuation"
-        autoCorrect={false}
-      />
-      <TextField
-        label="Date"
-        hint="Year-month-day. Choose another date to move only this day."
-        value={values.date}
-        onChangeText={(t) => set('date', t)}
-        error={errors.date}
-        keyboardType="numbers-and-punctuation"
-        autoCorrect={false}
-      />
+      <Card style={{ gap: spacing.md }}>
+        <TimeField
+          label="Time"
+          value={values.time}
+          onChange={(t) => set('time', t)}
+          error={errors.time}
+        />
+        <DateField
+          label="Date"
+          hint="Choose another date to move only this day."
+          value={values.date}
+          onChange={(t) => set('date', t)}
+          error={errors.date}
+        />
+      </Card>
       <TextField
         label="Notes"
         hint="Leave empty to use the routine’s notes."
@@ -169,11 +186,7 @@ export default function OccurrenceScreen() {
         textAlignVertical="top"
       />
 
-      {saveError ? (
-        <Text accessibilityRole="alert" style={{ color: theme.danger }}>
-          Error: {saveError}
-        </Text>
-      ) : null}
+      {saveError ? <InlineNotice tone="error" message={saveError} /> : null}
       <Button
         label={saving ? 'Saving…' : 'Save for this day only'}
         onPress={() =>
@@ -202,15 +215,17 @@ export default function OccurrenceScreen() {
       {override ? (
         <Button
           label="Undo changes for this day"
-          variant="secondary"
+          variant="plain"
           disabled={saving}
           onPress={() => run(() => repo.clearOccurrence(routineId, occurrenceDate))}
         />
       ) : null}
 
       <View style={{ gap: spacing.sm }}>
-        <Text variant="bodyStrong">Every day of the routine</Text>
-        <Text muted>Change the time, days, or title for the whole routine instead.</Text>
+        <SectionLabel>Every day of the routine</SectionLabel>
+        <Text muted style={{ paddingHorizontal: spacing.md }}>
+          Change the time, days, or title for the whole routine instead.
+        </Text>
         <Button
           label="Edit the whole routine"
           variant="secondary"
@@ -218,7 +233,6 @@ export default function OccurrenceScreen() {
           onPress={() => router.replace({ pathname: '/routine', params: { id: routineId } })}
         />
       </View>
-      <Button label="Cancel" variant="secondary" onPress={() => router.back()} />
     </Screen>
   );
 }

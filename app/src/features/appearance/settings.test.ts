@@ -14,7 +14,14 @@ describe('parseAppearance', () => {
         'display.density': 'compact',
         'display.colorTheme': 'sage',
       }),
-    ).toEqual({ textScale: 1.3, density: 'compact', colorTheme: 'sage' });
+    ).toEqual({ ...defaultAppearance, textScale: 1.3, density: 'compact', colorTheme: 'sage' });
+    expect(
+      parseAppearance({
+        'display.motion': 'off',
+        'display.haptics': false,
+        'display.taskActions': 'buttons',
+      }),
+    ).toEqual({ ...defaultAppearance, motion: 'off', haptics: false, taskActions: 'buttons' });
   });
 
   it('falls back per field for invalid values', () => {
@@ -24,8 +31,15 @@ describe('parseAppearance', () => {
         'display.density': 'tiny',
         'display.colorTheme': 'sage',
       }),
-    ).toEqual({ textScale: 1, density: 'comfortable', colorTheme: 'sage' });
+    ).toEqual({ ...defaultAppearance, colorTheme: 'sage' });
     expect(parseAppearance({ 'display.colorTheme': 42 }).colorTheme).toBe('system');
+    expect(
+      parseAppearance({
+        'display.motion': 'fast',
+        'display.haptics': 'yes',
+        'display.taskActions': 'swipe',
+      }),
+    ).toEqual(defaultAppearance);
   });
 });
 

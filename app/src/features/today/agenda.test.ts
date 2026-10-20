@@ -1,5 +1,5 @@
 import type { Task } from '@/db/taskRepository';
-import { addDays, groupAgenda, statusText } from './agenda';
+import { addDays, groupAgenda, nextTaskId, statusText } from './agenda';
 
 function task(id: string, time: string | null, createdAt = 1): Task {
   return {
@@ -52,5 +52,19 @@ describe('statusText', () => {
     expect(statusText('pending')).toBeNull();
     expect(statusText('completed')).toBe('Done');
     expect(statusText('dismissed')).toBe('Dismissed');
+  });
+});
+
+describe('nextTaskId', () => {
+  const at = (h: number, m: number) => new Date(2026, 9, 20, h, m);
+  it('picks the first pending timed task at or after now', () => {
+    const timed = groupAgenda([task('a', '07:00'), task('b', '09:30'), task('c', '18:00')]).timed;
+    expect(nextTaskId(timed, at(8, 0))).toBe('b');
+    expect(nextTaskId(timed, at(9, 30))).toBe('b');
+    expect(nextTaskId(timed, at(6, 0))).toBe('a');
+  });
+  it('returns null when every timed task is earlier or done', () => {
+    const timed = [task('a', '07:00'), { ...task('b', '20:00'), status: 'completed' as const }];
+    expect(nextTaskId(timed, at(12, 0))).toBeNull();
   });
 });
