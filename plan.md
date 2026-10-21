@@ -28,7 +28,6 @@ Let users request features or report problems from inside the app without adding
 ### Tasks
 
 - [ ] Create the `feedback@plank.to` mailbox, confirm it receives mail, then set `mailboxLive` to `true` in [shared/support.json](shared/support.json). This is an owner task (it also completes 5.3).
-- [ ] Integrate `expo-mail-composer`; when no mail account is available, fall back to `mailto:`, and if that also fails, show the address with a copy-to-clipboard button.
 - [ ] Keep a local draft of the message so leaving the screen or switching to the mail app does not lose what was typed; clear it after the composer reports the mail was sent.
 - [ ] Show a calm confirmation after sending ("Thanks — we read every message") with no follow-up prompts or rating requests.
 - [ ] Check accessibility: screen reader labels, dynamic text size, focus order, and keyboard avoidance on the feedback screen.
