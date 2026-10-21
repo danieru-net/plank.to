@@ -27,7 +27,7 @@ Let users request features or report problems from inside the app without adding
 
 ### Tasks
 
-- [ ] Choose and set up the support mailbox (e.g. `feedback@plank.to`) and record it in a single app config constant shared by the app and website.
+- [ ] Create the `feedback@plank.to` mailbox, confirm it receives mail, then set `mailboxLive` to `true` in [shared/support.json](shared/support.json). This is an owner task (it also completes 5.3).
 - [ ] Add a "Feedback" section to [settings/index.tsx](app/src/app/(tabs)/settings/index.tsx) with rows for "Suggest a feature or improvement" and "Report a problem".
 - [ ] Build a `settings/feedback.tsx` screen: feedback type (idea, improvement, problem), a free-text message field, optional "What were you trying to do?" field for problems, and the "Include device details" toggle with a visible preview of exactly what will be sent.
 - [ ] Add `features/feedback/feedbackMessage.ts` that builds the email subject and body from the form state, with unit tests covering each feedback type and the diagnostics toggle on and off.
