@@ -101,6 +101,8 @@ export type PreferenceValues = {
   'weather.units': 'metric' | 'imperial';
   /** The single cached forecast (JSON); validated on read by features/weather/forecastCache.ts. */
   'weather.forecastCache': unknown;
+  /** The unsent feedback form (JSON); validated on read by features/feedback/feedbackDraft.ts. */
+  'feedback.draft': unknown;
 };
 
 export type PreferenceKey = keyof PreferenceValues;
