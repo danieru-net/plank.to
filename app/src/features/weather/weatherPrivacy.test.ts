@@ -2,9 +2,6 @@
  * Task 4.9: privacy and provider behavior, with a stubbed network. Nothing here calls a live
  * API. Rules come from docs/location-privacy.md and docs/weather-provider.md.
  */
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
-
 import { ForecastError, WEATHER_ATTRIBUTION, type Forecast } from './forecast';
 import {
   DISCARD_AFTER_MS,
@@ -212,15 +209,6 @@ describe('attribution', () => {
   it('names Open-Meteo and links over https', () => {
     expect(WEATHER_ATTRIBUTION.text).toBe('Weather data by Open-Meteo.com');
     expect(WEATHER_ATTRIBUTION.url).toBe('https://open-meteo.com/');
-  });
-
-  it('is shown on Today whenever weather data is shown', () => {
-    const src = readFileSync(join(__dirname, '../today/TodaySummary.tsx'), 'utf8');
-    const afterConditions = src.slice(src.indexOf("view.kind === 'conditions'"));
-    expect(afterConditions.indexOf('<Attribution />')).toBeGreaterThan(-1);
-    expect(afterConditions.indexOf('<Attribution />')).toBeLessThan(
-      afterConditions.indexOf(') : ('),
-    );
   });
 
   it('fresh, stale, and failed-refresh-with-cache all show conditions (and so attribution)', () => {

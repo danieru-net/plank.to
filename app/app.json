@@ -25,9 +25,7 @@
       "predictiveBackGestureEnabled": false,
       "package": "to.plank.app",
       "versionCode": 1,
-      "blockedPermissions": [
-        "android.permission.ACCESS_FINE_LOCATION"
-      ]
+      "blockedPermissions": ["android.permission.ACCESS_FINE_LOCATION"]
     },
     "scheme": "plank",
     "plugins": [
