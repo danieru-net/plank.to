@@ -1,6 +1,6 @@
 import * as Clipboard from 'expo-clipboard';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { KeyboardAvoidingView, StyleSheet, View } from 'react-native';
 
 import { Button } from '@/components/Button';
@@ -18,6 +18,7 @@ import { parseFeedbackKind, type FeedbackKind } from '@/features/feedback/feedba
 import { buildFeedbackMessage } from '@/features/feedback/feedbackMessage';
 import { sendFeedback } from '@/features/feedback/sendFeedback';
 import { FEEDBACK_EMAIL } from '@/features/feedback/support';
+import { useFeedbackDraft } from '@/features/feedback/useFeedbackDraft';
 
 const titles: Record<FeedbackKind, string> = {
   idea: 'Suggest an idea',
@@ -49,9 +50,32 @@ export default function FeedbackScreen() {
   const [noMailApp, setNoMailApp] = useState(false);
   const [copied, setCopied] = useState(false);
   const router = useRouter();
+  const draft = useFeedbackDraft();
+  const edited = useRef(false);
   const details = useMemo(() => diagnosticLines(readDeviceDetails(settings)), [settings]);
   const prompt = messagePrompts[kind];
   const canSend = message.trim().length > 0 && !sending;
+
+  // Bring back an unsent message, unless the user already started typing a new one.
+  useEffect(() => {
+    if (!draft.restored || edited.current) return;
+    setKind(draft.restored.kind);
+    setMessage(draft.restored.message);
+    setContext(draft.restored.context);
+    setIncludeDetails(draft.restored.includeDetails);
+  }, [draft.restored]);
+
+  const { loaded, save } = draft;
+  useEffect(() => {
+    if (loaded) save({ kind, message, context, includeDetails });
+  }, [loaded, save, kind, message, context, includeDetails]);
+
+  function edit<T>(set: (value: T) => void) {
+    return (value: T) => {
+      edited.current = true;
+      set(value);
+    };
+  }
 
   async function send() {
     setSending(true);
@@ -59,7 +83,10 @@ export default function FeedbackScreen() {
     const outcome = await sendFeedback(FEEDBACK_EMAIL, email);
     setSending(false);
     setNoMailApp(outcome === 'unavailable');
-    if (outcome === 'sent') router.back();
+    if (outcome === 'sent') {
+      draft.clear();
+      router.back();
+    }
   }
 
   async function copyAddress() {
@@ -84,7 +111,7 @@ export default function FeedbackScreen() {
             label="Feedback type"
             options={kindOptions}
             value={kind}
-            onChange={setKind}
+            onChange={edit(setKind)}
           />
         </View>
 
@@ -92,7 +119,7 @@ export default function FeedbackScreen() {
           label={prompt.label}
           hint={prompt.hint}
           value={message}
-          onChangeText={setMessage}
+          onChangeText={edit(setMessage)}
           multiline
           textAlignVertical="top"
         />
@@ -102,7 +129,7 @@ export default function FeedbackScreen() {
             label="What were you trying to do? (optional)"
             hint="For example: adding a routine for school days."
             value={context}
-            onChangeText={setContext}
+            onChangeText={edit(setContext)}
             multiline
             textAlignVertical="top"
           />
@@ -114,7 +141,7 @@ export default function FeedbackScreen() {
               label="Include device details"
               description="Helps us understand problems. Your tasks, routines and location are never included."
               checked={includeDetails}
-              onChange={setIncludeDetails}
+              onChange={edit(setIncludeDetails)}
             />
           </Card>
           {includeDetails ? (
