@@ -10,6 +10,7 @@ export default function SettingsLayout() {
       <Stack.Screen name="appearance" options={{ title: 'Appearance' }} />
       <Stack.Screen name="reminders" options={{ title: 'Reminders' }} />
       <Stack.Screen name="weather" options={{ title: 'Weather' }} />
+      <Stack.Screen name="feedback" options={{ title: 'Feedback' }} />
     </Stack>
   );
 }
