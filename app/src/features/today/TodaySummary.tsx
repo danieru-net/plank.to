@@ -13,6 +13,7 @@ import {
   weatherFacts,
 } from '@/features/clothing/suggestionRules';
 import { useAppearance } from '@/features/appearance/context';
+import { WEATHER_ATTRIBUTION } from '@/features/weather/forecast';
 import { describeWeather, type WeatherAction } from '@/features/weather/weatherDisplay';
 import { useTodayWeather } from '@/features/weather/useTodayWeather';
 import { borderWidth, minTouchTarget } from '@/theme';
@@ -116,6 +117,7 @@ export function TodaySummary() {
           </View>
           {view.notice ? <Text variant="caption">{view.notice}</Text> : null}
           {actionButton(view.action)}
+          <Attribution />
         </View>
       ) : (
         <View
@@ -189,6 +191,24 @@ export function TodaySummary() {
   );
 }
 
+function Attribution() {
+  const { palette: theme } = useAppearance();
+  return (
+    <Pressable
+      accessibilityRole="link"
+      accessibilityLabel={`${WEATHER_ATTRIBUTION.text}. Opens in your browser.`}
+      onPress={() =>
+        Linking.openURL(WEATHER_ATTRIBUTION.url).catch((e: unknown) => console.error(e))
+      }
+      style={styles.link}
+    >
+      <Text variant="caption" style={{ color: theme.primary, textDecorationLine: 'underline' }}>
+        {WEATHER_ATTRIBUTION.text}
+      </Text>
+    </Pressable>
+  );
+}
+
 const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center' },
   grow: { flex: 1 },
@@ -202,5 +222,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  link: { minHeight: minTouchTarget, justifyContent: 'center', alignSelf: 'flex-start' },
   offRow: { minHeight: minTouchTarget, flexDirection: 'row', alignItems: 'center' },
 });
