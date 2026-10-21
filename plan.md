@@ -28,7 +28,6 @@ Let users request features or report problems from inside the app without adding
 ### Tasks
 
 - [ ] Create the `feedback@plank.to` mailbox, confirm it receives mail, then set `mailboxLive` to `true` in [shared/support.json](shared/support.json). This is an owner task (it also completes 5.3).
-- [ ] Replace the placeholder [settings/feedback.tsx](app/src/app/(tabs)/settings/feedback.tsx) screen with the form: feedback type (idea, improvement, problem), a free-text message field, optional "What were you trying to do?" field for problems, and the "Include device details" toggle with a visible preview of exactly what will be sent.
 - [ ] Add `features/feedback/feedbackMessage.ts` that builds the email subject and body from the form state, with unit tests covering each feedback type and the diagnostics toggle on and off.
 - [ ] Integrate `expo-mail-composer`; when no mail account is available, fall back to `mailto:`, and if that also fails, show the address with a copy-to-clipboard button.
 - [ ] Keep a local draft of the message so leaving the screen or switching to the mail app does not lose what was typed; clear it after the composer reports the mail was sent.
