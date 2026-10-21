@@ -4,7 +4,6 @@ import Animated, { FadeInDown, LinearTransition } from 'react-native-reanimated'
 
 import { Card } from '@/components/Card';
 import { Text } from '@/components/Text';
-import { useAppearance } from '@/features/appearance/context';
 import { occurrenceStatusText } from '@/features/routines/occurrenceForm';
 import type { RoutineOccurrence } from '@/features/routines/routineAgenda';
 import { minTouchTarget } from '@/theme';
@@ -13,7 +12,6 @@ type Props = { item: RoutineOccurrence; onOpen: () => void };
 
 /** A routine's occurrence on Today. Opening it offers "only this day" or "whole routine". */
 export function RoutineOccurrenceItem({ item, onOpen }: Props) {
-  const { settings } = useAppearance();
   const { occurrence, details } = item;
   const status = occurrenceStatusText(occurrence);
   const inactive = occurrence.status !== 'pending';
@@ -25,13 +23,6 @@ export function RoutineOccurrenceItem({ item, onOpen }: Props) {
         onPress={onOpen}
       >
         <Card style={styles.card}>
-          {item.symbol ? (
-            <Text
-              style={{ fontSize: 28 * settings.textScale, lineHeight: 36 * settings.textScale }}
-            >
-              {item.symbol}
-            </Text>
-          ) : null}
           <View style={styles.body}>
             <Text
               variant="bodyStrong"

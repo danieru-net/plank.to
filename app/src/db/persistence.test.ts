@@ -160,19 +160,21 @@ describe('upgrade from an earlier schema version with data present', () => {
       status: 'completed',
       reminderEnabled: true,
       reminderAdvanceMinutes: 10,
-      steps: [expect.objectContaining({ title: 'Lunch' })],
     });
     expect(await app.tasks.listTasksForDate('2026-10-19')).toHaveLength(2);
     expect(await app.routines.getRoutine('r1')).toMatchObject({
       title: 'Brush teeth',
       weekdays: [1, 3, 5],
       paused: true,
-      steps: [expect.objectContaining({ title: 'Floss' })],
     });
     expect(await app.routines.listOccurrenceOverrides('r1')).toEqual([
       expect.objectContaining({ occurrenceDate: '2026-10-05', status: 'dismissed' }),
     ]);
     expect(await app.prefs.getAll()).toEqual({ 'display.textScale': 1.5 });
+    // Steps from older versions are dropped with their table.
+    expect(app.raw.prepare("SELECT name FROM sqlite_master WHERE name = 'steps'").all()).toEqual(
+      [],
+    );
 
     // Later migrations' seeds are present and the app can keep writing.
     expect(await app.weather.get()).toMatchObject({ mode: 'off' });
@@ -247,7 +249,6 @@ describe('persistence after restart', () => {
       title: 'Walk',
       date: '2026-10-19',
       time: '08:00',
-      steps: ['Shoes', 'Lead'],
       reminderEnabled: true,
       reminderAdvanceMinutes: 15,
     });
@@ -265,14 +266,9 @@ describe('persistence after restart', () => {
       time: '08:00',
       reminderEnabled: true,
       reminderAdvanceMinutes: 15,
-      steps: [
-        expect.objectContaining({ title: 'Shoes' }),
-        expect.objectContaining({ title: 'Lead' }),
-      ],
     });
     expect((await b.tasks.getTask(done.id))?.status).toBe('completed');
     expect(await b.tasks.getTask(gone.id)).toBeNull();
-    expect(count(b.raw, 'steps')).toBe(2); // the deleted task's steps did not linger
   });
 
   it('keeps routines, single-day exceptions, pause state, and cascading deletes', async () => {
@@ -282,14 +278,12 @@ describe('persistence after restart', () => {
       time: '19:00',
       weekdays: [0, 1, 2, 3, 4, 5, 6],
       startDate: '2026-10-01',
-      steps: ['Soap'],
     });
     const doomed = await a.routines.createRoutine({
       title: 'Doomed',
       time: '06:00',
       weekdays: [1],
       startDate: '2026-10-01',
-      steps: ['Gone'],
     });
     await a.routines.saveOccurrence(daily.id, '2026-10-20', { movedTime: '20:30' });
     await a.routines.saveOccurrence(doomed.id, '2026-10-19', { status: 'dismissed' });
@@ -302,13 +296,11 @@ describe('persistence after restart', () => {
     expect(await b.routines.getRoutine(daily.id)).toMatchObject({
       paused: true,
       weekdays: [0, 1, 2, 3, 4, 5, 6],
-      steps: [expect.objectContaining({ title: 'Soap' })],
     });
     expect(await b.routines.listOccurrenceOverrides(daily.id)).toEqual([
       expect.objectContaining({ occurrenceDate: '2026-10-20', movedTime: '20:30' }),
     ]);
     expect(count(b.raw, 'occurrence_overrides')).toBe(1);
-    expect(count(b.raw, 'steps')).toBe(1);
     await b.routines.resumeRoutine(daily.id);
     quit(b.raw);
     const c = await launch();

@@ -17,12 +17,10 @@ const routine: Routine = {
   time: '19:00',
   weekdays: [1, 3],
   startDate: '2026-10-01',
-  symbol: null,
   imageUri: null,
   paused: false,
   reminderEnabled: false,
   reminderAdvanceMinutes: 0,
-  steps: [],
   createdAt: 1,
   updatedAt: 1,
 };

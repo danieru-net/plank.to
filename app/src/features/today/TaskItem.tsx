@@ -25,7 +25,7 @@ type Props = {
 const SETTLE_MS = 350;
 
 /**
- * One task in Today's grouped list: time, optional symbol, and title. Actions follow the "Task
+ * One task in Today's grouped list: time and title. Actions follow the "Task
  * actions" setting: a check circle plus a menu, or labelled buttons. Either way the same actions
  * are offered to screen readers as named actions on the row.
  */
@@ -130,13 +130,6 @@ export function TaskItem({ task, next, onOpen, onComplete, onReopen, onDismiss }
               style={{ minWidth: 52 * settings.textScale }}
             >
               {task.time}
-            </Text>
-          ) : null}
-          {task.symbol ? (
-            <Text
-              style={{ fontSize: 24 * settings.textScale, lineHeight: 30 * settings.textScale }}
-            >
-              {task.symbol}
             </Text>
           ) : null}
           <View style={styles.body}>

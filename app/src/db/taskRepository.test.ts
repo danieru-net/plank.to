@@ -65,32 +65,27 @@ describe('task repository', () => {
       status: 'pending',
       reminderEnabled: false,
       reminderAdvanceMinutes: 0,
-      steps: [],
     });
     expect(await repo.getTask(task.id)).toEqual(task);
   });
 
-  it('stores optional fields and ordered steps, ignoring blank steps', async () => {
+  it('stores optional fields', async () => {
     const { repo } = await setup();
     const task = await repo.createTask({
       ...base,
       time: '19:00',
       notes: ' warm water ',
-      symbol: 'shower',
       imageUri: 'file:///a.png',
       reminderEnabled: true,
       reminderAdvanceMinutes: 15,
-      steps: ['Towel', '  ', 'Soap'],
     });
     expect(task).toMatchObject({
       time: '19:00',
       notes: 'warm water',
-      symbol: 'shower',
       imageUri: 'file:///a.png',
       reminderEnabled: true,
       reminderAdvanceMinutes: 15,
     });
-    expect(task.steps.map((s) => s.title)).toEqual(['Towel', 'Soap']);
   });
 
   it('rejects invalid input with a message per field and saves nothing', async () => {
@@ -103,9 +98,6 @@ describe('task repository', () => {
     expect(await issuesOf(repo.createTask({ ...base, time: '7pm' }))).toEqual(['time']);
     expect(await issuesOf(repo.createTask({ ...base, reminderAdvanceMinutes: -1 }))).toEqual([
       'reminderAdvanceMinutes',
-    ]);
-    expect(await issuesOf(repo.createTask({ ...base, steps: Array(51).fill('s') }))).toEqual([
-      'steps',
     ]);
     expect(await issuesOf(repo.createTask({ title: '', date: 'bad', time: 'bad' }))).toEqual([
       'title',
@@ -133,29 +125,25 @@ describe('task repository', () => {
 
   it('updates only the given fields and bumps updated_at', async () => {
     const { repo } = await setup();
-    const task = await repo.createTask({ ...base, time: '19:00', steps: ['a'] });
+    const task = await repo.createTask({ ...base, time: '19:00' });
     const updated = await repo.updateTask(task.id, { title: 'Bath', notes: 'later' });
     expect(updated).toMatchObject({ title: 'Bath', notes: 'later', time: '19:00' });
-    expect(updated.steps.map((s) => s.title)).toEqual(['a']);
     expect(updated.updatedAt).toBeGreaterThan(task.updatedAt);
     expect(updated.createdAt).toBe(task.createdAt);
   });
 
-  it('can clear optional fields and replace steps', async () => {
+  it('can clear optional fields', async () => {
     const { repo } = await setup();
-    const task = await repo.createTask({ ...base, time: '19:00', notes: 'n', steps: ['a', 'b'] });
-    const updated = await repo.updateTask(task.id, { time: null, notes: null, steps: ['c'] });
+    const task = await repo.createTask({ ...base, time: '19:00', notes: 'n' });
+    const updated = await repo.updateTask(task.id, { time: null, notes: null });
     expect(updated.time).toBeNull();
     expect(updated.notes).toBeNull();
-    expect(updated.steps.map((s) => s.title)).toEqual(['c']);
   });
 
   it('rejects an invalid update and leaves the task unchanged', async () => {
     const { repo } = await setup();
-    const task = await repo.createTask({ ...base, steps: ['a'] });
-    expect(await issuesOf(repo.updateTask(task.id, { title: '', steps: ['z'] }))).toEqual([
-      'title',
-    ]);
+    const task = await repo.createTask(base);
+    expect(await issuesOf(repo.updateTask(task.id, { title: '' }))).toEqual(['title']);
     expect(await repo.getTask(task.id)).toEqual(task);
   });
 
@@ -171,12 +159,11 @@ describe('task repository', () => {
     expect(reopened.statusChangedAt).toBeNull();
   });
 
-  it('deletes a task and its steps', async () => {
-    const { raw, repo } = await setup();
-    const task = await repo.createTask({ ...base, steps: ['a', 'b'] });
+  it('deletes a task', async () => {
+    const { repo } = await setup();
+    const task = await repo.createTask(base);
     await repo.deleteTask(task.id);
     expect(await repo.getTask(task.id)).toBeNull();
-    expect(raw.prepare('SELECT count(*) AS n FROM steps').get()).toEqual({ n: 0 });
   });
 
   it('reports not_found for unknown ids', async () => {
@@ -196,13 +183,12 @@ describe('task repository', () => {
   it('lists a day: timed in order, then untimed, other days excluded', async () => {
     const { repo } = await setup();
     await repo.createTask({ ...base, title: 'untimed 1' });
-    await repo.createTask({ ...base, title: 'evening', time: '19:00', steps: ['s'] });
+    await repo.createTask({ ...base, title: 'evening', time: '19:00' });
     await repo.createTask({ ...base, title: 'morning', time: '07:30' });
     await repo.createTask({ ...base, title: 'untimed 2' });
     await repo.createTask({ ...base, title: 'tomorrow', date: '2026-10-20' });
     const list = await repo.listTasksForDate('2026-10-19');
     expect(list.map((t) => t.title)).toEqual(['morning', 'evening', 'untimed 1', 'untimed 2']);
-    expect(list[1].steps).toHaveLength(1);
     expect(await repo.listTasksForDate('2026-10-21')).toEqual([]);
     expect(await issuesOf(repo.listTasksForDate('nope'))).toEqual(['date']);
   });

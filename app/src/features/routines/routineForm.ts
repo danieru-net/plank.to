@@ -10,8 +10,6 @@ export type RoutineFormValues = {
   weekdays: number[];
   startDate: string;
   notes: string;
-  steps: string[];
-  symbol: string | null;
   reminderEnabled: boolean;
   reminderAdvanceMinutes: number;
 };
@@ -37,8 +35,6 @@ export function emptyRoutineForm(startDate: string, advance = 10): RoutineFormVa
     weekdays: [],
     startDate,
     notes: '',
-    steps: [],
-    symbol: null,
     reminderEnabled: false,
     reminderAdvanceMinutes: advance,
   };
@@ -51,8 +47,6 @@ export function routineToForm(routine: Routine): RoutineFormValues {
     weekdays: routine.weekdays,
     startDate: routine.startDate,
     notes: routine.notes ?? '',
-    steps: routine.steps.map((s) => s.title),
-    symbol: routine.symbol,
     reminderEnabled: routine.reminderEnabled,
     reminderAdvanceMinutes: routine.reminderAdvanceMinutes,
   };
@@ -78,8 +72,6 @@ export function formToRoutineInput(values: RoutineFormValues): RoutineInput {
     weekdays: values.weekdays,
     startDate: values.startDate.trim(),
     notes: values.notes,
-    steps: values.steps,
-    symbol: values.symbol,
     reminderEnabled: values.reminderEnabled,
     reminderAdvanceMinutes: values.reminderAdvanceMinutes,
   };
@@ -91,8 +83,6 @@ const FIELDS: ReadonlySet<string> = new Set([
   'weekdays',
   'startDate',
   'notes',
-  'steps',
-  'symbol',
   'reminderAdvanceMinutes',
 ]);
 

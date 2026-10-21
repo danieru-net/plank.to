@@ -17,7 +17,7 @@ Deep link, with the app running in test mode (`npm run start:test` in `app/`, a 
 |---|---|---|---|---|
 | 1 | Today with weather, clothing idea and tasks | `seeded-weather` | Wait for the forecast (stubbed network) | `today-order`, `clothing-suggestions` |
 | 2 | Today agenda without weather (shows the app works without it) | `seeded` | None | `smoke`, `task-lifecycle` |
-| 3 | Task editor with steps | `seeded` | Tap "Seed: Pack gym bag" | `task-lifecycle` |
+| 3 | Task editor | `seeded` | Tap "Seed: Pack gym bag" | `task-lifecycle` |
 | 4 | New routine, weekday picker | `empty` | Add a task or routine, choose routine | `routine-create` |
 | 5 | Edit one occurrence vs the series | `seeded` | Open "Seed: Morning stretch" and start an edit | `routine-occurrence-vs-series` |
 | 6 | Settings: reminders and appearance | `seeded` | Settings and profile | `reminder-controls`, `visual-preferences` |

@@ -167,6 +167,16 @@ export const migrations: Migration[] = [
          ON tasks (routine_id, routine_occurrence_date) WHERE routine_id IS NOT NULL`,
     ],
   },
+  {
+    version: 4,
+    description: 'Remove the unused symbol column from tasks and routines',
+    statements: [`ALTER TABLE tasks DROP COLUMN symbol`, `ALTER TABLE routines DROP COLUMN symbol`],
+  },
+  {
+    version: 5,
+    description: 'Remove the unused steps table',
+    statements: [`DROP TABLE steps`],
+  },
 ];
 
 export const SCHEMA_VERSION = migrations[migrations.length - 1].version;
@@ -174,7 +184,6 @@ export const SCHEMA_VERSION = migrations[migrations.length - 1].version;
 export const TABLE_NAMES = [
   'tasks',
   'routines',
-  'steps',
   'occurrence_overrides',
   'preferences',
   'clothing_options',

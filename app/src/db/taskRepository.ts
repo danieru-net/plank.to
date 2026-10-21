@@ -1,6 +1,6 @@
 import { StorageError, toStorageError, ValidationError, type ValidationIssue } from './errors';
 import { isLocalImageUri } from './localImage';
-import type { Id, LocalDate, LocalTime, TaskRow, StepRow, Timestamp } from './types';
+import type { Id, LocalDate, LocalTime, TaskRow, Timestamp } from './types';
 
 /** The subset of expo-sqlite's SQLiteDatabase that the repository needs. */
 export type TaskDb = {
@@ -16,7 +16,6 @@ export type Task = {
   notes: string | null;
   date: LocalDate;
   time: LocalTime | null;
-  symbol: string | null;
   imageUri: string | null;
   status: TaskRow['status'];
   statusChangedAt: Timestamp | null;
@@ -25,7 +24,6 @@ export type Task = {
   /** The routine this task was generated from, if any. */
   routineId: Id | null;
   routineOccurrenceDate: LocalDate | null;
-  steps: { id: Id; title: string }[];
   createdAt: Timestamp;
   updatedAt: Timestamp;
 };
@@ -35,20 +33,16 @@ export type TaskInput = {
   date: LocalDate;
   time?: LocalTime | null;
   notes?: string | null;
-  symbol?: string | null;
   imageUri?: string | null;
   reminderEnabled?: boolean;
   reminderAdvanceMinutes?: number;
-  /** Step titles in order. Blank titles are ignored. */
-  steps?: string[];
 };
 
-/** Fields to change. Omitted fields are kept; `steps`, when given, replaces all steps. */
+/** Fields to change. Omitted fields are kept. */
 export type TaskUpdate = Partial<TaskInput>;
 
 export const MAX_TITLE_LENGTH = 200;
 export const MAX_NOTES_LENGTH = 5000;
-export const MAX_STEPS = 50;
 export const MAX_ADVANCE_MINUTES = 7 * 24 * 60;
 
 export type RepositoryOptions = {
@@ -82,11 +76,9 @@ type Normalized = {
   date: LocalDate;
   time: LocalTime | null;
   notes: string | null;
-  symbol: string | null;
   imageUri: string | null;
   reminderEnabled: boolean;
   reminderAdvanceMinutes: number;
-  steps: string[];
 };
 
 export const blankToNull = (v: string | null | undefined) => {
@@ -130,26 +122,15 @@ export function validateTask(input: TaskInput): Normalized {
       message: 'Choose a reminder lead time between 0 minutes and 7 days.',
     });
 
-  const steps = (input.steps ?? []).map((s) => s.trim()).filter(Boolean);
-  if (steps.length > MAX_STEPS)
-    issues.push({ field: 'steps', message: `Use ${MAX_STEPS} steps or fewer.` });
-  else if (steps.some((s) => s.length > MAX_TITLE_LENGTH))
-    issues.push({
-      field: 'steps',
-      message: `Keep each step under ${MAX_TITLE_LENGTH} characters.`,
-    });
-
   if (issues.length) throw new ValidationError(issues);
   return {
     title,
     date: input.date,
     time,
     notes,
-    symbol: blankToNull(input.symbol),
     imageUri,
     reminderEnabled: input.reminderEnabled ?? false,
     reminderAdvanceMinutes: advance,
-    steps,
   };
 }
 
@@ -162,20 +143,13 @@ export function createTaskRepository(db: TaskDb, options: RepositoryOptions = {}
   const queryFailed = (e: unknown) =>
     toStorageError('query_failed', 'Something went wrong saving your tasks. Please try again.', e);
 
-  async function attachSteps(rows: TaskRow[]): Promise<Task[]> {
-    if (!rows.length) return [];
-    const marks = rows.map(() => '?').join(', ');
-    const steps = await db.getAllAsync<StepRow>(
-      `SELECT * FROM steps WHERE task_id IN (${marks}) ORDER BY position`,
-      rows.map((r) => r.id),
-    );
+  function toTasks(rows: TaskRow[]): Task[] {
     return rows.map((r) => ({
       id: r.id,
       title: r.title,
       notes: r.notes,
       date: r.date,
       time: r.time,
-      symbol: r.symbol,
       imageUri: r.image_uri,
       status: r.status,
       statusChangedAt: r.status_changed_at,
@@ -183,26 +157,15 @@ export function createTaskRepository(db: TaskDb, options: RepositoryOptions = {}
       reminderAdvanceMinutes: r.reminder_advance_minutes,
       routineId: r.routine_id,
       routineOccurrenceDate: r.routine_occurrence_date,
-      steps: steps.filter((s) => s.task_id === r.id).map((s) => ({ id: s.id, title: s.title })),
       createdAt: r.created_at,
       updatedAt: r.updated_at,
     }));
   }
 
-  async function insertSteps(taskId: Id, titles: string[], ts: Timestamp) {
-    for (const [position, title] of titles.entries()) {
-      await db.runAsync(
-        `INSERT INTO steps (id, task_id, position, title, created_at, updated_at)
-         VALUES (?, ?, ?, ?, ?, ?)`,
-        [newId(), taskId, position, title, ts, ts],
-      );
-    }
-  }
-
   async function getTask(id: Id): Promise<Task | null> {
     try {
       const row = await db.getFirstAsync<TaskRow>('SELECT * FROM tasks WHERE id = ?', [id]);
-      return row ? (await attachSteps([row]))[0] : null;
+      return row ? toTasks([row])[0] : null;
     } catch (e) {
       throw queryFailed(e);
     }
@@ -224,17 +187,16 @@ export function createTaskRepository(db: TaskDb, options: RepositoryOptions = {}
     try {
       await db.withTransactionAsync(async () => {
         await db.runAsync(
-          `INSERT INTO tasks (id, title, notes, date, time, symbol, image_uri, status,
+          `INSERT INTO tasks (id, title, notes, date, time, image_uri, status,
              reminder_enabled, reminder_advance_minutes, created_at, updated_at,
              routine_id, routine_occurrence_date)
-           VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?, ?, ?, ?)`,
+           VALUES (?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?, ?, ?, ?)`,
           [
             id,
             v.title,
             v.notes,
             v.date,
             v.time,
-            v.symbol,
             v.imageUri,
             v.reminderEnabled ? 1 : 0,
             v.reminderAdvanceMinutes,
@@ -244,7 +206,6 @@ export function createTaskRepository(db: TaskDb, options: RepositoryOptions = {}
             routine?.occurrenceDate ?? null,
           ],
         );
-        await insertSteps(id, v.steps, ts);
       });
     } catch (e) {
       throw queryFailed(e);
@@ -259,18 +220,16 @@ export function createTaskRepository(db: TaskDb, options: RepositoryOptions = {}
       date: current.date,
       time: current.time,
       notes: current.notes,
-      symbol: current.symbol,
       imageUri: current.imageUri,
       reminderEnabled: current.reminderEnabled,
       reminderAdvanceMinutes: current.reminderAdvanceMinutes,
-      steps: current.steps.map((s) => s.title),
       ...patch,
     });
     const ts = now();
     try {
       await db.withTransactionAsync(async () => {
         await db.runAsync(
-          `UPDATE tasks SET title = ?, notes = ?, date = ?, time = ?, symbol = ?, image_uri = ?,
+          `UPDATE tasks SET title = ?, notes = ?, date = ?, time = ?, image_uri = ?,
              reminder_enabled = ?, reminder_advance_minutes = ?, updated_at = ?
            WHERE id = ?`,
           [
@@ -278,7 +237,6 @@ export function createTaskRepository(db: TaskDb, options: RepositoryOptions = {}
             v.notes,
             v.date,
             v.time,
-            v.symbol,
             v.imageUri,
             v.reminderEnabled ? 1 : 0,
             v.reminderAdvanceMinutes,
@@ -286,10 +244,6 @@ export function createTaskRepository(db: TaskDb, options: RepositoryOptions = {}
             id,
           ],
         );
-        if (patch.steps !== undefined) {
-          await db.runAsync('DELETE FROM steps WHERE task_id = ?', [id]);
-          await insertSteps(id, v.steps, ts);
-        }
       });
     } catch (e) {
       throw queryFailed(e);
@@ -337,7 +291,7 @@ export function createTaskRepository(db: TaskDb, options: RepositoryOptions = {}
            ORDER BY time IS NULL, time, created_at, id`,
           [date],
         );
-        return await attachSteps(rows);
+        return toTasks(rows);
       } catch (e) {
         throw queryFailed(e);
       }

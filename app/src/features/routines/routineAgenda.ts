@@ -4,7 +4,6 @@ import { occurrencesBetween, weekdaysToMask, type Occurrence } from './recurrenc
 
 export type RoutineOccurrence = {
   routineId: string;
-  symbol: string | null;
   occurrence: Occurrence;
   details: OccurrenceDetails;
 };
@@ -31,7 +30,6 @@ export function routineOccurrencesForDate(
     )) {
       items.push({
         routineId: routine.id,
-        symbol: routine.symbol,
         occurrence,
         details: occurrenceDetails(routine, occurrence),
       });

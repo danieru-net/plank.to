@@ -31,8 +31,6 @@ describe('taskForm', () => {
       date: '2026-03-01',
       time: '08:30',
       notes: null,
-      symbol: '🏃',
-      steps: [{ id: 'a', title: 'Shoes' }],
       reminderEnabled: true,
       reminderAdvanceMinutes: 15,
     } as Task;
@@ -41,8 +39,6 @@ describe('taskForm', () => {
       date: '2026-03-01',
       time: '08:30',
       notes: '',
-      steps: ['Shoes'],
-      symbol: '🏃',
       reminderEnabled: true,
       reminderAdvanceMinutes: 15,
     });

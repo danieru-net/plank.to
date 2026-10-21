@@ -22,7 +22,7 @@ Plank is a calm daily planner for tasks and weekly routines. It works without an
 
 Today
 - See what is planned for today in one clear list.
-- Add a task with an optional time, notes, steps, and a symbol.
+- Add a task with an optional time, notes, and picture.
 - Mark things done, move them, or dismiss them without fuss.
 
 Routines

@@ -38,7 +38,7 @@ Forecast request (`api.open-meteo.com/v1/forecast`):
 
 Geocoding request: the search text, `count`, `language`, `format`.
 
-Never sent: task, routine, step, note, or reminder content; clothing preferences; dismissed suggestions; settings; any user, device, or install identifier; precise coordinates; the date or time of tasks.
+Never sent: task, routine, note, or reminder content; clothing preferences; dismissed suggestions; settings; any user, device, or install identifier; precise coordinates; the date or time of tasks.
 
 Not avoidable: the provider sees the device's IP address and the request time, as with any HTTPS request. Say so in the disclosure; do not claim the provider learns nothing.
 

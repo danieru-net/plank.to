@@ -20,7 +20,7 @@ export function toLocalDate(d: Date): string {
 /** Deletes all user data and restores the first-run state (weather off, all clothing allowed). */
 export async function resetData(db: TaskDb): Promise<void> {
   await db.withTransactionAsync(async () => {
-    // Steps and overrides go with their task or routine (ON DELETE CASCADE).
+    // Overrides go with their routine (ON DELETE CASCADE).
     for (const table of ['tasks', 'routines', 'preferences']) {
       await db.runAsync(`DELETE FROM ${table}`, []);
     }
@@ -43,12 +43,11 @@ export async function seedData(db: TaskDb, scenario: Scenario, today = new Date(
   const routines = createRoutineRepository(db);
   const prefs = createPreferenceRepository(db);
 
-  await tasks.createTask({ title: 'Seed: Pay rent', date, time: '09:00', symbol: '🧹' });
+  await tasks.createTask({ title: 'Seed: Pay rent', date, time: '09:00' });
   await tasks.createTask({
     title: 'Seed: Pack gym bag',
     date,
     time: '17:30',
-    steps: ['Shoes', 'Towel', 'Water bottle'],
   });
   await tasks.createTask({ title: 'Seed: Call the dentist', date });
   await tasks.createTask({ title: 'Seed: Tomorrow only', date: toLocalDate(addDays(today, 1)) });
@@ -58,7 +57,6 @@ export async function seedData(db: TaskDb, scenario: Scenario, today = new Date(
     time: '07:30',
     weekdays: [0, 1, 2, 3, 4, 5, 6],
     startDate: date,
-    steps: ['Neck', 'Shoulders', 'Hamstrings'],
   });
   await routines.createRoutine({
     title: 'Seed: Weekday standup',

@@ -147,7 +147,6 @@ export default function TodayScreen() {
               </Text>
             </View>
           ) : null}
-          <Button label="Add a task" icon="add" variant="plain" inline onPress={addTask} />
           {doneTasks.length > 0 ? (
             <View style={{ gap: spacing.sm }}>
               <Pressable

@@ -17,7 +17,6 @@ import {
   defaultId,
   MAX_ADVANCE_MINUTES,
   MAX_NOTES_LENGTH,
-  MAX_STEPS,
   MAX_TITLE_LENGTH,
   type RepositoryOptions,
   type TaskDb,
@@ -28,7 +27,6 @@ import type {
   LocalTime,
   OccurrenceOverrideRow,
   RoutineRow,
-  StepRow,
   Timestamp,
 } from './types';
 
@@ -41,12 +39,10 @@ export type Routine = {
   weekdays: number[];
   /** The routine never generates occurrences before this date. */
   startDate: LocalDate;
-  symbol: string | null;
   imageUri: string | null;
   paused: boolean;
   reminderEnabled: boolean;
   reminderAdvanceMinutes: number;
-  steps: { id: Id; title: string }[];
   createdAt: Timestamp;
   updatedAt: Timestamp;
 };
@@ -58,15 +54,12 @@ export type RoutineInput = {
   weekdays: readonly number[];
   startDate: LocalDate;
   notes?: string | null;
-  symbol?: string | null;
   imageUri?: string | null;
   reminderEnabled?: boolean;
   reminderAdvanceMinutes?: number;
-  /** Step titles in order. Blank titles are ignored. */
-  steps?: string[];
 };
 
-/** Fields to change. Omitted fields are kept; `steps`, when given, replaces all steps. */
+/** Fields to change. Omitted fields are kept. */
 export type RoutineUpdate = Partial<RoutineInput>;
 
 type Normalized = {
@@ -75,11 +68,9 @@ type Normalized = {
   weekdays: number;
   startDate: LocalDate;
   notes: string | null;
-  symbol: string | null;
   imageUri: string | null;
   reminderEnabled: boolean;
   reminderAdvanceMinutes: number;
-  steps: string[];
 };
 
 /** Validates a full routine and returns it trimmed, or throws a ValidationError listing every problem. */
@@ -125,15 +116,6 @@ export function validateRoutine(input: RoutineInput): Normalized {
       message: 'Choose a reminder lead time between 0 minutes and 7 days.',
     });
 
-  const steps = (input.steps ?? []).map((s) => s.trim()).filter(Boolean);
-  if (steps.length > MAX_STEPS)
-    issues.push({ field: 'steps', message: `Use ${MAX_STEPS} steps or fewer.` });
-  else if (steps.some((s) => s.length > MAX_TITLE_LENGTH))
-    issues.push({
-      field: 'steps',
-      message: `Keep each step under ${MAX_TITLE_LENGTH} characters.`,
-    });
-
   if (issues.length) throw new ValidationError(issues);
   return {
     title,
@@ -141,11 +123,9 @@ export function validateRoutine(input: RoutineInput): Normalized {
     weekdays,
     startDate: input.startDate,
     notes,
-    symbol: blankToNull(input.symbol),
     imageUri,
     reminderEnabled: input.reminderEnabled ?? false,
     reminderAdvanceMinutes: advance,
-    steps,
   };
 }
 
@@ -192,13 +172,7 @@ export function createRoutineRepository(db: TaskDb, options: RepositoryOptions =
       e,
     );
 
-  async function attachSteps(rows: RoutineRow[]): Promise<Routine[]> {
-    if (!rows.length) return [];
-    const marks = rows.map(() => '?').join(', ');
-    const steps = await db.getAllAsync<StepRow>(
-      `SELECT * FROM steps WHERE routine_id IN (${marks}) ORDER BY position`,
-      rows.map((r) => r.id),
-    );
+  function toRoutines(rows: RoutineRow[]): Routine[] {
     return rows.map((r) => ({
       id: r.id,
       title: r.title,
@@ -206,31 +180,19 @@ export function createRoutineRepository(db: TaskDb, options: RepositoryOptions =
       time: r.time,
       weekdays: maskToWeekdays(r.weekdays),
       startDate: r.start_date,
-      symbol: r.symbol,
       imageUri: r.image_uri,
       paused: r.paused === 1,
       reminderEnabled: r.reminder_enabled === 1,
       reminderAdvanceMinutes: r.reminder_advance_minutes,
-      steps: steps.filter((s) => s.routine_id === r.id).map((s) => ({ id: s.id, title: s.title })),
       createdAt: r.created_at,
       updatedAt: r.updated_at,
     }));
   }
 
-  async function insertSteps(routineId: Id, titles: string[], ts: Timestamp) {
-    for (const [position, title] of titles.entries()) {
-      await db.runAsync(
-        `INSERT INTO steps (id, routine_id, position, title, created_at, updated_at)
-         VALUES (?, ?, ?, ?, ?, ?)`,
-        [newId(), routineId, position, title, ts, ts],
-      );
-    }
-  }
-
   async function getRoutine(id: Id): Promise<Routine | null> {
     try {
       const row = await db.getFirstAsync<RoutineRow>('SELECT * FROM routines WHERE id = ?', [id]);
-      return row ? (await attachSteps([row]))[0] : null;
+      return row ? toRoutines([row])[0] : null;
     } catch (e) {
       throw queryFailed(e);
     }
@@ -249,9 +211,9 @@ export function createRoutineRepository(db: TaskDb, options: RepositoryOptions =
     try {
       await db.withTransactionAsync(async () => {
         await db.runAsync(
-          `INSERT INTO routines (id, title, notes, time, weekdays, start_date, symbol, image_uri,
+          `INSERT INTO routines (id, title, notes, time, weekdays, start_date, image_uri,
              paused, reminder_enabled, reminder_advance_minutes, created_at, updated_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?, ?, ?)`,
+           VALUES (?, ?, ?, ?, ?, ?, ?, 0, ?, ?, ?, ?)`,
           [
             id,
             v.title,
@@ -259,7 +221,6 @@ export function createRoutineRepository(db: TaskDb, options: RepositoryOptions =
             v.time,
             v.weekdays,
             v.startDate,
-            v.symbol,
             v.imageUri,
             v.reminderEnabled ? 1 : 0,
             v.reminderAdvanceMinutes,
@@ -267,7 +228,6 @@ export function createRoutineRepository(db: TaskDb, options: RepositoryOptions =
             ts,
           ],
         );
-        await insertSteps(id, v.steps, ts);
       });
     } catch (e) {
       throw queryFailed(e);
@@ -283,11 +243,9 @@ export function createRoutineRepository(db: TaskDb, options: RepositoryOptions =
       weekdays: current.weekdays,
       startDate: current.startDate,
       notes: current.notes,
-      symbol: current.symbol,
       imageUri: current.imageUri,
       reminderEnabled: current.reminderEnabled,
       reminderAdvanceMinutes: current.reminderAdvanceMinutes,
-      steps: current.steps.map((s) => s.title),
       ...patch,
     });
     const ts = now();
@@ -295,7 +253,7 @@ export function createRoutineRepository(db: TaskDb, options: RepositoryOptions =
       await db.withTransactionAsync(async () => {
         await db.runAsync(
           `UPDATE routines SET title = ?, notes = ?, time = ?, weekdays = ?, start_date = ?,
-             symbol = ?, image_uri = ?, reminder_enabled = ?, reminder_advance_minutes = ?,
+             image_uri = ?, reminder_enabled = ?, reminder_advance_minutes = ?,
              updated_at = ?
            WHERE id = ?`,
           [
@@ -304,7 +262,6 @@ export function createRoutineRepository(db: TaskDb, options: RepositoryOptions =
             v.time,
             v.weekdays,
             v.startDate,
-            v.symbol,
             v.imageUri,
             v.reminderEnabled ? 1 : 0,
             v.reminderAdvanceMinutes,
@@ -312,10 +269,6 @@ export function createRoutineRepository(db: TaskDb, options: RepositoryOptions =
             id,
           ],
         );
-        if (patch.steps !== undefined) {
-          await db.runAsync('DELETE FROM steps WHERE routine_id = ?', [id]);
-          await insertSteps(id, v.steps, ts);
-        }
       });
     } catch (e) {
       throw queryFailed(e);
@@ -513,14 +466,14 @@ export function createRoutineRepository(db: TaskDb, options: RepositoryOptions =
           'SELECT * FROM routines ORDER BY paused, time, created_at, id',
           [],
         );
-        return await attachSteps(rows);
+        return toRoutines(rows);
       } catch (e) {
         throw queryFailed(e);
       }
     },
     pauseRoutine: (id: Id) => setPaused(id, true),
     resumeRoutine: (id: Id) => setPaused(id, false),
-    /** Deletes the routine; its steps and per-occurrence overrides are removed with it. */
+    /** Deletes the routine; its per-occurrence overrides are removed with it. */
     async deleteRoutine(id: Id): Promise<void> {
       await requireRoutine(id);
       try {

@@ -6,27 +6,11 @@ export type TaskFormValues = {
   date: string;
   time: string;
   notes: string;
-  steps: string[];
-  symbol: string | null;
   reminderEnabled: boolean;
   reminderAdvanceMinutes: number;
 };
 
 export type TaskFormErrors = Partial<Record<keyof TaskFormValues, string>>;
-
-/** Symbols offered in the editor. Labels are the accessible names. */
-export const TASK_SYMBOLS = [
-  { symbol: '🚿', label: 'Shower' },
-  { symbol: '🍽️', label: 'Meal' },
-  { symbol: '💊', label: 'Medicine' },
-  { symbol: '🧹', label: 'Chores' },
-  { symbol: '🛒', label: 'Shopping' },
-  { symbol: '📞', label: 'Call' },
-  { symbol: '🏃', label: 'Exercise' },
-  { symbol: '📚', label: 'Study' },
-  { symbol: '🛏️', label: 'Sleep' },
-  { symbol: '🦷', label: 'Teeth' },
-] as const;
 
 export function toLocalDateString(d: Date): string {
   const pad = (n: number) => String(n).padStart(2, '0');
@@ -40,8 +24,6 @@ export function emptyForm(date: string, advance = 10): TaskFormValues {
     date,
     time: '',
     notes: '',
-    steps: [],
-    symbol: null,
     reminderEnabled: false,
     reminderAdvanceMinutes: advance,
   };
@@ -53,8 +35,6 @@ export function taskToForm(task: Task): TaskFormValues {
     date: task.date,
     time: task.time ?? '',
     notes: task.notes ?? '',
-    steps: task.steps.map((s) => s.title),
-    symbol: task.symbol,
     reminderEnabled: task.reminderEnabled,
     reminderAdvanceMinutes: task.reminderAdvanceMinutes,
   };
@@ -73,8 +53,6 @@ export function formToInput(values: TaskFormValues): TaskInput {
     date: values.date.trim(),
     time: normalizeTimeText(values.time) || null,
     notes: values.notes,
-    steps: values.steps,
-    symbol: values.symbol,
     reminderEnabled: values.reminderEnabled,
     reminderAdvanceMinutes: values.reminderAdvanceMinutes,
   };
@@ -85,8 +63,6 @@ const FIELDS: ReadonlySet<string> = new Set([
   'date',
   'time',
   'notes',
-  'steps',
-  'symbol',
   'reminderAdvanceMinutes',
 ]);
 

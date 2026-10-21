@@ -77,7 +77,7 @@ Static guards are in `app/src/accessibility.test.ts`. Still needed on devices:
 - [ ] Reading and focus order matches the visual order on each screen, including after saving, deleting, or dismissing an item (focus does not get lost). Keyboard open on a text field does not hide the Save button.
 - [ ] Largest Dynamic Type (iOS, Accessibility sizes) and Android font size and display size at maximum: no clipped or overlapping text, action rows wrap, tab labels stay readable, everything remains reachable by scrolling. Rebuild the dev client first (`npm run ios`); the simulator build seen in 6.4 was stale.
 - [ ] Text size setting in Settings combined with system large text still caps sensibly.
-- [ ] Touch targets feel adequate (48pt) for the day chips, symbol picker, and Remove buttons.
+- [ ] Touch targets feel adequate (48pt) for the day chips, and Remove buttons.
 - [ ] Contrast in light, dark, and every color scheme, outdoors brightness and with Increase Contrast on.
 - [ ] State is understandable in grayscale or with color filters (selected, completed, paused, errors).
 - [ ] Reduce Motion and Bold Text on iOS do not break layout. Native Alert dialogs (delete confirmations) are announced and focus returns afterward.

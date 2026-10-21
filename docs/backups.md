@@ -4,7 +4,7 @@ Decided: 2026-10-19. This is a design note, not legal advice. Real-device restor
 
 ## Where the data lives
 
-All planner data is in one SQLite file, `plank.db` (opened with `openDatabaseAsync('plank.db')` in `app/src/db/database.ts`, WAL mode, so `-wal` and `-shm` files sit beside it). That includes tasks, routines, steps, notes, and the `preferences` table (display, reminder, and clothing settings, the saved weather place, and the one cached forecast under `weather.forecastCache`). There are no separate preference files and no other app-owned data stores we write to.
+All planner data is in one SQLite file, `plank.db` (opened with `openDatabaseAsync('plank.db')` in `app/src/db/database.ts`, WAL mode, so `-wal` and `-shm` files sit beside it). That includes tasks, routines, notes, and the `preferences` table (display, reminder, and clothing settings, the saved weather place, and the one cached forecast under `weather.forecastCache`). There are no separate preference files and no other app-owned data stores we write to.
 
 - iOS: `<container>/Documents/SQLite/plank.db`. expo-sqlite's `defaultDatabaseDirectory` is the app Documents directory plus `SQLite` (`app/node_modules/expo-sqlite/ios/SQLiteModule.swift`; tvOS uses Caches instead). Verified on the iPhone 17 / iOS 27 simulator: the three files are in `Documents/SQLite/` and carry no extended attributes, so none is flagged excluded from backup (`xattr -l` empty; an excluded item would have `com.apple.MobileBackup`).
 - Android: `getFilesDir()/SQLite/plank.db` (`SQLiteModule.kt`, `androidContext.filesDir + "/SQLite"`), which is internal app storage.

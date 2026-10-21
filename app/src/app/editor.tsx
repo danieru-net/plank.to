@@ -20,7 +20,6 @@ import {
   type TaskFormValues,
 } from '@/features/tasks/taskForm';
 import { useReconcileReminders } from '@/features/notifications/useReminderReconciler';
-import { SymbolPicker } from '@/features/tasks/SymbolPicker';
 import { useTaskRepository } from '@/features/tasks/useTaskRepository';
 import { useAppearance } from '@/features/appearance/context';
 
@@ -165,7 +164,6 @@ export default function EditorScreen() {
           optional
         />
       </Card>
-      <SymbolPicker value={values.symbol} onChange={(symbol) => set('symbol', symbol)} />
 
       {saveError ? <InlineNotice tone="error" message={saveError} /> : null}
       <Button label={saving ? 'Saving…' : 'Save task'} onPress={onSave} disabled={saving} />

@@ -84,20 +84,6 @@ describe('constraints', () => {
     expect(db.prepare('SELECT count(*) AS n FROM occurrence_overrides').get()?.n).toBe(0);
   });
 
-  it('requires a step to belong to exactly one parent', () => {
-    const db = freshDb();
-    insertRoutine(db, 'r1', 127);
-    const step = (task: string | null, routine: string | null) =>
-      db
-        .prepare(
-          `INSERT INTO steps (id, task_id, routine_id, position, title, created_at, updated_at)
-           VALUES (hex(randomblob(4)), ?, ?, 0, 'Soap', ?, ?)`,
-        )
-        .run(task, routine, NOW, NOW);
-    expect(() => step(null, 'r1')).not.toThrow();
-    expect(() => step(null, null)).toThrow();
-  });
-
   it('keeps weather settings to a single row and requires coordinates for manual mode', () => {
     const db = freshDb();
     const insert = (id: number, mode: string, lat: number | null, lon: number | null) =>

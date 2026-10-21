@@ -1,0 +1,298 @@
+import * as Notifications from 'expo-notifications';
+
+import type { OccurrenceOverride, Routine } from '@/db/routineRepository';
+import type { Task } from '@/db/taskRepository';
+import { loadReminderPlan } from './reminderPlan';
+import { reconcileReminders } from './reminderService';
+
+jest.mock('expo-notifications', () => ({
+  SchedulableTriggerInputTypes: { DATE: 'date' },
+  AndroidImportance: { DEFAULT: 3 },
+  getPermissionsAsync: jest.fn(),
+  getAllScheduledNotificationsAsync: jest.fn(),
+  scheduleNotificationAsync: jest.fn(),
+  cancelScheduledNotificationAsync: jest.fn(),
+  setNotificationChannelAsync: jest.fn(),
+}));
+
+const api = Notifications as unknown as {
+  getPermissionsAsync: jest.Mock;
+  getAllScheduledNotificationsAsync: jest.Mock;
+  scheduleNotificationAsync: jest.Mock;
+  cancelScheduledNotificationAsync: jest.Mock;
+};
+
+const now = new Date(2026, 5, 10, 12, 0); // Wednesday 2026-06-10 12:00 local
+
+const task = (over: Partial<Task> = {}): Task => ({
+  id: 't1',
+  title: 'Call',
+  notes: null,
+  date: '2026-06-10',
+  time: '15:00',
+  imageUri: null,
+  status: 'pending',
+  statusChangedAt: null,
+  reminderEnabled: true,
+  reminderAdvanceMinutes: 0,
+  routineId: null,
+  routineOccurrenceDate: null,
+  steps: [],
+  createdAt: 0,
+  updatedAt: 0,
+  ...over,
+});
+
+const routine = (over: Partial<Routine> = {}): Routine => ({
+  id: 'r1',
+  title: 'Shower',
+  notes: null,
+  time: '19:00',
+  weekdays: [0, 1, 2, 3, 4, 5, 6],
+  startDate: '2026-06-01',
+  imageUri: null,
+  paused: false,
+  reminderEnabled: true,
+  reminderAdvanceMinutes: 0,
+  steps: [],
+  createdAt: 0,
+  updatedAt: 0,
+  ...over,
+});
+
+type Override = OccurrenceOverride;
+const override = (over: Partial<Override>): Override => ({
+  id: 'o1',
+  routineId: 'r1',
+  occurrenceDate: '2026-06-10',
+  status: 'pending',
+  title: null,
+  notes: null,
+  movedDate: null,
+  movedTime: null,
+  reminderEnabled: null,
+  ...over,
+});
+
+function repos(tasks: Task[], routines: Routine[], overrides: Override[] = []) {
+  return {
+    tasks: { listTasksForDate: async (d: string) => tasks.filter((t) => t.date === d) },
+    routines: {
+      listRoutines: async () => routines,
+      listOccurrenceOverrides: async (id: string) => overrides.filter((o) => o.routineId === id),
+    },
+  };
+}
+
+const plan = (r: ReturnType<typeof repos>, days = 7) =>
+  loadReminderPlan(r.tasks, r.routines, now, days);
+
+/** Fake OS: scheduling an existing identifier replaces it, like the real API. */
+let store: Map<string, { identifier: string; content: any; trigger: any }>;
+
+beforeEach(() => {
+  store = new Map();
+  jest.resetAllMocks();
+  api.getPermissionsAsync.mockResolvedValue({
+    granted: true,
+    status: 'granted',
+    canAskAgain: true,
+  });
+  api.getAllScheduledNotificationsAsync.mockImplementation(async () => [...store.values()]);
+  api.scheduleNotificationAsync.mockImplementation(async ({ identifier, content, trigger }) => {
+    store.set(identifier, {
+      identifier,
+      content,
+      trigger: { type: 'date', value: trigger.date.getTime() },
+    });
+    return identifier;
+  });
+  api.cancelScheduledNotificationAsync.mockImplementation(async (id: string) => {
+    store.delete(id);
+  });
+});
+
+describe('reminder plan from routines', () => {
+  it('plans only the selected weekdays', async () => {
+    // Mon (1) and Fri (5); window Wed 06-10 .. Tue 06-16 -> Fri 06-12 and Mon 06-15.
+    const out = await plan(repos([], [routine({ weekdays: [1, 5] })]));
+    expect(out.map((r) => r.id)).toEqual(['routine:r1:2026-06-12', 'routine:r1:2026-06-15']);
+  });
+
+  it('plans every day of the window for an all-days routine', async () => {
+    const out = await plan(repos([], [routine()]));
+    expect(out).toHaveLength(7);
+  });
+
+  it('fires at local wall-clock time minus the advance notice', async () => {
+    const out = await plan(repos([], [routine({ reminderAdvanceMinutes: 15 })]), 1);
+    expect(out[0].fireAt).toEqual(new Date(2026, 5, 10, 18, 45));
+  });
+
+  it('honours a one-day dismissal, move, and reminder override without touching other days', async () => {
+    const r = repos(
+      [],
+      [routine()],
+      [
+        override({ occurrenceDate: '2026-06-10', status: 'dismissed' }),
+        override({ id: 'o2', occurrenceDate: '2026-06-11', reminderEnabled: false }),
+        override({
+          id: 'o3',
+          occurrenceDate: '2026-06-12',
+          movedDate: '2026-06-12',
+          movedTime: '08:30',
+        }),
+      ],
+    );
+    const out = await plan(r, 4);
+    expect(out.map((x) => x.id)).toEqual(['routine:r1:2026-06-12', 'routine:r1:2026-06-13']);
+    expect(out[0].fireAt).toEqual(new Date(2026, 5, 12, 8, 30));
+    expect(out[1].fireAt).toEqual(new Date(2026, 5, 13, 19, 0));
+  });
+
+  it('lets an override turn on a reminder the routine has off', async () => {
+    const r = repos(
+      [],
+      [routine({ reminderEnabled: false })],
+      [override({ occurrenceDate: '2026-06-10', reminderEnabled: true })],
+    );
+    expect((await plan(r, 2)).map((x) => x.id)).toEqual(['routine:r1:2026-06-10']);
+  });
+
+  it('plans nothing for a paused routine and nothing after a delete', async () => {
+    expect(await plan(repos([], [routine({ paused: true })]))).toEqual([]);
+    expect(await plan(repos([], []))).toEqual([]);
+  });
+
+  it('has one reminder per task even if it is listed on several days', async () => {
+    const t = task();
+    const r = {
+      tasks: { listTasksForDate: async () => [t] },
+      routines: { listRoutines: async () => [], listOccurrenceOverrides: async () => [] },
+    };
+    expect(await loadReminderPlan(r.tasks, r.routines, now, 3)).toHaveLength(1);
+  });
+});
+
+describe('reconcileReminders with a fake notifications API', () => {
+  it('does nothing and never schedules or cancels without permission', async () => {
+    api.getPermissionsAsync.mockResolvedValue({ granted: false, status: 'undetermined' });
+    store.set('task:old', { identifier: 'task:old', content: {}, trigger: null });
+    const r = repos([task()], []);
+    expect(await reconcileReminders(r.tasks, r.routines, now)).toEqual({
+      scheduled: 0,
+      cancelled: 0,
+    });
+    expect(api.scheduleNotificationAsync).not.toHaveBeenCalled();
+    expect(api.cancelScheduledNotificationAsync).not.toHaveBeenCalled();
+  });
+
+  it('schedules the plan, then does nothing on a repeat run (deduplication)', async () => {
+    const r = repos([task()], [routine()]);
+    const first = await reconcileReminders(r.tasks, r.routines, now);
+    expect(first).toEqual({ scheduled: 8, cancelled: 0 });
+    expect(store.size).toBe(8);
+    expect(store.get('task:t1')?.trigger.value).toBe(new Date(2026, 5, 10, 15, 0).getTime());
+    expect(await reconcileReminders(r.tasks, r.routines, now)).toEqual({
+      scheduled: 0,
+      cancelled: 0,
+    });
+    expect(store.size).toBe(8);
+  });
+
+  it('cancels stale reminders after delete, pause, completion, and dismissal', async () => {
+    const tasks = [task()];
+    const routines = [routine()];
+    const overrides: Override[] = [];
+    const run = () => {
+      const r = repos(tasks, routines, overrides);
+      return reconcileReminders(r.tasks, r.routines, now);
+    };
+    await run();
+    expect(store.size).toBe(8);
+
+    tasks[0] = task({ status: 'completed' });
+    expect(await run()).toEqual({ scheduled: 0, cancelled: 1 });
+    expect(store.has('task:t1')).toBe(false);
+
+    overrides.push(override({ occurrenceDate: '2026-06-10', status: 'dismissed' }));
+    expect(await run()).toEqual({ scheduled: 0, cancelled: 1 });
+    expect(store.has('routine:r1:2026-06-10')).toBe(false);
+
+    routines[0] = routine({ paused: true });
+    expect(await run()).toEqual({ scheduled: 0, cancelled: 6 });
+    expect(store.size).toBe(0);
+
+    routines[0] = routine();
+    expect((await run()).scheduled).toBe(6);
+    routines.length = 0; // deleted
+    expect(await run()).toEqual({ scheduled: 0, cancelled: 6 });
+    expect(store.size).toBe(0);
+  });
+
+  it('reschedules only the changed reminder, replacing it in place', async () => {
+    const tasks = [task()];
+    const r = () => repos(tasks, []);
+    await reconcileReminders(r().tasks, r().routines, now);
+    tasks[0] = task({ time: '16:00' });
+    expect(await reconcileReminders(r().tasks, r().routines, now)).toEqual({
+      scheduled: 1,
+      cancelled: 0,
+    });
+    expect(store.size).toBe(1);
+    expect(store.get('task:t1')?.trigger.value).toBe(new Date(2026, 5, 10, 16, 0).getTime());
+  });
+
+  it('leaves foreign and snooze notifications alone', async () => {
+    store.set('other:1', { identifier: 'other:1', content: {}, trigger: null });
+    store.set('snooze:task:t1', { identifier: 'snooze:task:t1', content: {}, trigger: null });
+    const r = repos([], []);
+    expect(await reconcileReminders(r.tasks, r.routines, now)).toEqual({
+      scheduled: 0,
+      cancelled: 0,
+    });
+    expect(store.size).toBe(2);
+  });
+
+  it('force reschedules everything', async () => {
+    const r = repos([task()], []);
+    await reconcileReminders(r.tasks, r.routines, now);
+    const result = await reconcileReminders(r.tasks, r.routines, now, { force: true });
+    expect(result).toEqual({ scheduled: 1, cancelled: 0 });
+    expect(store.size).toBe(1);
+  });
+
+  it('applies quiet hours when scheduling', async () => {
+    const r = repos([task({ time: '07:00', date: '2026-06-11' })], []);
+    await reconcileReminders(r.tasks, r.routines, now, {
+      settings: {
+        sound: true,
+        vibration: true,
+        snoozeMinutes: 10,
+        quietHours: { enabled: true, start: '22:00', end: '08:00' },
+      } as never,
+    });
+    // 07:00 is inside quiet hours and the delay would pass the task time, so it is skipped.
+    expect(store.size).toBe(0);
+  });
+
+  it('serializes overlapping calls so they cannot double-schedule', async () => {
+    const r = repos([task()], []);
+    const results = await Promise.all([
+      reconcileReminders(r.tasks, r.routines, now),
+      reconcileReminders(r.tasks, r.routines, now),
+    ]);
+    expect(results).toEqual([
+      { scheduled: 1, cancelled: 0 },
+      { scheduled: 0, cancelled: 0 },
+    ]);
+    expect(api.scheduleNotificationAsync).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps working after a failed run', async () => {
+    const r = repos([task()], []);
+    api.getAllScheduledNotificationsAsync.mockRejectedValueOnce(new Error('boom'));
+    await expect(reconcileReminders(r.tasks, r.routines, now)).rejects.toThrow('boom');
+    expect((await reconcileReminders(r.tasks, r.routines, now)).scheduled).toBe(1);
+  });
+});

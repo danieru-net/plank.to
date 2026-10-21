@@ -39,21 +39,19 @@ async function setup() {
 
 // 2026-06-10 is a Wednesday (3); 2026-06-11 a Thursday (4).
 describe('createRoutineTasksForDate', () => {
-  it('creates a task only on the routine’s weekdays, with its details and steps', async () => {
+  it('creates a task only on the routine’s weekdays, with its details', async () => {
     const { tasks, routines } = await setup();
     await routines.createRoutine({
       title: 'Stretch',
       time: '07:30',
       weekdays: [3],
       startDate: '2026-06-01',
-      steps: ['Neck', 'Back'],
     });
     expect(await createRoutineTasksForDate(tasks, routines, '2026-06-11')).toBe(0);
     expect(await createRoutineTasksForDate(tasks, routines, '2026-06-10')).toBe(1);
     const [t] = await tasks.listTasksForDate('2026-06-10');
     expect(t).toMatchObject({ title: 'Stretch', time: '07:30', status: 'pending' });
     expect(t.routineId).not.toBeNull();
-    expect(t.steps.map((s) => s.title)).toEqual(['Neck', 'Back']);
   });
 
   it('does not create the same task twice, even after it was moved to another day', async () => {

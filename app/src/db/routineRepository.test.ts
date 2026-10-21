@@ -65,7 +65,6 @@ describe('routine repository', () => {
       startDate: '2026-10-19',
       paused: false,
       notes: null,
-      steps: [],
     });
     expect(await repo.getRoutine(routine.id)).toEqual(routine);
   });
@@ -116,21 +115,12 @@ describe('routine repository', () => {
     expect(await issuesOf(repo.createRoutine({ ...base, time: '' }))).toEqual(['time']);
   });
 
-  it('creates ordered steps and ignores blank ones', async () => {
-    const { repo } = await setup();
-    const routine = await repo.createRoutine({ ...base, steps: [' Floss ', '', 'Brush'] });
-    expect(routine.steps.map((s) => s.title)).toEqual(['Floss', 'Brush']);
-  });
-
   it('edits only the fields given, keeping the rest', async () => {
     const { repo } = await setup();
-    const routine = await repo.createRoutine({ ...base, steps: ['A', 'B'] });
+    const routine = await repo.createRoutine(base);
     const edited = await repo.updateRoutine(routine.id, { time: '20:30', weekdays: [0, 6] });
     expect(edited).toMatchObject({ title: 'Brush teeth', time: '20:30', weekdays: [0, 6] });
-    expect(edited.steps.map((s) => s.title)).toEqual(['A', 'B']);
     expect(edited.updatedAt).toBeGreaterThan(routine.updatedAt);
-    const cleared = await repo.updateRoutine(routine.id, { steps: [] });
-    expect(cleared.steps).toEqual([]);
   });
 
   it('does not change a routine when an edit is invalid', async () => {
@@ -159,9 +149,9 @@ describe('routine repository', () => {
     expect(list.map((r) => r.id)).toEqual([early.id, late.id, paused.id]);
   });
 
-  it('deletes a routine with its steps and overrides', async () => {
+  it('deletes a routine with its overrides', async () => {
     const { repo, raw } = await setup();
-    const routine = await repo.createRoutine({ ...base, steps: ['A'] });
+    const routine = await repo.createRoutine(base);
     raw
       .prepare(
         `INSERT INTO occurrence_overrides (id, routine_id, occurrence_date, status, created_at, updated_at)
@@ -170,7 +160,6 @@ describe('routine repository', () => {
       .run(routine.id);
     await repo.deleteRoutine(routine.id);
     expect(await repo.getRoutine(routine.id)).toBeNull();
-    expect(raw.prepare('SELECT COUNT(*) AS n FROM steps').get()).toEqual({ n: 0 });
     expect(raw.prepare('SELECT COUNT(*) AS n FROM occurrence_overrides').get()).toEqual({ n: 0 });
   });
 
@@ -190,7 +179,7 @@ describe('routine repository', () => {
 
   it('turns database failures into storage errors', async () => {
     const { repo, raw } = await setup();
-    raw.exec('DROP TABLE steps');
+    raw.exec('DROP TABLE routines');
     await expect(repo.createRoutine(base)).rejects.toMatchObject({ code: 'query_failed' });
   });
 

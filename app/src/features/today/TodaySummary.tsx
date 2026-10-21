@@ -13,10 +13,9 @@ import {
   weatherFacts,
 } from '@/features/clothing/suggestionRules';
 import { useAppearance } from '@/features/appearance/context';
-import { WEATHER_ATTRIBUTION } from '@/features/weather/forecast';
 import { describeWeather, type WeatherAction } from '@/features/weather/weatherDisplay';
 import { useTodayWeather } from '@/features/weather/useTodayWeather';
-import { minTouchTarget } from '@/theme';
+import { borderWidth, minTouchTarget } from '@/theme';
 
 const actionLabels: Record<WeatherAction, string> = {
   retry: 'Try again',
@@ -117,7 +116,6 @@ export function TodaySummary() {
           </View>
           {view.notice ? <Text variant="caption">{view.notice}</Text> : null}
           {actionButton(view.action)}
-          <Attribution />
         </View>
       ) : (
         <View
@@ -166,36 +164,28 @@ export function TodaySummary() {
             <Text variant="caption" muted>
               {clothingNote}
             </Text>
-            <Button
-              label={clothingCopy.dismiss}
+            <Pressable
+              accessibilityRole="button"
               accessibilityLabel={`${clothingCopy.dismiss} clothing ideas`}
               accessibilityHint="Hides clothing ideas for today"
-              variant="plain"
-              inline
               onPress={() => void dismiss()}
-            />
+              hitSlop={8}
+              style={({ pressed }) => [
+                styles.iconButton,
+                {
+                  borderWidth,
+                  borderColor: theme.separator,
+                  backgroundColor: theme.surface,
+                  opacity: pressed ? 0.6 : 1,
+                },
+              ]}
+            >
+              <Ionicons name="close" size={28} color={theme.primary} />
+            </Pressable>
           </>
         )}
       </View>
     </Card>
-  );
-}
-
-function Attribution() {
-  const { palette: theme } = useAppearance();
-  return (
-    <Pressable
-      accessibilityRole="link"
-      accessibilityLabel={`${WEATHER_ATTRIBUTION.text}. Opens in your browser.`}
-      onPress={() =>
-        Linking.openURL(WEATHER_ATTRIBUTION.url).catch((e: unknown) => console.error(e))
-      }
-      style={styles.link}
-    >
-      <Text variant="caption" style={{ color: theme.primary, textDecorationLine: 'underline' }}>
-        {WEATHER_ATTRIBUTION.text}
-      </Text>
-    </Pressable>
   );
 }
 
@@ -204,6 +194,13 @@ const styles = StyleSheet.create({
   grow: { flex: 1 },
   icon: { width: 40, textAlign: 'center' },
   divider: { height: StyleSheet.hairlineWidth },
-  link: { minHeight: minTouchTarget, justifyContent: 'center', alignSelf: 'flex-start' },
+  iconButton: {
+    alignSelf: 'flex-end',
+    width: minTouchTarget,
+    height: minTouchTarget,
+    borderRadius: minTouchTarget / 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   offRow: { minHeight: minTouchTarget, flexDirection: 'row', alignItems: 'center' },
 });

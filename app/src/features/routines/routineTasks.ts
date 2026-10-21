@@ -31,11 +31,9 @@ export async function createRoutineTasksForDate(
         notes: details.notes,
         date: details.date,
         time: details.time,
-        symbol: routine.symbol,
         imageUri: routine.imageUri,
         reminderEnabled: occurrence.reminderEnabled ?? routine.reminderEnabled,
         reminderAdvanceMinutes: routine.reminderAdvanceMinutes,
-        steps: routine.steps.map((s) => s.title),
       },
       { id: routine.id, occurrenceDate: occurrence.occurrenceDate },
     );

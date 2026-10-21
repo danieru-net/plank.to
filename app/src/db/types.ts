@@ -22,7 +22,6 @@ export type TaskRow = Timestamps &
     notes: string | null;
     date: LocalDate;
     time: LocalTime | null;
-    symbol: string | null;
     image_uri: string | null;
     status: CompletionStatus;
     status_changed_at: Timestamp | null;
@@ -40,19 +39,9 @@ export type RoutineRow = Timestamps &
     /** Bitmask, bit 0 = Sunday ... bit 6 = Saturday. 127 = every day. */
     weekdays: number;
     start_date: LocalDate;
-    symbol: string | null;
     image_uri: string | null;
     paused: Bool;
   };
-
-export type StepRow = Timestamps & {
-  id: Id;
-  /** Exactly one of task_id / routine_id is set. */
-  task_id: Id | null;
-  routine_id: Id | null;
-  position: number;
-  title: string;
-};
 
 export type OccurrenceOverrideRow = Timestamps & {
   id: Id;

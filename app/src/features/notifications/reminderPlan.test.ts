@@ -21,7 +21,6 @@ const task = (over: Partial<Task> = {}): Task => ({
   notes: null,
   date: '2026-06-10',
   time: '15:00',
-  symbol: null,
   imageUri: null,
   status: 'pending',
   statusChangedAt: null,
@@ -29,7 +28,6 @@ const task = (over: Partial<Task> = {}): Task => ({
   reminderAdvanceMinutes: 0,
   routineId: null,
   routineOccurrenceDate: null,
-  steps: [],
   createdAt: 0,
   updatedAt: 0,
   ...over,
@@ -42,12 +40,10 @@ const routine = (over: Partial<Routine> = {}): Routine => ({
   time: '19:00',
   weekdays: [0, 1, 2, 3, 4, 5, 6],
   startDate: '2026-06-01',
-  symbol: null,
   imageUri: null,
   paused: false,
   reminderEnabled: true,
   reminderAdvanceMinutes: 0,
-  steps: [],
   createdAt: 0,
   updatedAt: 0,
   ...over,
@@ -111,7 +107,6 @@ describe('planTaskReminders', () => {
 describe('planRoutineReminders', () => {
   const item = (over: Partial<RoutineOccurrence['occurrence']> = {}): RoutineOccurrence => ({
     routineId: 'r1',
-    symbol: null,
     occurrence: {
       occurrenceDate: '2026-06-10',
       date: '2026-06-10',

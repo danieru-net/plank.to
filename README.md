@@ -16,9 +16,9 @@ The cited research in the product brief is a starting point for requirements, no
 ### Today view and tasks
 
 - Show the day as an easy-to-scan agenda or timeline.
-- Keep text primary, with optional pictures or symbols.
+- Keep text primary, with optional pictures.
 - Let people create, edit, reorder, reschedule, complete, or dismiss tasks.
-- Support optional task steps, times, notes, and images.
+- Support optional times, notes, and images on tasks.
 - Use neutral language; avoid streaks, guilt, and failure states.
 
 ### Weekly routines and reminders
