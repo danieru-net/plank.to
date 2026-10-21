@@ -14,71 +14,95 @@ Deliver an Expo mobile planner that works offline without an account, supports d
 - Treat weather and clothing output as informational suggestions, not health or safety advice.
 - Co-design and usability testing are release activities, not optional polish. Do not claim clinical or therapeutic effectiveness.
 
-## Phase 1 — Project foundation
 
-**Exit criteria:** The app and site build independently; the app runs on target platforms; automated checks are available and documented.
+## In-app feedback
 
-## Phase 2 — Local planner data and task flows
+Let users request features or report problems from inside the app without adding an account, a backend, or analytics. Feedback is always user-initiated and never prompted by streaks, usage counts, or pop-ups.
 
+### Decisions
 
-**Exit criteria:** Users can create and manage today's tasks offline; app restart preserves tasks and settings; failures are visible rather than silently ignored.
+- Send feedback through the device's mail composer (`expo-mail-composer`, falling back to a `mailto:` link) addressed to a dedicated support address. No feedback data is stored on a server we run, and nothing is sent without the user pressing Send in their own mail app.
+- Diagnostic details (app version, build number, OS and version, device model, text size and theme settings) are shown to the user and included only if they leave the "Include device details" toggle on. Never attach task, routine, location, or clothing data.
+- The website contact page offers the same address so people without a configured mail app can still reach us.
 
-## Phase 3 — Weekly routines and notifications
+### Tasks
 
-- [ ] **3.9 Test calendar edge cases on devices.** DST and timezone planning logic is now covered by unit tests (done, see done.md). Still to do by a person with real devices, following [docs/device-test-checklist.md](docs/device-test-checklist.md): timezone travel, real DST transitions, permission denial/re-enabling, reboot/app restart, and notification limits (64 on iOS) on iOS and Android.
+- [ ] Choose and set up the support mailbox (e.g. `feedback@plank.to`) and record it in a single app config constant shared by the app and website.
+- [ ] Add a "Feedback" section to [settings/index.tsx](app/src/app/(tabs)/settings/index.tsx) with rows for "Suggest a feature or improvement" and "Report a problem".
+- [ ] Build a `settings/feedback.tsx` screen: feedback type (idea, improvement, problem), a free-text message field, optional "What were you trying to do?" field for problems, and the "Include device details" toggle with a visible preview of exactly what will be sent.
+- [ ] Add `features/feedback/feedbackMessage.ts` that builds the email subject and body from the form state, with unit tests covering each feedback type and the diagnostics toggle on and off.
+- [ ] Integrate `expo-mail-composer`; when no mail account is available, fall back to `mailto:`, and if that also fails, show the address with a copy-to-clipboard button.
+- [ ] Keep a local draft of the message so leaving the screen or switching to the mail app does not lose what was typed; clear it after the composer reports the mail was sent.
+- [ ] Show a calm confirmation after sending ("Thanks — we read every message") with no follow-up prompts or rating requests.
+- [ ] Check accessibility: screen reader labels, dynamic text size, focus order, and keyboard avoidance on the feedback screen.
+- [ ] Update [contact.astro](web/src/pages/contact.astro) and [help.astro](web/src/pages/help.astro) with the feedback address and what to include in a request.
+- [ ] Update [privacy.astro](web/src/pages/privacy.astro) and [docs/location-privacy.md](docs/location-privacy.md) to describe what a feedback email contains and that device details are optional.
+- [ ] Add feedback flow steps (send with and without diagnostics, no mail account configured) to [docs/device-test-checklist.md](docs/device-test-checklist.md).
+- [ ] Set up a lightweight triage process: label incoming emails as idea, improvement, or problem and review them during co-design and usability sessions.
 
-**Exit criteria:** A daily routine such as “Shower, 7:00 PM, every day” produces the expected local occurrences and reminders; edits do not leave stale notifications; reminders remain optional.
+## Audience: autistic people and people with ADHD
 
-## Phase 4 — Optional weather and clothing suggestions
+Widen the stated audience from autistic people to also include people with ADHD (attention deficit). Both groups benefit from predictability and visual supports. ADHD adds needs around time blindness, getting started on tasks, and quickly capturing thoughts. Every support stays optional and configurable, and no one setup is assumed to suit everyone.
 
-- [ ] **4.9 Test privacy and provider behavior.** Automated tests are done (see done.md, "4.9 (partial)"). Still to do by a person with a device and network access, following the "Manual checks: weather privacy and provider" section of [docs/device-test-checklist.md](docs/device-test-checklist.md): a live Open-Meteo call, real traffic capture (hosts, headers, cookies, coordinates), the exact attribution/caching wording on Open-Meteo's license page, OS location permission flows, offline behavior, and the Settings clear-on-off behavior.
+### Decisions
 
-**Exit criteria:** Weather is entirely optional; users can use manual location or no location; suggestions reflect explicit preferences and can be dismissed; core planner features work when weather is offline or unavailable.
+- Name ADHD next to autism in the README, the store listing, and the website. Make no clinical or therapeutic claims.
+- New supports are off by default unless co-design shows a default helps most people. Each can be turned off on its own.
+- Keep the existing tone rules: no streaks, no shame, no countdowns that read as pressure, and no repeated nagging.
 
-## Phase 5 — Astro website and Firebase Hosting
+### Tasks
 
-- [ ] **5.2 Have the privacy policy reviewed for the intended release jurisdictions.** The draft is written at [web/src/pages/privacy.astro](web/src/pages/privacy.astro). A human must review it for the intended release jurisdictions, then remove the draft notice, replace the contact placeholder (see 5.3), and confirm the Open-Meteo attribution wording, caching terms (4.9), and backup statement (6.13).
-- [ ] **5.3 Replace the contact placeholder with a maintained contact route.** The owner must choose a real support route, then update the single constant in [web/src/config.ts](web/src/config.ts) (set `isPlaceholder` to false). The accessibility and contact pages already exist.
-- [ ] **5.4 Create the Firebase project and verify the first deploy.** Config and workflows are in place (see [web/README.md](web/README.md)). The owner must create the Firebase project, replace the placeholder in `.firebaserc`, set the `FIREBASE_PROJECT_ID` variable and `FIREBASE_SERVICE_ACCOUNT` secret, then confirm a preview and the first production deploy succeed.
-- [ ] **5.6 Deploy a preview and review it.** Deploy a preview to Firebase and re-review there.
+- [ ] Update the product description in [README.md](README.md), [index.astro](web/src/pages/index.astro), [help.astro](web/src/pages/help.astro) and [docs/release/store-listing.md](docs/release/store-listing.md) to name autistic people and people with ADHD, with no efficacy claims.
+- [ ] Bring back **task steps** (the `steps` table was dropped in a migration): optional ordered sub-steps on tasks and routines, ticked off one at a time on Today, with progress shown as "2 of 5 steps". Add a new migration and tests, and don't revert the old one.
+- [ ] Add a **Now / Next view**: one large card for the current task (with its steps) and a smaller "Next" card, reachable from Today and from a reminder notification. Helps people who find a full list overwhelming.
+- [ ] Add an optional **visual time indicator** for time blindness: a shrinking ring or bar showing time until the next task and, for tasks with a duration, time left. Neutral wording ("20 min until Lunch"), no red or alarm styling, and it follows the Animations setting.
+- [ ] Add optional **task duration** (e.g. 15 min) to tasks and routines so the time indicator and the timeline can show how long things take.
+- [ ] Add a **timeline layout** for Today (time down the side, blocks sized by duration) as a choice next to the current list, saved in Appearance.
+- [ ] Add a **transition heads-up** reminder ("In 5 minutes: getting ready for school") separate from the task reminder, so changes between activities are predictable. Reuse reminder reconciliation.
+- [ ] Show **pictures and symbols** on tasks, which the README promises but no screen renders: an emoji or symbol picker plus the existing local image (`imageUri`), shown on Today, Now/Next and the timeline. Add a "Pictures first" option that makes the picture larger than the text, for people who read pictures more easily than text.
+- [ ] Add **reordering** for untimed tasks (drag plus accessible "Move up" and "Move down" actions), as the README promises.
+- [ ] Add a **quick capture inbox**: a one-field "Add a thought" that saves undated tasks to an Inbox list, to be scheduled later. Reachable from Today in one tap.
+- [ ] Add a **"What changed" notice**: when a routine occurrence was moved, edited or skipped, Today shows a calm note at the top ("Swimming moved to 17:00 today") so changes are never a surprise.
+- [ ] Add **read aloud** (`expo-speech`) for a task's title and steps, for people who prefer listening, younger users, and anyone who finds reading tiring.
+- [ ] Add an optional, gentle **completion moment** (a short check animation and sound, or nothing). Off by default, never a streak or score, and it follows the Animations and Haptics settings.
+- [ ] Add a **Simple mode** that hides weather, clothing and the Routines tab, leaving only Today, for people who want fewer choices on screen.
+- [ ] Add **appearance presets** in [appearance.tsx](app/src/app/(tabs)/settings/appearance.tsx): "Calm (low stimulation)" (muted colors, no animation, no haptics, no emoji), "Focus" (Now/Next, larger text, labelled buttons) and "Playful" (the kids theme below). A preset only fills in the existing settings, and each one can still be changed afterwards.
+- [ ] Add a **readable font option** (e.g. Atkinson Hyperlegible, bundled locally) and a "More line spacing" toggle; update the [tokens.ts](app/src/theme/tokens.ts) typography to scale with it.
+- [ ] Add routine **templates** (Morning, Bedtime, School day, Leaving the house) with example steps. These are starting points that people can change, not prescriptions.
+- [ ] Run co-design and usability sessions with people with ADHD, and with autistic children and their caregivers, alongside the existing sessions with autistic adults. Record findings in `docs/`.
 
-**Exit criteria:** Astro pages build and deploy to Firebase Hosting as static content without planner data or Firebase database services.
+## Color themes: Playful (kids) and Blossom (pink)
 
-## Phase 6 — Automated testing, quality, and release
+Add two full-palette themes. The current accent themes (`sage`, `plum`, `clay`) only replace `primary`/`onPrimary`/`focus`. These two also tint `background`, `surface` and `separator`, so they need full light and dark palettes in [colors.ts](app/src/theme/colors.ts).
 
-- [ ] **6.4 Run accessibility checks (remaining: manual).** The static audit and automated guards are done (see done.md 6.4 partial). Still needed on real devices: VoiceOver and TalkBack passes, large Dynamic Type/font scale layout on iOS and Android, and contrast/focus order checks on both platforms. Checklist in `docs/device-test-checklist.md`.
-- [ ] **6.9 Remaining iOS acceptance cases (manual).** Simulator automation is done (17 Maestro flows pass; see [docs/acceptance-ios.md](docs/acceptance-ios.md)). Still to verify by hand on a device: true airplane mode with a cached forecast, notification delivery, tap and snooze, device location revoked after being chosen, and notifications across restart/reboot. Android stays a separate platform check.
-- [ ] **6.10 Conduct usability sessions.** Ask participants whether the day is understandable, routines are easy to create/change, reminders are useful or disruptive, weather and suggestions are clear, and the app feels optional and under their control.
-- [ ] **6.11 Triage findings and fix release blockers.** Prioritize safety/privacy issues, confusing recurrence/reminder behavior, and accessibility blockers. Retest affected flows with participants where possible.
-- [ ] **6.12 Prepare release materials (remaining: owner steps).** Drafts are done in [docs/release/](docs/release/) (see done.md, "6.12 (partial)"). Still to do by the owner: create store and Expo accounts, capture final screenshots, replace the `[[PLACEHOLDER` URLs and contact, confirm the privacy-label choice, run a first real EAS build, and work through [docs/release/release-checklist.md](docs/release/release-checklist.md).
-- [ ] **6.13 Verify backups on real devices.** Policy, config, and wording are done (see [docs/backups.md](docs/backups.md)). Remaining: on real devices, confirm an iCloud backup restore and a Google Auto Backup restore return tasks, routines, and settings (including a backup taken while the app is open), that reminders are re-created after a restore, and behavior with backup disabled.
-- [ ] **6.14 Publish and monitor.** Release the mobile app and static site; monitor only operational information that does not collect planner content or sensitive location/profile data, and maintain a clear way for users to report issues.
+### Decisions
 
-**Exit criteria:** Unit tests and the documented macOS/iOS Simulator automation pass; each automated feature flow produces a reviewable MP4; high-priority usability/privacy issues are resolved; and user-facing privacy and permission disclosures match the shipped behavior.
+- Name themes by look, not by who they're for: "Playful (bright colors)" and "Blossom (pink)". Anyone can pick either, which matches the project's rule of never assuming things about people by gender.
+- Both themes must pass `npm run check:contrast` in light and dark mode. Bright does not mean low contrast.
+- Playful can also change shape (rounder corners, larger icons), but must not add motion beyond what the Animations setting allows.
 
-## MVP acceptance checklist
+### Tasks
 
-- [ ] Tasks and routines can be created, changed, and viewed without an account or network connection.
-- [ ] A routine can repeat on selected weekdays or every day at a chosen local time.
-- [ ] A user can choose whether a change affects one occurrence or the recurring series.
-- [ ] Reminders are optional; users can reschedule or dismiss occurrences without nagging or accidentally altering the routine.
-- [ ] Task/routine edits and deletes reconcile their scheduled notifications without stale or duplicate alerts.
-- [ ] Text size, visual density, colors, and reminder preferences persist locally.
-- [ ] The initial screen presents weather first, the clothing suggestion next, and today's task agenda after them; disabling or failing weather does not block access to tasks.
-- [ ] Weather is opt-in, location access is requested only for location-based weather, and manual-location and off options exist.
-- [ ] Weather-provider terms, current free-tier limits, attribution, caching, and privacy implications are verified and documented.
-- [ ] Clothing suggestions use explicit user choices, are non-prescriptive, and can be dismissed; gender is never inferred.
-- [ ] Weather and clothing features failing or being disabled never prevent access to the planner.
-- [ ] A free, locally runnable macOS/iOS Simulator UI automation command verifies core user flows and produces a separate MP4 video for each tested functionality.
-- [ ] Automated tests use deterministic local data and mocked weather, and generated videos/reports are not committed as source files.
-- [ ] Astro privacy, help, and product pages deploy to Firebase Hosting independently of planner data.
-- [ ] Co-design/usability testing includes varied preferences and evaluates understandability, reminder disruption, weather clarity, and user control.
+- [ ] Extend the theme model in [colors.ts](app/src/theme/colors.ts) so a theme can override the whole `Palette` per scheme, not just the accent. Make sure `resolvePalette` and `allPalettes` cover the new themes.
+- [ ] Add a **Blossom** theme: soft pink background (e.g. `#FFF4F7`), white surface, deep rose primary (e.g. `#A3335F`) for light mode, and a dark plum/rose variant for dark mode. Check every pair in `contrastRequirements`.
+- [ ] Add a **Playful** theme: warm light background, white surface, strong blue or violet primary, with a secondary accent color used only for decoration, never as the only cue. Provide a dark variant.
+- [ ] Add optional shape tokens (`radius.card`, `radius.button`, icon size) to [tokens.ts](app/src/theme/tokens.ts) so Playful can use rounder cards and larger icons; [Card.tsx](app/src/components/Card.tsx) and [Button.tsx](app/src/components/Button.tsx) read them from appearance context.
+- [ ] Update the Swatch and Preview in [appearance.tsx](app/src/app/(tabs)/settings/appearance.tsx) to show the tinted background and shape, so people can judge a theme before choosing it.
+- [ ] Add unit tests in [settings.test.ts](app/src/features/appearance/settings.test.ts) and [contrast.test.ts](app/src/theme/contrast.test.ts) for parsing the new theme values and checking their contrast, and extend [visual-preferences.yaml](app/.maestro/visual-preferences.yaml) to switch to each new theme.
+- [ ] Add screenshots of both themes to [docs/release/screenshots.md](docs/release/screenshots.md).
 
-## Owner input needed (proceeding with the recommendation unless changed)
+## Kids and caregiver support
 
-- [ ] **Support contact (5.3).** Using a placeholder in `web/src/config.ts`. Recommendation: a dedicated support address (not a personal inbox) before publishing.
-- [ ] **Firebase project (5.4).** Create the project, set repo variable `FIREBASE_PROJECT_ID` and secret `FIREBASE_SERVICE_ACCOUNT`, replace the id in `.firebaserc`. Recommendation: one project, preview channels for PRs.
-- [ ] **Open-Meteo attribution and terms (4.1/4.9).** Approve the attribution line and confirm caching/commercial terms on the live license page. Decision made: non-commercial, called directly, no proxy.
-- [ ] **Privacy policy legal review (5.2).** Needs review for the intended release jurisdictions; remove the draft notice afterwards.
-- [ ] **Android verification.** No emulator/SDK has been used yet; Android checks remain manual (see `docs/device-test-checklist.md`).
-- [ ] **Real-device and usability work (3.9, 4.9, 6.10).** Needs people and devices; checklists live in `docs/`.
+If children are a target audience, the app needs a caregiver setup flow, and the App Store Kids Category has extra rules.
+
+### Tasks
+
+- [ ] Decide whether to list the app in the App Store Kids Category or Google Play's Families program. Both restrict external links, require a parental gate before leaving the app (including the feedback `mailto:`), and set rules for third-party network calls (check the weather API). Record the decision in [docs/release/](docs/release/).
+- [ ] Add an optional **caregiver lock**: a simple parental gate (e.g. hold a button and answer a question) before Settings, routine editing and deleting, so a child can complete tasks without changing the schedule by accident.
+- [ ] Add a **picture-first kids layout** option: large picture cards, read-aloud on tap, labelled Complete buttons, and no text-only rows.
+- [ ] Add a help page for caregivers on [help.astro](web/src/pages/help.astro) covering how to set up routines, pictures and the caregiver lock together with the child.
+
+## Housekeeping
+
+- [ ] Delete the committed `*.ts-E` files in `app/src` (leftover backups from `sed -i -E` on macOS) and add `*-E` to [app/.gitignore](app/.gitignore).
+- [ ] Remove `imageUri` from the task model or ship the picture UI above. Either way, don't keep fields that no screen uses.
