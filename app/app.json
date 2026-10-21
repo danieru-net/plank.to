@@ -42,7 +42,8 @@
           "isIosReducedAccuracyByDefault": true
         }
       ],
-      "@react-native-community/datetimepicker"
+      "@react-native-community/datetimepicker",
+      "expo-mail-composer"
     ],
     "experiments": {
       "typedRoutes": true

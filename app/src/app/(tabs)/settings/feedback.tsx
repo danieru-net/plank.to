@@ -1,8 +1,11 @@
-import { Stack, useLocalSearchParams } from 'expo-router';
+import * as Clipboard from 'expo-clipboard';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { KeyboardAvoidingView, StyleSheet, View } from 'react-native';
 
+import { Button } from '@/components/Button';
 import { Card } from '@/components/Card';
+import { InlineNotice } from '@/components/InlineNotice';
 import { Screen } from '@/components/Screen';
 import { SectionLabel } from '@/components/SectionLabel';
 import { SegmentedControl } from '@/components/SegmentedControl';
@@ -12,6 +15,8 @@ import { ToggleRow } from '@/components/ToggleRow';
 import { useAppearance } from '@/features/appearance/context';
 import { diagnosticLines, readDeviceDetails } from '@/features/feedback/diagnostics';
 import { parseFeedbackKind, type FeedbackKind } from '@/features/feedback/feedbackKind';
+import { buildFeedbackMessage } from '@/features/feedback/feedbackMessage';
+import { sendFeedback } from '@/features/feedback/sendFeedback';
 import { FEEDBACK_EMAIL } from '@/features/feedback/support';
 
 const titles: Record<FeedbackKind, string> = {
@@ -32,7 +37,7 @@ const messagePrompts: Record<FeedbackKind, { label: string; hint: string }> = {
   problem: { label: 'What happened?', hint: 'Describe what you saw.' },
 };
 
-// The form for an idea, improvement or problem. Sending through the mail composer comes next.
+// The form for an idea, improvement or problem, sent through the user's own mail app.
 export default function FeedbackScreen() {
   const { settings, spacing } = useAppearance();
   const initialKind = parseFeedbackKind(useLocalSearchParams<{ kind?: string }>().kind);
@@ -40,8 +45,31 @@ export default function FeedbackScreen() {
   const [message, setMessage] = useState('');
   const [context, setContext] = useState('');
   const [includeDetails, setIncludeDetails] = useState(true);
+  const [sending, setSending] = useState(false);
+  const [noMailApp, setNoMailApp] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const router = useRouter();
   const details = useMemo(() => diagnosticLines(readDeviceDetails(settings)), [settings]);
   const prompt = messagePrompts[kind];
+  const canSend = message.trim().length > 0 && !sending;
+
+  async function send() {
+    setSending(true);
+    const email = buildFeedbackMessage({ kind, message, context, includeDetails }, details);
+    const outcome = await sendFeedback(FEEDBACK_EMAIL, email);
+    setSending(false);
+    setNoMailApp(outcome === 'unavailable');
+    if (outcome === 'sent') router.back();
+  }
+
+  async function copyAddress() {
+    try {
+      await Clipboard.setStringAsync(FEEDBACK_EMAIL);
+      setCopied(true);
+    } catch {
+      // The address stays on screen as selectable text.
+    }
+  }
 
   return (
     <KeyboardAvoidingView
@@ -108,10 +136,37 @@ export default function FeedbackScreen() {
           )}
         </View>
 
-        <View style={{ gap: spacing.xs }}>
-          <Text muted>Sending from the app is coming soon. Until then, you can email us at</Text>
-          <Text selectable accessibilityHint="Long press to copy the address">
-            {FEEDBACK_EMAIL}
+        {noMailApp ? (
+          <InlineNotice
+            title="No mail app found"
+            message="You can still email us yourself. Copy the address below, then paste your message into any email app."
+          >
+            <Text selectable accessibilityHint="Long press to copy the address">
+              {FEEDBACK_EMAIL}
+            </Text>
+            <Button
+              label={copied ? 'Address copied' : 'Copy address'}
+              icon={copied ? 'checkmark' : 'copy-outline'}
+              variant="secondary"
+              inline
+              onPress={copyAddress}
+              accessibilityLiveRegion="polite"
+            />
+          </InlineNotice>
+        ) : null}
+
+        <View style={{ gap: spacing.sm }}>
+          <Button
+            label={sending ? 'Opening mail…' : 'Open in mail app'}
+            icon="mail-outline"
+            disabled={!canSend}
+            onPress={send}
+            accessibilityHint="Opens your mail app with this message filled in"
+          />
+          <Text variant="caption" muted style={{ paddingHorizontal: spacing.md }}>
+            {message.trim()
+              ? 'Nothing is sent until you press Send in your mail app.'
+              : 'Write a message first.'}
           </Text>
         </View>
       </Screen>
