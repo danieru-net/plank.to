@@ -93,7 +93,7 @@ Feedback (Settings → Feedback) is the only way data reaches Plank, and only wh
 - The recipient sees the sender's email address (and name, if the mail app adds one) and the send time, as with any email. Use it only to read and reply; never add it to a mailing list.
 - The unsent draft is kept in the local preferences table (key `feedback.draft`) and removed once the composer reports Sent. Like other local data it may be in device backups.
 
-The privacy policy ("Feedback emails" in [privacy.astro](../web/src/pages/privacy.astro)) repeats this for users.
+The privacy policy ("Feedback emails" in [privacy.astro](../web/src/pages/privacy.astro)) repeats this for users. How incoming emails are labelled and reviewed is in [feedback-triage.md](feedback-triage.md).
 
 ## Verification (for task 4.9)
 

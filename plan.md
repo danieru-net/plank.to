@@ -28,7 +28,6 @@ Let users request features or report problems from inside the app without adding
 ### Tasks
 
 - [ ] Create the `feedback@plank.to` mailbox, confirm it receives mail, then set `mailboxLive` to `true` in [shared/support.json](shared/support.json). This is an owner task (it also completes 5.3).
-- [ ] Set up a lightweight triage process: label incoming emails as idea, improvement, or problem and review them during co-design and usability sessions.
 
 ## Audience: autistic people and people with ADHD
 
