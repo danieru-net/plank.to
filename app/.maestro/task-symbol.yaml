@@ -15,6 +15,7 @@ appId: to.plank.app
 - inputText: 'Maestro bath time'
 # The Done key, not hideKeyboard: its tap can land on "Choose a photo" and open the picker.
 - pressKey: Enter
+- tapOn: 'More options'
 - assertVisible: 'Choose a photo'
 - scrollUntilVisible:
     element: 'Bath'
@@ -27,6 +28,7 @@ appId: to.plank.app
 - assertVisible: 'Maestro bath time, Bath, any time. Edit'
 # Remove the symbol again
 - tapOn: 'Maestro bath time, Bath, any time. Edit'
+- tapOn: 'More options'
 - scrollUntilVisible:
     element: 'No symbol'
     centerElement: true
