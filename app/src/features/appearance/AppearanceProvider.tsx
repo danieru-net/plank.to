@@ -38,6 +38,7 @@ const keyFor = {
   haptics: 'display.haptics',
   taskActions: 'display.taskActions',
   picturesFirst: 'display.picturesFirst',
+  readAloud: 'display.readAloud',
 } as const;
 
 /** Loads saved appearance settings, applies them app-wide, and saves changes locally. */

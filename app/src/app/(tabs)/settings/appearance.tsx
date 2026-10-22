@@ -105,6 +105,12 @@ export default function AppearanceScreen() {
           checked={settings.picturesFirst}
           onChange={(picturesFirst) => update({ picturesFirst })}
         />
+        <ToggleRow
+          label="Read aloud"
+          description="Adds a Read aloud button to each task on Today. It speaks the title and notes, and you can stop it any time."
+          checked={settings.readAloud}
+          onChange={(readAloud) => update({ readAloud })}
+        />
       </Card>
 
       {error ? <InlineNotice tone="error" message={error} /> : null}

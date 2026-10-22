@@ -9,6 +9,7 @@ import type { Task } from '@/db/taskRepository';
 import { useAppearance } from '@/features/appearance/context';
 import { useFeedback } from '@/features/appearance/feedback';
 import { pictureLabel, TaskPicture } from '@/features/pictures/TaskPicture';
+import { ReadAloudButton } from '@/features/speech/ReadAloudButton';
 import { minTouchTarget, tint } from '@/theme';
 import { statusText } from './agenda';
 
@@ -200,6 +201,14 @@ export function TaskItem({
         ) : null}
         {handle}
       </View>
+
+      {settings.readAloud ? (
+        <View
+          style={[styles.actions, { paddingHorizontal: spacing.md, paddingBottom: spacing.sm }]}
+        >
+          <ReadAloudButton task={task} />
+        </View>
+      ) : null}
 
       {!compact ? (
         <View

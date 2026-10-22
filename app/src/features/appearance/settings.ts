@@ -16,6 +16,8 @@ export type AppearanceSettings = {
   taskActions: TaskActions;
   /** Shows a task's picture or symbol large, above its title. */
   picturesFirst: boolean;
+  /** Shows a Read aloud button on each task, which speaks its title and notes. */
+  readAloud: boolean;
 };
 
 export const textScaleOptions = [
@@ -49,6 +51,7 @@ export const defaultAppearance: AppearanceSettings = {
   haptics: true,
   taskActions: 'compact',
   picturesFirst: false,
+  readAloud: false,
 };
 
 /** Reads stored preference values, ignoring anything missing or invalid (defaults apply). */
@@ -60,6 +63,7 @@ export function parseAppearance(stored: Record<string, unknown>): AppearanceSett
   const haptics = stored['display.haptics'];
   const taskActions = stored['display.taskActions'];
   const picturesFirst = stored['display.picturesFirst'];
+  const readAloud = stored['display.readAloud'];
   return {
     textScale: textScaleOptions.some((o) => o.value === scale)
       ? (scale as number)
@@ -78,6 +82,7 @@ export function parseAppearance(stored: Record<string, unknown>): AppearanceSett
         : defaultAppearance.taskActions,
     picturesFirst:
       typeof picturesFirst === 'boolean' ? picturesFirst : defaultAppearance.picturesFirst,
+    readAloud: typeof readAloud === 'boolean' ? readAloud : defaultAppearance.readAloud,
   };
 }
 

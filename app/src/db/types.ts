@@ -93,6 +93,7 @@ export type PreferenceValues = {
   'display.haptics': boolean;
   'display.taskActions': 'compact' | 'buttons';
   'display.picturesFirst': boolean;
+  'display.readAloud': boolean;
   /** The user chose "Not now" on the reminder explanation shown on Today. */
   'reminders.promptDismissed': boolean;
   'reminders.defaultAdvanceMinutes': number;
