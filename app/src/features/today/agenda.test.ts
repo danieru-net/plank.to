@@ -1,5 +1,5 @@
 import type { Task } from '@/db/taskRepository';
-import { addDays, groupAgenda, nextTaskId, statusText } from './agenda';
+import { addDays, groupAgenda, moveItem, nextTaskId, statusText } from './agenda';
 
 function task(id: string, time: string | null, createdAt = 1): Task {
   return {
@@ -43,6 +43,22 @@ describe('groupAgenda', () => {
 
   it('returns empty groups for no tasks', () => {
     expect(groupAgenda([])).toEqual({ timed: [], untimed: [] });
+  });
+});
+
+describe('moveItem', () => {
+  it('moves an item up or down without changing the original', () => {
+    const items = ['a', 'b', 'c', 'd'];
+    expect(moveItem(items, 0, 2)).toEqual(['b', 'c', 'a', 'd']);
+    expect(moveItem(items, 3, 1)).toEqual(['a', 'd', 'b', 'c']);
+    expect(moveItem(items, 1, 1)).toEqual(items);
+    expect(items).toEqual(['a', 'b', 'c', 'd']);
+  });
+
+  it('clamps positions to the list', () => {
+    expect(moveItem(['a', 'b'], 0, 5)).toEqual(['b', 'a']);
+    expect(moveItem(['a', 'b'], 1, -1)).toEqual(['b', 'a']);
+    expect(moveItem([], 0, 1)).toEqual([]);
   });
 });
 

@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useFocusEffect, useRouter } from 'expo-router';
-import { useCallback, useState } from 'react';
+import { useCallback, useState, type ComponentProps } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { Button } from '@/components/Button';
@@ -18,9 +18,10 @@ import { createRoutineTasksForDate } from '@/features/routines/routineTasks';
 import { useRoutineRepository } from '@/features/routines/useRoutineRepository';
 import { toLocalDateString } from '@/features/tasks/taskForm';
 import { useTaskRepository } from '@/features/tasks/useTaskRepository';
-import { formatDateHeading, groupAgenda, nextTaskId } from '@/features/today/agenda';
+import { formatDateHeading, groupAgenda, moveItem, nextTaskId } from '@/features/today/agenda';
 import { TaskItem } from '@/features/today/TaskItem';
 import { TodaySummary } from '@/features/today/TodaySummary';
+import { useReorder } from '@/features/today/useReorder';
 import { minTouchTarget } from '@/theme';
 
 type Load = { status: 'loading' } | { status: 'error'; message: string } | { status: 'ready' };
@@ -80,7 +81,20 @@ export default function TodayScreen() {
   const nothingPlanned = tasks.length === 0;
   const allDone = !nothingPlanned && timed.length === 0 && untimed.length === 0;
 
-  const renderItem = (t: Task) => (
+  /** Shows the new order of the untimed tasks still to do straight away, then saves it. */
+  const moveUntimed = (from: number, to: number) => {
+    const order = moveItem(untimed, from, to);
+    setTasks((prev) => [...prev.filter((t) => !order.includes(t)), ...order]);
+    void act((r) =>
+      r.reorderUntimedTasks(
+        today,
+        order.map((t) => t.id),
+      ),
+    );
+  };
+  const reorder = useReorder({ onMove: moveUntimed });
+
+  const renderItem = (t: Task, extra?: Partial<ComponentProps<typeof TaskItem>>) => (
     <TaskItem
       key={t.id}
       task={t}
@@ -89,11 +103,23 @@ export default function TodayScreen() {
       onComplete={() => act((r) => r.completeTask(t.id))}
       onReopen={() => act((r) => r.reopenTask(t.id))}
       onDismiss={() => act((r) => r.dismissTask(t.id))}
+      {...extra}
     />
   );
 
+  const renderUntimed = (t: Task, i: number) =>
+    untimed.length < 2
+      ? renderItem(t)
+      : reorder.row(i, t.id, (handle) =>
+          renderItem(t, {
+            handle,
+            onMoveUp: i > 0 ? () => moveUntimed(i, i - 1) : undefined,
+            onMoveDown: i < untimed.length - 1 ? () => moveUntimed(i, i + 1) : undefined,
+          }),
+        );
+
   return (
-    <Screen contentContainerStyle={{ gap: spacing.lg }}>
+    <Screen contentContainerStyle={{ gap: spacing.lg }} scrollEnabled={!reorder.dragging}>
       <Stack.Screen
         options={{
           headerRight: () => (
@@ -134,10 +160,10 @@ export default function TodayScreen() {
       {load.status === 'ready' && !nothingPlanned ? (
         <>
           {timed.length > 0 ? (
-            <ListSection title="Scheduled">{timed.map(renderItem)}</ListSection>
+            <ListSection title="Scheduled">{timed.map((t) => renderItem(t))}</ListSection>
           ) : null}
           {untimed.length > 0 ? (
-            <ListSection title="Any time">{untimed.map(renderItem)}</ListSection>
+            <ListSection title="Any time">{untimed.map(renderUntimed)}</ListSection>
           ) : null}
           {allDone ? (
             <View style={[styles.closing, { gap: spacing.sm, paddingVertical: spacing.md }]}>
@@ -169,7 +195,7 @@ export default function TodayScreen() {
                   color={theme.textMuted}
                 />
               </Pressable>
-              {showDone ? <ListSection>{doneTasks.map(renderItem)}</ListSection> : null}
+              {showDone ? <ListSection>{doneTasks.map((t) => renderItem(t))}</ListSection> : null}
             </View>
           ) : null}
         </>

@@ -216,6 +216,56 @@ describe('task repository', () => {
     expect(await issuesOf(repo.listTasksForDate('nope'))).toEqual(['date']);
   });
 
+  it('keeps the order chosen for untimed tasks, with new ones after', async () => {
+    const { repo } = await setup();
+    const a = await repo.createTask({ ...base, title: 'a' });
+    const b = await repo.createTask({ ...base, title: 'b' });
+    const c = await repo.createTask({ ...base, title: 'c' });
+    await repo.createTask({ ...base, title: 'timed', time: '08:00' });
+    await repo.reorderUntimedTasks(base.date, [c.id, a.id]);
+    await repo.createTask({ ...base, title: 'd' });
+    const titles = async () => (await repo.listTasksForDate(base.date)).map((t) => t.title);
+    expect(await titles()).toEqual(['timed', 'c', 'a', 'b', 'd']);
+
+    // A subset keeps the other untimed tasks after it, in their current order.
+    await repo.reorderUntimedTasks(base.date, [b.id]);
+    expect(await titles()).toEqual(['timed', 'b', 'c', 'a', 'd']);
+  });
+
+  it('drops a task from the untimed order when it gets a time or moves day', async () => {
+    const { repo } = await setup();
+    const a = await repo.createTask({ ...base, title: 'a' });
+    const b = await repo.createTask({ ...base, title: 'b' });
+    const c = await repo.createTask({ ...base, title: 'c' });
+    await repo.reorderUntimedTasks(base.date, [c.id, b.id, a.id]);
+    const titles = async () => (await repo.listTasksForDate(base.date)).map((t) => t.title);
+
+    await repo.updateTask(b.id, { title: 'b2' });
+    expect(await titles()).toEqual(['c', 'b2', 'a']);
+
+    await repo.updateTask(c.id, { time: '09:00' });
+    await repo.updateTask(c.id, { time: null });
+    expect(await titles()).toEqual(['b2', 'a', 'c']);
+
+    await repo.updateTask(a.id, { date: '2026-10-20' });
+    await repo.updateTask(a.id, { date: base.date });
+    // Neither a nor c has a place now, so they follow b2 oldest first.
+    expect(await titles()).toEqual(['b2', 'a', 'c']);
+  });
+
+  it('rejects reordering with tasks that are not untimed on that day', async () => {
+    const { repo } = await setup();
+    const a = await repo.createTask({ ...base, title: 'a' });
+    const timed = await repo.createTask({ ...base, title: 'timed', time: '08:00' });
+    const other = await repo.createTask({ ...base, title: 'other', date: '2026-10-20' });
+    for (const ids of [[timed.id], [other.id], ['missing'], [a.id, a.id]]) {
+      await expect(repo.reorderUntimedTasks(base.date, ids)).rejects.toMatchObject({
+        code: 'not_found',
+      });
+    }
+    expect(await issuesOf(repo.reorderUntimedTasks('nope', [a.id]))).toEqual(['date']);
+  });
+
   it('wraps database failures as query_failed', async () => {
     const failing = createTaskRepository({
       runAsync: async () => {

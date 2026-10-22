@@ -28,6 +28,17 @@ export function groupAgenda(tasks: Task[]): AgendaGroups {
   return { timed, untimed };
 }
 
+/** Returns a copy of `items` with the item at `from` moved to `to` (both clamped to the list). */
+export function moveItem<T>(items: T[], from: number, to: number): T[] {
+  const last = items.length - 1;
+  const source = Math.min(Math.max(from, 0), last);
+  const target = Math.min(Math.max(to, 0), last);
+  const next = [...items];
+  const [item] = next.splice(source, 1);
+  if (item !== undefined) next.splice(target, 0, item);
+  return next;
+}
+
 export function statusText(status: Task['status']): string | null {
   if (status === 'completed') return 'Done';
   if (status === 'dismissed') return 'Dismissed';

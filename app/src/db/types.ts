@@ -29,6 +29,8 @@ export type TaskRow = Timestamps &
     /** Set when the task was generated from a routine. */
     routine_id: Id | null;
     routine_occurrence_date: LocalDate | null;
+    /** Order among the day's untimed tasks, set when the person reorders them. */
+    position: number | null;
   };
 
 export type RoutineRow = Timestamps &

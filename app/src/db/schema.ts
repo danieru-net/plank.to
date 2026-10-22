@@ -186,6 +186,12 @@ export const migrations: Migration[] = [
       `ALTER TABLE routines ADD COLUMN symbol TEXT`,
     ],
   },
+  {
+    version: 7,
+    description: 'Let people put untimed tasks in their own order',
+    // NULL means "not reordered yet": those tasks follow ordered ones, oldest first.
+    statements: [`ALTER TABLE tasks ADD COLUMN position INTEGER`],
+  },
 ];
 
 export const SCHEMA_VERSION = migrations[migrations.length - 1].version;

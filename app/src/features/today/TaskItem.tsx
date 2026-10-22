@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { ActionSheetIOS, Alert, Pressable, StyleSheet, View } from 'react-native';
 import Animated, { LinearTransition, ZoomIn } from 'react-native-reanimated';
 
@@ -20,6 +20,11 @@ type Props = {
   onComplete: () => void;
   onReopen: () => void;
   onDismiss: () => void;
+  /** Set for untimed tasks still to do that can move up or down in the list. */
+  onMoveUp?: () => void;
+  onMoveDown?: () => void;
+  /** A drag handle shown at the end of the row, for tasks that can be reordered. */
+  handle?: ReactNode;
 };
 
 /** How long the filled check shows before the task moves to Done, when motion is on. */
@@ -31,7 +36,17 @@ const SETTLE_MS = 350;
  * actions" setting: a check circle plus a menu, or labelled buttons. Either way the same actions
  * are offered to screen readers as named actions on the row.
  */
-export function TaskItem({ task, next, onOpen, onComplete, onReopen, onDismiss }: Props) {
+export function TaskItem({
+  task,
+  next,
+  onOpen,
+  onComplete,
+  onReopen,
+  onDismiss,
+  onMoveUp,
+  onMoveDown,
+  handle,
+}: Props) {
   const { palette: theme, spacing, settings, motion } = useAppearance();
   const feedback = useFeedback();
   const status = statusText(task.status);
@@ -53,6 +68,8 @@ export function TaskItem({ task, next, onOpen, onComplete, onReopen, onDismiss }
   const openMenu = () => {
     const items: { label: string; run: () => void }[] = [];
     if (editable) items.push({ label: 'Edit', run: onOpen });
+    if (onMoveUp) items.push({ label: 'Move up', run: onMoveUp });
+    if (onMoveDown) items.push({ label: 'Move down', run: onMoveDown });
     if (pending) items.push({ label: 'Dismiss for today', run: onDismiss });
     else items.push({ label: `Undo ${status?.toLowerCase()}`, run: onReopen });
     if (process.env.EXPO_OS === 'ios') {
@@ -116,11 +133,15 @@ export function TaskItem({ task, next, onOpen, onComplete, onReopen, onDismiss }
                   { name: 'dismiss', label: 'Dismiss for today' },
                 ]
               : [{ name: 'reopen', label: 'Undo' }]),
+            ...(onMoveUp ? [{ name: 'moveUp', label: 'Move up' }] : []),
+            ...(onMoveDown ? [{ name: 'moveDown', label: 'Move down' }] : []),
           ]}
           onAccessibilityAction={(e) => {
             if (e.nativeEvent.actionName === 'complete') onComplete();
             if (e.nativeEvent.actionName === 'dismiss') onDismiss();
             if (e.nativeEvent.actionName === 'reopen') onReopen();
+            if (e.nativeEvent.actionName === 'moveUp') onMoveUp?.();
+            if (e.nativeEvent.actionName === 'moveDown') onMoveDown?.();
           }}
           disabled={!editable}
           onPress={onOpen}
@@ -177,6 +198,7 @@ export function TaskItem({ task, next, onOpen, onComplete, onReopen, onDismiss }
             <Ionicons name="ellipsis-horizontal" size={20} color={theme.textMuted} />
           </Pressable>
         ) : null}
+        {handle}
       </View>
 
       {!compact ? (
@@ -203,6 +225,26 @@ export function TaskItem({ task, next, onOpen, onComplete, onReopen, onDismiss }
                 inline
                 onPress={onDismiss}
               />
+              {onMoveUp ? (
+                <Button
+                  label="Move up"
+                  icon="arrow-up"
+                  variant="secondary"
+                  accessibilityLabel={`Move ${task.title} up`}
+                  inline
+                  onPress={onMoveUp}
+                />
+              ) : null}
+              {onMoveDown ? (
+                <Button
+                  label="Move down"
+                  icon="arrow-down"
+                  variant="secondary"
+                  accessibilityLabel={`Move ${task.title} down`}
+                  inline
+                  onPress={onMoveDown}
+                />
+              ) : null}
             </>
           ) : (
             <Button
