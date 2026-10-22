@@ -1,0 +1,46 @@
+# Put "Any time" tasks in a new order with "Move up", and check the order is kept after a restart.
+# Starts from the seeded state, which has one untimed task. Dragging is checked by hand
+# (docs/device-test-checklist.md).
+appId: to.plank.app
+---
+- runFlow:
+    file: helpers/launch.yaml
+    env:
+      SCENARIO: seeded
+- scrollUntilVisible:
+    element: 'Add a task'
+    centerElement: true
+- tapOn: 'Add a task'
+- assertVisible: 'New task'
+- tapOn: 'What would you like to do?'
+- inputText: 'Maestro water plants'
+- pressKey: Enter
+- scrollUntilVisible:
+    element: 'Save task'
+    centerElement: true
+- tapOn: 'Save task'
+# New untimed tasks go to the end of "Any time".
+- scrollUntilVisible:
+    element: 'Maestro water plants, any time. Edit'
+    centerElement: true
+- assertVisible:
+    text: 'Maestro water plants, any time. Edit'
+    below: 'Seed: Call the dentist, any time. Edit'
+- tapOn: 'More actions for Maestro water plants'
+- assertNotVisible: 'Move down'
+- tapOn: 'Move up'
+- assertVisible:
+    text: 'Seed: Call the dentist, any time. Edit'
+    below: 'Maestro water plants, any time. Edit'
+# The order is saved, not only shown.
+- stopApp
+- runFlow:
+    file: helpers/connect.yaml
+    env:
+      READY: 'Maestro water plants, any time. Edit'
+- scrollUntilVisible:
+    element: 'Seed: Call the dentist, any time. Edit'
+    centerElement: true
+- assertVisible:
+    text: 'Seed: Call the dentist, any time. Edit'
+    below: 'Maestro water plants, any time. Edit'

@@ -95,6 +95,16 @@ Automated coverage: `features/pictures/` (which files the app may delete), the t
 - [ ] Settings > Appearance > Pictures first: the preview and Today show the picture large above the title, at every text size, and done tasks fade their picture.
 - [ ] VoiceOver and TalkBack: the symbols read as a radio group named "Symbol" with each symbol's name and the selected one; a task row reads its symbol's name after the title; photos are not read on their own.
 
+## Reordering "Any time" tasks
+
+Automated coverage: the task repository tests (saved order, new tasks at the end, a task leaving the order when it gets a time or moves day), `agenda.test.ts` (`moveItem`), and the Maestro flow `task-reorder` ("Move up" from the menu, order kept after a restart). Dragging by the handle was tried once with a Maestro swipe on the iOS simulator. Still to check by hand:
+
+- [ ] Drag a task by its handle on a real iPhone and Android phone: the row follows the finger, the other rows make room, the page does not scroll while dragging, and the new order stays after letting go.
+- [ ] Drag with "Haptic feedback" on and off: a light tap when the drag starts and when the row passes another, and nothing when it is off.
+- [ ] With "Task actions" set to labelled buttons, "Move up" and "Move down" show under each "Any time" task (no "Move up" on the first, no "Move down" on the last) and work.
+- [ ] VoiceOver and TalkBack: the handle is not read out, and the row's actions include "Move up" and "Move down".
+- [ ] With large text, the handle and buttons still fit and the row can still be dragged.
+
 ## Feedback screen
 
 Open Settings > Feedback > Suggest a feature or improvement (and Report a problem). Static fixes are described in done.md. These still need a person:

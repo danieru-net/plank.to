@@ -74,6 +74,18 @@ describe('migrate', () => {
     expect(columns.map((c) => c.name)).toContain('symbol');
   });
 
+  it('adds an empty position column to existing tasks', async () => {
+    const { raw, db } = newDb();
+    await migrate(db, migrations.slice(0, 6));
+    raw.exec(
+      "INSERT INTO tasks (id, title, date, created_at, updated_at) VALUES ('t1', 'Keep me', '2026-01-01', 1, 1)",
+    );
+    await migrate(db);
+    expect(raw.prepare('SELECT title, position FROM tasks').all()).toEqual([
+      { title: 'Keep me', position: null },
+    ]);
+  });
+
   it('rolls back a failing migration and reports a StorageError', async () => {
     const { raw, db } = newDb();
     await migrate(db, migrations.slice(0, 1));

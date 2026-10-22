@@ -240,12 +240,15 @@ export function createTaskRepository(db: TaskDb, options: RepositoryOptions = {}
       ...patch,
     });
     const ts = now();
+    // A task that moves to another day or gets a time leaves its place in the untimed order.
+    const keepPosition = v.date === current.date && v.time === null;
     try {
       await db.withTransactionAsync(async () => {
         await db.runAsync(
           `UPDATE tasks SET title = ?, notes = ?, date = ?, time = ?, symbol = ?,
              image_uri = ?,
-             reminder_enabled = ?, reminder_advance_minutes = ?, updated_at = ?
+             reminder_enabled = ?, reminder_advance_minutes = ?, updated_at = ?,
+             position = CASE WHEN ? THEN position END
            WHERE id = ?`,
           [
             v.title,
@@ -257,6 +260,7 @@ export function createTaskRepository(db: TaskDb, options: RepositoryOptions = {}
             v.reminderEnabled ? 1 : 0,
             v.reminderAdvanceMinutes,
             ts,
+            keepPosition ? 1 : 0,
             id,
           ],
         );
@@ -297,17 +301,45 @@ export function createTaskRepository(db: TaskDb, options: RepositoryOptions = {}
         throw queryFailed(e);
       }
     },
-    /** Tasks for one day: timed tasks in time order, then untimed tasks, oldest first. */
+    /**
+     * Tasks for one day: timed tasks in time order, then untimed tasks in the order the person
+     * chose. Untimed tasks that were never reordered come last, oldest first.
+     */
     async listTasksForDate(date: LocalDate): Promise<Task[]> {
       if (!isRealDate(date))
         throw new ValidationError([{ field: 'date', message: 'Choose a valid date.' }]);
       try {
         const rows = await db.getAllAsync<TaskRow>(
           `SELECT * FROM tasks WHERE date = ?
-           ORDER BY time IS NULL, time, created_at, id`,
+           ORDER BY time IS NULL, time, position IS NULL, position, created_at, id`,
           [date],
         );
         return toTasks(rows);
+      } catch (e) {
+        throw queryFailed(e);
+      }
+    },
+    /**
+     * Saves the order of a day's untimed tasks. `ids` may be a subset (such as the tasks still to
+     * do); the day's other untimed tasks keep their relative order after them.
+     */
+    async reorderUntimedTasks(date: LocalDate, ids: Id[]): Promise<void> {
+      if (!isRealDate(date))
+        throw new ValidationError([{ field: 'date', message: 'Choose a valid date.' }]);
+      try {
+        const rows = await db.getAllAsync<{ id: Id }>(
+          `SELECT id FROM tasks WHERE date = ? AND time IS NULL
+           ORDER BY position IS NULL, position, created_at, id`,
+          [date],
+        );
+        const existing = rows.map((r) => r.id);
+        if (new Set(ids).size !== ids.length || ids.some((id) => !existing.includes(id)))
+          throw notFound();
+        const order = [...ids, ...existing.filter((id) => !ids.includes(id))];
+        await db.withTransactionAsync(async () => {
+          for (const [i, id] of order.entries())
+            await db.runAsync('UPDATE tasks SET position = ? WHERE id = ?', [i, id]);
+        });
       } catch (e) {
         throw queryFailed(e);
       }

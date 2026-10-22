@@ -41,7 +41,6 @@ Widen the stated audience from autistic people to also include people with ADHD 
 
 ### Tasks
 
-- [ ] Add **reordering** for untimed tasks (drag plus accessible "Move up" and "Move down" actions), as the README promises.
 - [ ] Add a **"What changed" notice**: when a routine occurrence was moved, edited or skipped, Today shows a calm note at the top ("Swimming moved to 17:00 today") so changes are never a surprise.
 - [ ] Add **read aloud** (`expo-speech`) for a task's title and steps, for people who prefer listening, younger users, and anyone who finds reading tiring.
 - [ ] Add an optional, gentle **completion moment** (a short check animation and sound, or nothing). Off by default, never a streak or score, and it follows the Animations and Haptics settings.
