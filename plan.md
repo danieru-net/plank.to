@@ -35,6 +35,23 @@ Widen the stated audience from autistic people to also include people with ADHD 
 
 ### Decisions
 
+- Name themes by look, not by who they're for: "Playful (bright colors)" and "Blossom (pink)". Anyone can pick either, which matches the project's rule of never assuming things about people by gender.
+- Both themes must pass `npm run check:contrast` in light and dark mode. Bright does not mean low contrast.
+- Playful can also change shape (rounder corners, larger icons), but must not add motion beyond what the Animations setting allows.
+
+### Tasks
+
+- [ ] Extend the theme model in [colors.ts](app/src/theme/colors.ts) so a theme can override the whole `Palette` per scheme, not just the accent. Make sure `resolvePalette` and `allPalettes` cover the new themes.
+- [ ] Add a **Blossom** theme: soft pink background (e.g. `#FFF4F7`), white surface, deep rose primary (e.g. `#A3335F`) for light mode, and a dark plum/rose variant for dark mode. Check every pair in `contrastRequirements`.
+- [ ] Add a **Playful** theme: warm light background, white surface, strong blue or violet primary, with a secondary accent color used only for decoration, never as the only cue. Provide a dark variant.
+- [ ] Add optional shape tokens (`radius.card`, `radius.button`, icon size) to [tokens.ts](app/src/theme/tokens.ts) so Playful can use rounder cards and larger icons; [Card.tsx](app/src/components/Card.tsx) and [Button.tsx](app/src/components/Button.tsx) read them from appearance context.
+- [ ] Update the Swatch and Preview in [appearance.tsx](app/src/app/(tabs)/settings/appearance.tsx) to show the tinted background and shape, so people can judge a theme before choosing it.
+- [ ] Add unit tests in [settings.test.ts](app/src/features/appearance/settings.test.ts) and [contrast.test.ts](app/src/theme/contrast.test.ts) for parsing the new theme values and checking their contrast, and extend [visual-preferences.yaml](app/.maestro/visual-preferences.yaml) to switch to each new theme.
+- [ ] Add screenshots of both themes to [docs/release/screenshots.md](docs/release/screenshots.md).
+
+
+### Decisions
+
 - Name ADHD next to autism in the README, the store listing, and the website. Make no clinical or therapeutic claims.
 - New supports are off by default unless co-design shows a default helps most people. Each can be turned off on its own.
 - Keep the existing tone rules: no streaks, no shame, no countdowns that read as pressure, and no repeated nagging.
@@ -53,21 +70,7 @@ Widen the stated audience from autistic people to also include people with ADHD 
 
 Add two full-palette themes. The current accent themes (`sage`, `plum`, `clay`) only replace `primary`/`onPrimary`/`focus`. These two also tint `background`, `surface` and `separator`, so they need full light and dark palettes in [colors.ts](app/src/theme/colors.ts).
 
-### Decisions
 
-- Name themes by look, not by who they're for: "Playful (bright colors)" and "Blossom (pink)". Anyone can pick either, which matches the project's rule of never assuming things about people by gender.
-- Both themes must pass `npm run check:contrast` in light and dark mode. Bright does not mean low contrast.
-- Playful can also change shape (rounder corners, larger icons), but must not add motion beyond what the Animations setting allows.
-
-### Tasks
-
-- [ ] Extend the theme model in [colors.ts](app/src/theme/colors.ts) so a theme can override the whole `Palette` per scheme, not just the accent. Make sure `resolvePalette` and `allPalettes` cover the new themes.
-- [ ] Add a **Blossom** theme: soft pink background (e.g. `#FFF4F7`), white surface, deep rose primary (e.g. `#A3335F`) for light mode, and a dark plum/rose variant for dark mode. Check every pair in `contrastRequirements`.
-- [ ] Add a **Playful** theme: warm light background, white surface, strong blue or violet primary, with a secondary accent color used only for decoration, never as the only cue. Provide a dark variant.
-- [ ] Add optional shape tokens (`radius.card`, `radius.button`, icon size) to [tokens.ts](app/src/theme/tokens.ts) so Playful can use rounder cards and larger icons; [Card.tsx](app/src/components/Card.tsx) and [Button.tsx](app/src/components/Button.tsx) read them from appearance context.
-- [ ] Update the Swatch and Preview in [appearance.tsx](app/src/app/(tabs)/settings/appearance.tsx) to show the tinted background and shape, so people can judge a theme before choosing it.
-- [ ] Add unit tests in [settings.test.ts](app/src/features/appearance/settings.test.ts) and [contrast.test.ts](app/src/theme/contrast.test.ts) for parsing the new theme values and checking their contrast, and extend [visual-preferences.yaml](app/.maestro/visual-preferences.yaml) to switch to each new theme.
-- [ ] Add screenshots of both themes to [docs/release/screenshots.md](docs/release/screenshots.md).
 
 ## Kids and caregiver support
 
