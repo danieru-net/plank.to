@@ -5,6 +5,7 @@ import { StyleSheet, View } from 'react-native';
 import { ListRow, ListSection } from '@/components/List';
 import { Screen } from '@/components/Screen';
 import { useAppearance } from '@/features/appearance/context';
+import { CaregiverGuard } from '@/features/caregiver/CaregiverGate';
 import { visibleFeatures } from '@/features/appearance/simpleMode';
 import { radius } from '@/theme';
 
@@ -34,6 +35,12 @@ const pages: Page[] = [
     icon: 'partly-sunny-outline',
     href: '/settings/weather',
   },
+  {
+    title: 'Caregiver lock',
+    subtitle: 'Ask a grown-up question before Settings and editing',
+    icon: 'lock-closed-outline',
+    href: '/settings/caregiver',
+  },
 ];
 
 const feedbackPages: Page[] = [
@@ -52,6 +59,14 @@ const feedbackPages: Page[] = [
 ];
 
 export default function SettingsScreen() {
+  return (
+    <CaregiverGuard what="Settings">
+      <SettingsList />
+    </CaregiverGuard>
+  );
+}
+
+function SettingsList() {
   const router = useRouter();
   const { palette: theme, spacing, settings } = useAppearance();
   const visible = visibleFeatures(settings.simpleMode);

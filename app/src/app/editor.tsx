@@ -24,10 +24,20 @@ import { useReconcileReminders } from '@/features/notifications/useReminderRecon
 import { PictureField, usePictureCleanup } from '@/features/pictures/PictureField';
 import { useTaskRepository } from '@/features/tasks/useTaskRepository';
 import { useAppearance } from '@/features/appearance/context';
+import { CaregiverGuard } from '@/features/caregiver/CaregiverGate';
 
 type Params = { id?: string };
 
 export default function EditorScreen() {
+  const router = useRouter();
+  return (
+    <CaregiverGuard what="Editing tasks" sticky onCancel={() => router.back()}>
+      <EditorScreenForm />
+    </CaregiverGuard>
+  );
+}
+
+function EditorScreenForm() {
   const { id } = useLocalSearchParams<Params>();
   const router = useRouter();
   const { spacing } = useAppearance();

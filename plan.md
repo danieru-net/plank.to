@@ -63,7 +63,6 @@ If children are a target audience, the app needs a caregiver setup flow, and the
 
 ### Tasks
 
-- [ ] Add an optional **caregiver lock**: a simple parental gate (e.g. hold a button and answer a question) before Settings, routine editing and deleting, so a child can complete tasks without changing the schedule by accident.
 - [ ] Add a **picture-first kids layout** option: large picture cards, read-aloud on tap, labelled Complete buttons, and no text-only rows.
 - [ ] Add a help page for caregivers on [help.astro](web/src/pages/help.astro) covering how to set up routines, pictures and the caregiver lock together with the child.
 

@@ -98,6 +98,8 @@ export type PreferenceValues = {
   'display.simpleMode': boolean;
   'display.font': 'system' | 'readable';
   'display.moreLineSpacing': boolean;
+  /** The optional caregiver lock is on. Whether it is currently unlocked is never stored. */
+  'caregiver.lockEnabled': boolean;
   /** The user chose "Not now" on the reminder explanation shown on Today. */
   'reminders.promptDismissed': boolean;
   'reminders.defaultAdvanceMinutes': number;
