@@ -23,6 +23,9 @@ import { useFeedbackDraft } from '@/features/feedback/useFeedbackDraft';
 
 // Shown once after the mail composer reports Sent, with no follow-up prompts or rating requests.
 const SENT_TITLE = 'Thanks — we read every message';
+const UNAVAILABLE_TITLE = 'No mail app found';
+const UNAVAILABLE_MESSAGE =
+  'You can still email us yourself. Copy the address below, then paste your message into any email app.';
 
 const titles: Record<FeedbackKind, string> = {
   idea: 'Suggest an idea',
@@ -90,6 +93,9 @@ export default function FeedbackScreen() {
     if (result === 'sent') {
       draft.clear();
       AccessibilityInfo.announceForAccessibility(SENT_TITLE);
+    } else if (result === 'unavailable') {
+      // The notice appears above the button, behind the screen reader's focus, so read it out.
+      AccessibilityInfo.announceForAccessibility(`${UNAVAILABLE_TITLE}. ${UNAVAILABLE_MESSAGE}`);
     }
   }
 
@@ -97,6 +103,7 @@ export default function FeedbackScreen() {
     try {
       await Clipboard.setStringAsync(FEEDBACK_EMAIL);
       setCopied(true);
+      AccessibilityInfo.announceForAccessibility('Address copied');
     } catch {
       // The address stays on screen as selectable text.
     }
@@ -118,13 +125,20 @@ export default function FeedbackScreen() {
     );
   }
 
+  // iOS insets the scroll view by the keyboard and keeps the focused field in view. Android draws
+  // edge to edge, so the window may not resize for the keyboard; padding makes room instead.
   return (
     <KeyboardAvoidingView
       style={styles.fill}
-      behavior={process.env.EXPO_OS === 'ios' ? 'padding' : undefined}
+      behavior="padding"
+      enabled={process.env.EXPO_OS === 'android'}
     >
       <Stack.Screen options={{ title: titles[kind] }} />
-      <Screen contentContainerStyle={{ gap: spacing.lg }}>
+      <Screen
+        contentContainerStyle={{ gap: spacing.lg }}
+        automaticallyAdjustKeyboardInsets
+        keyboardDismissMode="interactive"
+      >
         <View style={{ gap: spacing.sm }}>
           <SectionLabel>Type</SectionLabel>
           <SegmentedControl
@@ -184,10 +198,7 @@ export default function FeedbackScreen() {
         </View>
 
         {outcome === 'unavailable' ? (
-          <InlineNotice
-            title="No mail app found"
-            message="You can still email us yourself. Copy the address below, then paste your message into any email app."
-          >
+          <InlineNotice title={UNAVAILABLE_TITLE} message={UNAVAILABLE_MESSAGE}>
             <Text selectable accessibilityHint="Long press to copy the address">
               {FEEDBACK_EMAIL}
             </Text>
@@ -197,7 +208,6 @@ export default function FeedbackScreen() {
               variant="secondary"
               inline
               onPress={copyAddress}
-              accessibilityLiveRegion="polite"
             />
           </InlineNotice>
         ) : null}
@@ -208,7 +218,11 @@ export default function FeedbackScreen() {
             icon="mail-outline"
             disabled={!canSend}
             onPress={send}
-            accessibilityHint="Opens your mail app with this message filled in"
+            accessibilityHint={
+              message.trim()
+                ? 'Opens your mail app with this message filled in'
+                : 'Write a message first'
+            }
           />
           <Text variant="caption" muted style={{ paddingHorizontal: spacing.md }}>
             {outcome === 'handedOff'

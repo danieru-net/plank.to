@@ -81,3 +81,16 @@ Static guards are in `app/src/accessibility.test.ts`. Still needed on devices:
 - [ ] Contrast in light, dark, and every color scheme, outdoors brightness and with Increase Contrast on.
 - [ ] State is understandable in grayscale or with color filters (selected, completed, paused, errors).
 - [ ] Reduce Motion and Bold Text on iOS do not break layout. Native Alert dialogs (delete confirmations) are announced and focus returns afterward.
+
+## Feedback screen
+
+Open Settings > Feedback > Suggest a feature or improvement (and Report a problem). Static fixes are described in done.md. These still need a person:
+
+- [ ] VoiceOver and TalkBack: each text field is read once, as its label then its hint (the visible label and hint above it are skipped). The type control reads as "Feedback type" with Idea, Improvement and Problem as radio buttons, one selected.
+- [ ] With the message empty, "Open in mail app" reads as dimmed or disabled with the hint "Write a message first". After typing, the hint is "Opens your mail app with this message filled in".
+- [ ] "Include device details" reads as a switch with its on/off state and description. With it on, the details card reads as one item listing every detail.
+- [ ] Focus order follows the screen: type, message, (for problems) "What were you trying to do?", device details, the button, the note under it.
+- [ ] With no mail account set up, pressing the button reads out "No mail app found" and the message. "Copy address" then reads out "Address copied".
+- [ ] After sending from the mail composer (iOS), "Thanks — we read every message" is read out and Done returns to Settings.
+- [ ] Largest text size (in-app Largest plus system Accessibility sizes): the type options stack one per line, no label breaks mid-word, and the details card wraps without overlap.
+- [ ] Keyboard: the field being typed in stays visible above the keyboard, including the optional second field for problems, and the screen can still scroll to the button with the keyboard open. Drag down to dismiss on iOS. Check on Android 15+ (edge to edge) and an older Android version.
