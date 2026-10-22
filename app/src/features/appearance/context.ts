@@ -3,8 +3,14 @@ import { useColorScheme } from 'react-native';
 import { useReducedMotion } from 'react-native-reanimated';
 
 import { resolvePalette, schemeFor, type ColorScheme, type Palette } from '@/theme/colors';
-import { maxFontSizeMultiplier } from '@/theme/tokens';
-import { defaultAppearance, spacingFor, type AppearanceSettings, type Spacing } from './settings';
+import { maxFontSizeMultiplier, type Shape } from '@/theme/tokens';
+import {
+  defaultAppearance,
+  shapeFor,
+  spacingFor,
+  type AppearanceSettings,
+  type Spacing,
+} from './settings';
 
 export type Appearance = {
   settings: AppearanceSettings;
@@ -12,6 +18,8 @@ export type Appearance = {
   /** Whether the chosen colors are light or dark. */
   scheme: ColorScheme;
   spacing: Spacing;
+  /** Corner radii and icon size for the chosen color theme. */
+  shape: Shape;
   /** Cap for system text scaling so in-app size times system size stays within the overall cap. */
   maxFontMultiplier: number;
   /** False when the user turned animations off, or chose "Match device" and the device reduces motion. */
@@ -28,6 +36,7 @@ export function buildAppearance(
     palette: resolvePalette(settings.colorTheme, systemScheme),
     scheme: schemeFor(settings.colorTheme, systemScheme),
     spacing: spacingFor(settings.density),
+    shape: shapeFor(settings.colorTheme),
     maxFontMultiplier: Math.max(1, maxFontSizeMultiplier / settings.textScale),
     motion: settings.motion === 'on' || (settings.motion === 'system' && !systemReducesMotion),
   };

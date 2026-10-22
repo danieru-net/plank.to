@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { Text } from './Text';
 import { useAppearance } from '@/features/appearance/context';
 import { useFeedback } from '@/features/appearance/feedback';
-import { minTouchTarget, radius, tint } from '@/theme';
+import { minTouchTarget, tint } from '@/theme';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -35,7 +35,7 @@ export function Button({
   onPress,
   ...rest
 }: Props) {
-  const { palette: theme, spacing, motion } = useAppearance();
+  const { palette: theme, spacing, motion, shape } = useAppearance();
   const feedback = useFeedback();
   const [pressed, setPressed] = useState(false);
   const plain = variant === 'plain' || variant === 'plainDanger';
@@ -81,7 +81,7 @@ export function Button({
         alignSelf: inline ? 'flex-start' : undefined,
         paddingVertical: spacing.sm,
         paddingHorizontal: plain ? spacing.sm : spacing.md,
-        borderRadius: radius.md,
+        borderRadius: shape.radius.button,
         borderCurve: 'continuous',
         flexDirection: 'row',
         gap: spacing.sm,
@@ -96,7 +96,7 @@ export function Button({
         transitionTimingFunction: cubicBezier(0.23, 1, 0.32, 1),
       }}
     >
-      {icon ? <Ionicons name={icon} size={20} color={foreground} /> : null}
+      {icon ? <Ionicons name={icon} size={shape.iconSize} color={foreground} /> : null}
       <Text variant="bodyStrong" style={{ color: foreground }}>
         {label}
       </Text>

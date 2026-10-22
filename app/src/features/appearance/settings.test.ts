@@ -1,6 +1,6 @@
-import { allPalettes } from '@/theme/colors';
+import { allPalettes, colorThemes } from '@/theme/colors';
 import { spacing } from '@/theme/tokens';
-import { defaultAppearance, parseAppearance, spacingFor } from './settings';
+import { defaultAppearance, parseAppearance, shapeFor, spacingFor } from './settings';
 
 describe('parseAppearance', () => {
   it('uses defaults when nothing is stored', () => {
@@ -51,6 +51,18 @@ describe('spacingFor', () => {
     const compact = spacingFor('compact');
     expect(compact.md).toBeLessThan(spacing.md);
     expect(compact.xs).toBeGreaterThan(0);
+  });
+});
+
+describe('shapeFor', () => {
+  it('keeps the original shape for every theme except Playful', () => {
+    for (const theme of colorThemes.filter((t) => t !== 'playful')) {
+      expect(shapeFor(theme)).toEqual({ radius: { card: 20, button: 12 }, iconSize: 20 });
+    }
+  });
+
+  it('gives Playful rounder corners and larger icons', () => {
+    expect(shapeFor('playful')).toEqual({ radius: { card: 28, button: 24 }, iconSize: 24 });
   });
 });
 

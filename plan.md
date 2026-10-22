@@ -40,7 +40,6 @@ Widen the stated audience from autistic people to also include people with ADHD 
 
 ### Tasks
 
-- [ ] Add optional shape tokens (`radius.card`, `radius.button`, icon size) to [tokens.ts](app/src/theme/tokens.ts) so Playful can use rounder cards and larger icons; [Card.tsx](app/src/components/Card.tsx) and [Button.tsx](app/src/components/Button.tsx) read them from appearance context.
 - [ ] Update the Swatch and Preview in [appearance.tsx](app/src/app/(tabs)/settings/appearance.tsx) to show the tinted background and shape, so people can judge a theme before choosing it.
 - [ ] Add unit tests in [settings.test.ts](app/src/features/appearance/settings.test.ts) and [contrast.test.ts](app/src/theme/contrast.test.ts) for parsing the new theme values and checking their contrast, and extend [visual-preferences.yaml](app/.maestro/visual-preferences.yaml) to switch to each new theme.
 - [ ] Add screenshots of both themes to [docs/release/screenshots.md](docs/release/screenshots.md).

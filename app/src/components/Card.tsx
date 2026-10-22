@@ -1,7 +1,7 @@
 import { View, type ViewProps } from 'react-native';
 
 import { useAppearance } from '@/features/appearance/context';
-import { cardShadow, radius } from '@/theme';
+import { cardShadow } from '@/theme';
 
 type Props = ViewProps & {
   /** No padding or gap, for grouped lists whose rows bring their own padding. */
@@ -10,7 +10,7 @@ type Props = ViewProps & {
 
 /** Raised surface: soft shadow in light, tonal lift in dark. No heavy outline. */
 export function Card({ style, flush = false, ...rest }: Props) {
-  const { palette: theme, spacing, scheme } = useAppearance();
+  const { palette: theme, spacing, scheme, shape } = useAppearance();
   const dark = scheme === 'dark';
   return (
     <View
@@ -18,7 +18,7 @@ export function Card({ style, flush = false, ...rest }: Props) {
       style={[
         {
           backgroundColor: theme.surface,
-          borderRadius: radius.lg,
+          borderRadius: shape.radius.card,
           borderCurve: 'continuous',
           padding: flush ? 0 : spacing.md,
           gap: flush ? 0 : spacing.sm,
