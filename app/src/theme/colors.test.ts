@@ -1,0 +1,39 @@
+import { allPalettes, colorThemes, palettes, resolvePalette } from './colors';
+
+describe('resolvePalette', () => {
+  it('uses the base palette for system, light and dark', () => {
+    expect(resolvePalette('system', 'dark')).toEqual(palettes.dark);
+    expect(resolvePalette('light', 'dark')).toEqual(palettes.light);
+    expect(resolvePalette('dark', 'light')).toEqual(palettes.dark);
+  });
+
+  it('merges accent themes over the base palette', () => {
+    expect(resolvePalette('sage', 'light')).toEqual({
+      ...palettes.light,
+      primary: '#2E6B47',
+      onPrimary: '#FFFFFF',
+      focus: '#2E6B47',
+    });
+    expect(resolvePalette('clay', 'dark')).toEqual({
+      ...palettes.dark,
+      primary: '#F0B48F',
+      onPrimary: '#2E1606',
+      focus: '#F0B48F',
+    });
+  });
+});
+
+describe('allPalettes', () => {
+  it('covers every theme with the schemes it can render', () => {
+    const names = allPalettes().map(([name]) => name);
+    for (const theme of colorThemes) {
+      const expected =
+        theme === 'light'
+          ? ['light/light']
+          : theme === 'dark'
+            ? ['dark/dark']
+            : [`${theme}/light`, `${theme}/dark`];
+      expect(names.filter((n) => n.startsWith(`${theme}/`))).toEqual(expected);
+    }
+  });
+});
