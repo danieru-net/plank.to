@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { Button } from '@/components/Button';
 import { Card } from '@/components/Card';
 import { InlineNotice } from '@/components/InlineNotice';
+import { ListRow, ListSection } from '@/components/List';
 import { Screen } from '@/components/Screen';
 import { SectionLabel } from '@/components/SectionLabel';
 import { SegmentedControl } from '@/components/SegmentedControl';
@@ -11,6 +12,7 @@ import { ToggleRow } from '@/components/ToggleRow';
 import { useAppearanceControls } from '@/features/appearance/AppearanceProvider';
 import { useAppearance } from '@/features/appearance/context';
 import { OptionGroup } from '@/features/appearance/OptionGroup';
+import { appearancePresets } from '@/features/appearance/presets';
 import {
   completionMomentOptions,
   densityOptions,
@@ -36,6 +38,22 @@ export default function AppearanceScreen() {
   return (
     <Screen contentContainerStyle={{ gap: spacing.lg }}>
       <Preview />
+
+      <ListSection
+        title="Presets"
+        footer="A preset only fills in the settings below. You can still change each one afterwards."
+      >
+        {appearancePresets.map((preset) => (
+          <ListRow
+            key={preset.id}
+            title={preset.label}
+            subtitle={preset.description}
+            accessibilityLabel={`${preset.label}. ${preset.description}`}
+            accessibilityHint="Applies these settings. You can change each one afterwards."
+            onPress={() => update(preset.settings)}
+          />
+        ))}
+      </ListSection>
 
       <OptionGroup
         label="Text size"
