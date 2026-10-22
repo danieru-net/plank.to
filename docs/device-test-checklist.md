@@ -94,3 +94,28 @@ Open Settings > Feedback > Suggest a feature or improvement (and Report a proble
 - [ ] After sending from the mail composer (iOS), "Thanks — we read every message" is read out and Done returns to Settings.
 - [ ] Largest text size (in-app Largest plus system Accessibility sizes): the type options stack one per line, no label breaks mid-word, and the details card wraps without overlap.
 - [ ] Keyboard: the field being typed in stays visible above the keyboard, including the optional second field for problems, and the screen can still scroll to the button with the keyboard open. Drag down to dismiss on iOS. Check on Android 15+ (edge to edge) and an older Android version.
+
+## Feedback flow
+
+Automated coverage is in `app/src/features/feedback/`: `feedbackMessage.test.ts` (subject and body, device details only when the toggle is on), `diagnostics.test.ts`, `sendFeedback.test.ts` (composer statuses, the `mailto:` fallback, `unavailable`), and `feedbackDraft.test.ts`. These stub the mail APIs, so nothing below has been tried with a real mail app. Use a dev or TestFlight/Play build on a real device; the iOS Simulator has no Mail app. Send test mail to an address you control (or to `feedback@plank.to` once `mailboxLive` is true in `shared/support.json`), and record the device, OS version, mail app, and result next to each step.
+
+### Send with device details
+- [ ] iOS with Mail set up: Settings > Feedback > Report a problem. Write a message and fill in "What were you trying to do?". Leave "Include device details" on and press "Open in mail app". The Mail composer opens addressed to the support address, with the subject "Plank problem: " plus the first line of the message, and the body has the message, "What I was trying to do:" and "Device details:".
+- [ ] The device details in the email match the card on screen exactly: app version and build, system, device, text size, colors. Nothing else is added: no tasks, routines, notes, reminders, location, weather, clothing, or identifiers.
+- [ ] Press Send. The app shows "Thanks — we read every message" and Done returns to Settings. Open the feedback screen again: it is empty (the draft was cleared). The email arrives with the same subject and body.
+- [ ] Android with Gmail (or another mail app): same steps. The mail app opens with the address, subject and body filled in. After sending and returning, the app shows "If you sent your message, thanks — we read every message." under the button (Android can't report whether it was sent), and the draft is kept.
+
+### Send without device details
+- [ ] Suggest a feature or improvement: switch the type to Improvement, write a message, and turn "Include device details" off. The details card is replaced by "No device details will be added. Only what you write is sent."
+- [ ] Open in mail app: the subject starts with "Plank improvement: ", and the body is only the message, with no "Device details:" section. The optional "What were you trying to do?" field is not shown and its text is not added for ideas and improvements, even if it was filled in before switching away from Problem.
+- [ ] A long first line (more than 60 characters) is shortened with "…" in the subject; the full text is in the body.
+
+### Cancel, save, and drafts
+- [ ] iOS: open the composer, then Cancel (Delete Draft). The app returns to the form with the message still there and no confirmation screen. Repeat with Save Draft: same result, and the draft is in Mail's Drafts.
+- [ ] Write a message, go back to Settings, and reopen the feedback screen: the type, message, second field and toggle are restored. Force-quit the app and reopen: still restored.
+
+### No mail account configured
+- [ ] iOS with no account in Mail (or Mail deleted): press "Open in mail app". If the `mailto:` fallback opens another mail app (for example Gmail or Outlook), the message is filled in there. If none is installed, "No mail app found" appears above the button with the address shown.
+- [ ] "Copy address" changes to "Address copied", and pasting in another app gives exactly the support address. Long-pressing the address also lets you select and copy it.
+- [ ] Android with no mail app that handles `mailto:` (for example a work profile or an emulator without Gmail): the same "No mail app found" notice and copy steps.
+- [ ] After "No mail app found", the message is still on screen and kept as a draft; nothing was sent.
