@@ -40,9 +40,7 @@ Widen the stated audience from autistic people to also include people with ADHD 
 
 ### Tasks
 
-- [ ] Update the Swatch and Preview in [appearance.tsx](app/src/app/(tabs)/settings/appearance.tsx) to show the tinted background and shape, so people can judge a theme before choosing it.
 - [ ] Add unit tests in [settings.test.ts](app/src/features/appearance/settings.test.ts) and [contrast.test.ts](app/src/theme/contrast.test.ts) for parsing the new theme values and checking their contrast, and extend [visual-preferences.yaml](app/.maestro/visual-preferences.yaml) to switch to each new theme.
-- [ ] Add screenshots of both themes to [docs/release/screenshots.md](docs/release/screenshots.md).
 
 
 ### Decisions
@@ -87,3 +85,4 @@ Tasks an agent cannot do: they need the owner, real people, or a business decisi
 - [ ] Create the `feedback@plank.to` mailbox, confirm it receives mail, then set `mailboxLive` to `true` in [shared/support.json](shared/support.json). This is an owner task (it also completes 5.3).
 - [ ] Run co-design and usability sessions with people with ADHD, and with autistic children and their caregivers, alongside the existing sessions with autistic adults. Record findings in `docs/`.
 - [ ] Decide whether to list the app in the App Store Kids Category or Google Play's Families program. Both restrict external links, require a parental gate before leaving the app (including the feedback `mailto:`), and set rules for third-party network calls (check the weather API). Record the decision in [docs/release/](docs/release/).
+- [ ] Add screenshots of both themes to [docs/release/screenshots.md](docs/release/screenshots.md). This needs the app running on a simulator or device.
