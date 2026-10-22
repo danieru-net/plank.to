@@ -41,7 +41,6 @@ Widen the stated audience from autistic people to also include people with ADHD 
 
 ### Tasks
 
-- [ ] Add a **Blossom** theme: soft pink background (e.g. `#FFF4F7`), white surface, deep rose primary (e.g. `#A3335F`) for light mode, and a dark plum/rose variant for dark mode. Check every pair in `contrastRequirements`.
 - [ ] Add a **Playful** theme: warm light background, white surface, strong blue or violet primary, with a secondary accent color used only for decoration, never as the only cue. Provide a dark variant.
 - [ ] Add optional shape tokens (`radius.card`, `radius.button`, icon size) to [tokens.ts](app/src/theme/tokens.ts) so Playful can use rounder cards and larger icons; [Card.tsx](app/src/components/Card.tsx) and [Button.tsx](app/src/components/Button.tsx) read them from appearance context.
 - [ ] Update the Swatch and Preview in [appearance.tsx](app/src/app/(tabs)/settings/appearance.tsx) to show the tinted background and shape, so people can judge a theme before choosing it.

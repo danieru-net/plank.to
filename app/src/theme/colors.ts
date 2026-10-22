@@ -45,7 +45,7 @@ export const palettes: Record<ColorScheme, Palette> = {
   },
 };
 
-export const colorThemes = ['system', 'light', 'dark', 'sage', 'plum', 'clay'] as const;
+export const colorThemes = ['system', 'light', 'dark', 'sage', 'plum', 'clay', 'blossom'] as const;
 export type ColorTheme = (typeof colorThemes)[number];
 export const defaultColorTheme: ColorTheme = 'system';
 
@@ -56,6 +56,7 @@ export const colorThemeLabels: Record<ColorTheme, string> = {
   sage: 'Sage (green accent)',
   plum: 'Plum (purple accent)',
   clay: 'Clay (orange accent)',
+  blossom: 'Blossom (pink)',
 };
 
 type Override = Partial<Palette>;
@@ -78,6 +79,28 @@ const overrides: Record<OverrideTheme, Record<ColorScheme, Override>> = {
   clay: {
     light: { primary: '#9A4A1F', onPrimary: '#FFFFFF', focus: '#9A4A1F' },
     dark: { primary: '#F0B48F', onPrimary: '#2E1606', focus: '#F0B48F' },
+  },
+  blossom: {
+    light: {
+      background: '#FFF4F7',
+      surface: '#FFFFFF',
+      separator: '#F1D9E1',
+      primary: '#A3335F',
+      onPrimary: '#FFFFFF',
+      danger: '#B3261E',
+      focus: '#A3335F',
+    },
+    dark: {
+      background: '#1C1218',
+      surface: '#2A1B24',
+      border: '#9C8892',
+      separator: '#43303B',
+      primary: '#F0A9C4',
+      onPrimary: '#3A0F22',
+      danger: '#FF9E8F',
+      onDanger: '#2A0B0B',
+      focus: '#F0A9C4',
+    },
   },
 };
 
