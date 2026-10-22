@@ -18,7 +18,7 @@ Plan today's tasks and weekly routines at your own pace. Reminders are optional,
 
 ## Full description (both stores, under 4000 chars)
 
-Plank is a calm daily planner for tasks and weekly routines. It works without an account and without a connection.
+Plank is a calm daily planner for tasks and weekly routines, made for autistic people, people with ADHD, and anyone who wants a clear, predictable day. It works without an account and without a connection.
 
 Today
 - See what is planned for today in one clear list.
@@ -73,4 +73,4 @@ First release. Daily tasks, weekly routines, optional reminders, and optional we
 
 ## Claims review
 
-Avoid: "treats", "therapy", "clinically", "reduces stress", "improves focus", "for ADHD/autism/anxiety". Weather/clothing: avoid "keeps you safe", "prevents illness". Co-design is not claimed unless 6.10 sessions have happened.
+Avoid: "treats", "therapy", "clinically", "reduces stress", "improves focus", "helps with ADHD/autism/anxiety", or labels that read as a medical product ("ADHD app", "autism therapy"). Naming who the app is made for ("made for autistic people, people with ADHD, and anyone who wants a clear, predictable day") is fine. Weather/clothing: avoid "keeps you safe", "prevents illness". Co-design is not claimed unless 6.10 sessions have happened.
