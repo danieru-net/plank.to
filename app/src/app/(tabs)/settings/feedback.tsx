@@ -1,10 +1,11 @@
 import * as Clipboard from 'expo-clipboard';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { KeyboardAvoidingView, StyleSheet, View } from 'react-native';
+import { AccessibilityInfo, KeyboardAvoidingView, StyleSheet, View } from 'react-native';
 
 import { Button } from '@/components/Button';
 import { Card } from '@/components/Card';
+import { EmptyState } from '@/components/EmptyState';
 import { InlineNotice } from '@/components/InlineNotice';
 import { Screen } from '@/components/Screen';
 import { SectionLabel } from '@/components/SectionLabel';
@@ -16,9 +17,12 @@ import { useAppearance } from '@/features/appearance/context';
 import { diagnosticLines, readDeviceDetails } from '@/features/feedback/diagnostics';
 import { parseFeedbackKind, type FeedbackKind } from '@/features/feedback/feedbackKind';
 import { buildFeedbackMessage } from '@/features/feedback/feedbackMessage';
-import { sendFeedback } from '@/features/feedback/sendFeedback';
+import { sendFeedback, type SendOutcome } from '@/features/feedback/sendFeedback';
 import { FEEDBACK_EMAIL } from '@/features/feedback/support';
 import { useFeedbackDraft } from '@/features/feedback/useFeedbackDraft';
+
+// Shown once after the mail composer reports Sent, with no follow-up prompts or rating requests.
+const SENT_TITLE = 'Thanks — we read every message';
 
 const titles: Record<FeedbackKind, string> = {
   idea: 'Suggest an idea',
@@ -47,7 +51,7 @@ export default function FeedbackScreen() {
   const [context, setContext] = useState('');
   const [includeDetails, setIncludeDetails] = useState(true);
   const [sending, setSending] = useState(false);
-  const [noMailApp, setNoMailApp] = useState(false);
+  const [outcome, setOutcome] = useState<SendOutcome | null>(null);
   const [copied, setCopied] = useState(false);
   const router = useRouter();
   const draft = useFeedbackDraft();
@@ -80,12 +84,12 @@ export default function FeedbackScreen() {
   async function send() {
     setSending(true);
     const email = buildFeedbackMessage({ kind, message, context, includeDetails }, details);
-    const outcome = await sendFeedback(FEEDBACK_EMAIL, email);
+    const result = await sendFeedback(FEEDBACK_EMAIL, email);
     setSending(false);
-    setNoMailApp(outcome === 'unavailable');
-    if (outcome === 'sent') {
+    setOutcome(result);
+    if (result === 'sent') {
       draft.clear();
-      router.back();
+      AccessibilityInfo.announceForAccessibility(SENT_TITLE);
     }
   }
 
@@ -96,6 +100,22 @@ export default function FeedbackScreen() {
     } catch {
       // The address stays on screen as selectable text.
     }
+  }
+
+  if (outcome === 'sent') {
+    return (
+      <Screen>
+        <Stack.Screen options={{ title: 'Feedback' }} />
+        <EmptyState
+          icon="checkmark-circle-outline"
+          title={SENT_TITLE}
+          message="Your message is on its way."
+          actionLabel="Done"
+          actionIcon="checkmark"
+          onAction={() => router.back()}
+        />
+      </Screen>
+    );
   }
 
   return (
@@ -163,7 +183,7 @@ export default function FeedbackScreen() {
           )}
         </View>
 
-        {noMailApp ? (
+        {outcome === 'unavailable' ? (
           <InlineNotice
             title="No mail app found"
             message="You can still email us yourself. Copy the address below, then paste your message into any email app."
@@ -191,9 +211,11 @@ export default function FeedbackScreen() {
             accessibilityHint="Opens your mail app with this message filled in"
           />
           <Text variant="caption" muted style={{ paddingHorizontal: spacing.md }}>
-            {message.trim()
-              ? 'Nothing is sent until you press Send in your mail app.'
-              : 'Write a message first.'}
+            {outcome === 'handedOff'
+              ? 'If you sent your message, thanks — we read every message.'
+              : message.trim()
+                ? 'Nothing is sent until you press Send in your mail app.'
+                : 'Write a message first.'}
           </Text>
         </View>
       </Screen>

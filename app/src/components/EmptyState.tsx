@@ -12,6 +12,7 @@ type Props = {
   actionLabel?: string;
   onAction?: () => void;
   icon?: keyof typeof Ionicons.glyphMap;
+  actionIcon?: keyof typeof Ionicons.glyphMap;
 };
 
 export function EmptyState({
@@ -20,6 +21,7 @@ export function EmptyState({
   actionLabel,
   onAction,
   icon = 'sunny-outline',
+  actionIcon = 'add',
 }: Props) {
   const { spacing, palette: theme } = useAppearance();
   return (
@@ -43,7 +45,7 @@ export function EmptyState({
       </View>
       {actionLabel && onAction ? (
         <View>
-          <Button label={actionLabel} icon="add" inline onPress={onAction} />
+          <Button label={actionLabel} icon={actionIcon} inline onPress={onAction} />
         </View>
       ) : null}
     </View>
