@@ -1,8 +1,11 @@
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
 
 import { Text } from './Text';
 import { useAppearance } from '@/features/appearance/context';
 import { minTouchTarget, radius } from '@/theme';
+
+/** Text scale (in-app size times system size) from which segments stack instead of sitting side by side. */
+const STACK_AT_TEXT_SCALE = 1.3;
 
 type Props<T extends string | number> = {
   label: string;
@@ -13,7 +16,8 @@ type Props<T extends string | number> = {
 
 /**
  * A short single choice shown side by side. The selected segment is raised onto the surface and
- * bold, so it does not depend on color alone. Use OptionGroup for long or many labels.
+ * bold, so it does not depend on color alone. Use OptionGroup for long or many labels. At large
+ * text sizes the segments stack, so a label never breaks in the middle of a word.
  */
 export function SegmentedControl<T extends string | number>({
   label,
@@ -21,7 +25,9 @@ export function SegmentedControl<T extends string | number>({
   value,
   onChange,
 }: Props<T>) {
-  const { palette: theme, spacing, scheme } = useAppearance();
+  const { palette: theme, spacing, scheme, settings } = useAppearance();
+  const { fontScale } = useWindowDimensions();
+  const stacked = fontScale * settings.textScale >= STACK_AT_TEXT_SCALE;
   return (
     <View
       accessibilityRole="radiogroup"
@@ -29,6 +35,7 @@ export function SegmentedControl<T extends string | number>({
       style={[
         styles.track,
         {
+          flexDirection: stacked ? 'column' : 'row',
           backgroundColor: scheme === 'dark' ? theme.background : theme.separator,
           padding: spacing.xs,
           gap: spacing.xs,
@@ -47,6 +54,7 @@ export function SegmentedControl<T extends string | number>({
             style={[
               styles.segment,
               {
+                flex: stacked ? undefined : 1,
                 paddingHorizontal: spacing.sm,
                 backgroundColor: selected ? theme.surface : 'transparent',
                 boxShadow: selected ? '0 1px 3px rgba(0, 0, 0, 0.12)' : undefined,
@@ -68,9 +76,8 @@ export function SegmentedControl<T extends string | number>({
 }
 
 const styles = StyleSheet.create({
-  track: { flexDirection: 'row', borderRadius: radius.md, borderCurve: 'continuous' },
+  track: { borderRadius: radius.md, borderCurve: 'continuous' },
   segment: {
-    flex: 1,
     minHeight: minTouchTarget,
     alignItems: 'center',
     justifyContent: 'center',

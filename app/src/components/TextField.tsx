@@ -17,11 +17,15 @@ export function TextField({ label, hint, error, onFocus, onBlur, ...rest }: Prop
   const { palette: theme, spacing, settings, maxFontMultiplier } = useAppearance();
   const [focused, setFocused] = useState(false);
 
+  // The input carries the label and hint, so screen readers skip the visible copies above it
+  // instead of reading each one twice.
   return (
     <View style={{ gap: spacing.xs }}>
-      <Text variant="bodyStrong">{label}</Text>
+      <Text variant="bodyStrong" accessibilityElementsHidden importantForAccessibility="no">
+        {label}
+      </Text>
       {hint ? (
-        <Text variant="caption" muted>
+        <Text variant="caption" muted accessibilityElementsHidden importantForAccessibility="no">
           {hint}
         </Text>
       ) : null}
