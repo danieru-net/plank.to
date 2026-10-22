@@ -19,6 +19,8 @@ export type AppearanceSettings = {
   taskActions: TaskActions;
   /** Shows a task's picture or symbol large, above its title. */
   picturesFirst: boolean;
+  /** Shows each task on Today as a large picture card with labelled buttons; tap the picture to hear it. */
+  pictureCards: boolean;
   /** Shows a Read aloud button on each task, which speaks its title and notes. */
   readAloud: boolean;
   /** An optional gentle moment when a task is completed. Never a streak, score or praise. */
@@ -73,6 +75,7 @@ export const defaultAppearance: AppearanceSettings = {
   haptics: true,
   taskActions: 'compact',
   picturesFirst: false,
+  pictureCards: false,
   readAloud: false,
   completionMoment: 'none',
   simpleMode: false,
@@ -89,6 +92,7 @@ export function parseAppearance(stored: Record<string, unknown>): AppearanceSett
   const haptics = stored['display.haptics'];
   const taskActions = stored['display.taskActions'];
   const picturesFirst = stored['display.picturesFirst'];
+  const pictureCards = stored['display.pictureCards'];
   const readAloud = stored['display.readAloud'];
   const completionMoment = stored['display.completionMoment'];
   const simpleMode = stored['display.simpleMode'];
@@ -112,6 +116,7 @@ export function parseAppearance(stored: Record<string, unknown>): AppearanceSett
         : defaultAppearance.taskActions,
     picturesFirst:
       typeof picturesFirst === 'boolean' ? picturesFirst : defaultAppearance.picturesFirst,
+    pictureCards: typeof pictureCards === 'boolean' ? pictureCards : defaultAppearance.pictureCards,
     readAloud: typeof readAloud === 'boolean' ? readAloud : defaultAppearance.readAloud,
     completionMoment: completionMomentOptions.some((o) => o.value === completionMoment)
       ? (completionMoment as CompletionMoment)

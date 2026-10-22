@@ -93,6 +93,7 @@ export type PreferenceValues = {
   'display.haptics': boolean;
   'display.taskActions': 'compact' | 'buttons';
   'display.picturesFirst': boolean;
+  'display.pictureCards': boolean;
   'display.readAloud': boolean;
   'display.completionMoment': 'none' | 'check' | 'checkSound';
   'display.simpleMode': boolean;
