@@ -64,10 +64,6 @@ If children are a target audience, the app needs a caregiver setup flow, and the
 ### Tasks
 
 
-## Housekeeping
-
-- [ ] Delete the committed `*.ts-E` files in `app/src` (leftover backups from `sed -i -E` on macOS) and add `*-E` to [app/.gitignore](app/.gitignore).
-
 ## Review
 
 Tasks an agent cannot do: they need the owner, real people, or a business decision.
