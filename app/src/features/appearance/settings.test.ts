@@ -23,6 +23,7 @@ describe('parseAppearance', () => {
       }),
     ).toEqual({ ...defaultAppearance, motion: 'off', haptics: false, taskActions: 'buttons' });
     expect(parseAppearance({ 'display.picturesFirst': true }).picturesFirst).toBe(true);
+    expect(parseAppearance({ 'display.readAloud': true }).readAloud).toBe(true);
   });
 
   it('accepts the Blossom and Playful themes', () => {
@@ -48,6 +49,7 @@ describe('parseAppearance', () => {
         'display.haptics': 'yes',
         'display.taskActions': 'swipe',
         'display.picturesFirst': 'yes',
+        'display.readAloud': 'yes',
       }),
     ).toEqual(defaultAppearance);
   });
