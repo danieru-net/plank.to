@@ -1,5 +1,5 @@
 import { colorThemes, defaultColorTheme, type ColorTheme } from '@/theme/colors';
-import { defaultShape, playfulShape, spacing, type Shape } from '@/theme/tokens';
+import { defaultShape, playfulShape, spacing, type FontChoice, type Shape } from '@/theme/tokens';
 
 export type Density = 'comfortable' | 'compact';
 /** "system" follows the device's Reduce Motion setting. */
@@ -25,6 +25,10 @@ export type AppearanceSettings = {
   completionMoment: CompletionMoment;
   /** Hides weather, clothing and the Routines tab, leaving Today and Settings. Only hides UI. */
   simpleMode: boolean;
+  /** The typeface: the device's own, or Atkinson Hyperlegible, designed for easy reading. */
+  font: FontChoice;
+  /** Adds extra space between lines of text. */
+  moreLineSpacing: boolean;
 };
 
 export const textScaleOptions = [
@@ -56,6 +60,11 @@ export const completionMomentOptions: { value: CompletionMoment; label: string }
   { value: 'checkSound', label: 'Check and sound' },
 ];
 
+export const fontOptions: { value: FontChoice; label: string }[] = [
+  { value: 'system', label: 'System' },
+  { value: 'readable', label: 'Atkinson Hyperlegible (readable)' },
+];
+
 export const defaultAppearance: AppearanceSettings = {
   textScale: 1,
   density: 'comfortable',
@@ -67,6 +76,8 @@ export const defaultAppearance: AppearanceSettings = {
   readAloud: false,
   completionMoment: 'none',
   simpleMode: false,
+  font: 'system',
+  moreLineSpacing: false,
 };
 
 /** Reads stored preference values, ignoring anything missing or invalid (defaults apply). */
@@ -81,6 +92,8 @@ export function parseAppearance(stored: Record<string, unknown>): AppearanceSett
   const readAloud = stored['display.readAloud'];
   const completionMoment = stored['display.completionMoment'];
   const simpleMode = stored['display.simpleMode'];
+  const font = stored['display.font'];
+  const moreLineSpacing = stored['display.moreLineSpacing'];
   return {
     textScale: textScaleOptions.some((o) => o.value === scale)
       ? (scale as number)
@@ -104,6 +117,9 @@ export function parseAppearance(stored: Record<string, unknown>): AppearanceSett
       ? (completionMoment as CompletionMoment)
       : defaultAppearance.completionMoment,
     simpleMode: typeof simpleMode === 'boolean' ? simpleMode : defaultAppearance.simpleMode,
+    font: font === 'system' || font === 'readable' ? font : defaultAppearance.font,
+    moreLineSpacing:
+      typeof moreLineSpacing === 'boolean' ? moreLineSpacing : defaultAppearance.moreLineSpacing,
   };
 }
 
