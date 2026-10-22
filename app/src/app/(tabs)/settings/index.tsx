@@ -5,6 +5,7 @@ import { StyleSheet, View } from 'react-native';
 import { ListRow, ListSection } from '@/components/List';
 import { Screen } from '@/components/Screen';
 import { useAppearance } from '@/features/appearance/context';
+import { visibleFeatures } from '@/features/appearance/simpleMode';
 import { radius } from '@/theme';
 
 type Page = {
@@ -52,7 +53,9 @@ const feedbackPages: Page[] = [
 
 export default function SettingsScreen() {
   const router = useRouter();
-  const { palette: theme, spacing } = useAppearance();
+  const { palette: theme, spacing, settings } = useAppearance();
+  const visible = visibleFeatures(settings.simpleMode);
+  const shownPages = pages.filter((p) => visible.weather || p.href !== '/settings/weather');
   const row = (p: Page) => (
     <ListRow
       key={p.title}
@@ -70,7 +73,7 @@ export default function SettingsScreen() {
   return (
     <Screen contentContainerStyle={{ gap: spacing.lg }}>
       <ListSection footer="Everything here is saved on this device and applies across the app.">
-        {pages.map(row)}
+        {shownPages.map(row)}
       </ListSection>
       <ListSection
         title="Feedback"

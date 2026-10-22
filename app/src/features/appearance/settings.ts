@@ -23,6 +23,8 @@ export type AppearanceSettings = {
   readAloud: boolean;
   /** An optional gentle moment when a task is completed. Never a streak, score or praise. */
   completionMoment: CompletionMoment;
+  /** Hides weather, clothing and the Routines tab, leaving Today and Settings. Only hides UI. */
+  simpleMode: boolean;
 };
 
 export const textScaleOptions = [
@@ -64,6 +66,7 @@ export const defaultAppearance: AppearanceSettings = {
   picturesFirst: false,
   readAloud: false,
   completionMoment: 'none',
+  simpleMode: false,
 };
 
 /** Reads stored preference values, ignoring anything missing or invalid (defaults apply). */
@@ -77,6 +80,7 @@ export function parseAppearance(stored: Record<string, unknown>): AppearanceSett
   const picturesFirst = stored['display.picturesFirst'];
   const readAloud = stored['display.readAloud'];
   const completionMoment = stored['display.completionMoment'];
+  const simpleMode = stored['display.simpleMode'];
   return {
     textScale: textScaleOptions.some((o) => o.value === scale)
       ? (scale as number)
@@ -99,6 +103,7 @@ export function parseAppearance(stored: Record<string, unknown>): AppearanceSett
     completionMoment: completionMomentOptions.some((o) => o.value === completionMoment)
       ? (completionMoment as CompletionMoment)
       : defaultAppearance.completionMoment,
+    simpleMode: typeof simpleMode === 'boolean' ? simpleMode : defaultAppearance.simpleMode,
   };
 }
 

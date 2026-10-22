@@ -24,6 +24,7 @@ describe('parseAppearance', () => {
     ).toEqual({ ...defaultAppearance, motion: 'off', haptics: false, taskActions: 'buttons' });
     expect(parseAppearance({ 'display.picturesFirst': true }).picturesFirst).toBe(true);
     expect(parseAppearance({ 'display.readAloud': true }).readAloud).toBe(true);
+    expect(parseAppearance({ 'display.simpleMode': true }).simpleMode).toBe(true);
     expect(parseAppearance({ 'display.completionMoment': 'checkSound' }).completionMoment).toBe(
       'checkSound',
     );
@@ -54,6 +55,7 @@ describe('parseAppearance', () => {
         'display.picturesFirst': 'yes',
         'display.readAloud': 'yes',
         'display.completionMoment': 'confetti',
+        'display.simpleMode': 'yes',
       }),
     ).toEqual(defaultAppearance);
   });

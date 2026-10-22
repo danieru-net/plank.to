@@ -12,6 +12,7 @@ import { Text } from '@/components/Text';
 import { StorageError } from '@/db/errors';
 import type { Task, TaskRepository } from '@/db/taskRepository';
 import { useAppearance } from '@/features/appearance/context';
+import { visibleFeatures } from '@/features/appearance/simpleMode';
 import { useReconcileReminders } from '@/features/notifications/useReminderReconciler';
 import { ReminderPermissionCard } from '@/features/notifications/ReminderPermissionCard';
 import { loadRoutineChanges, type RoutineChange } from '@/features/routines/routineChanges';
@@ -29,7 +30,7 @@ type Load = { status: 'loading' } | { status: 'error'; message: string } | { sta
 
 export default function TodayScreen() {
   const router = useRouter();
-  const { palette: theme, spacing } = useAppearance();
+  const { palette: theme, spacing, settings } = useAppearance();
   const repo = useTaskRepository();
   const routineRepo = useRoutineRepository();
   const reconcile = useReconcileReminders();
@@ -151,7 +152,7 @@ export default function TodayScreen() {
           message={changes.map((c) => c.message).join('\n')}
         />
       ) : null}
-      <TodaySummary />
+      {visibleFeatures(settings.simpleMode).weather ? <TodaySummary /> : null}
 
       {actionError ? <InlineNotice tone="error" message={actionError} /> : null}
       {load.status === 'loading' ? <Text muted>Loading today’s tasks…</Text> : null}
