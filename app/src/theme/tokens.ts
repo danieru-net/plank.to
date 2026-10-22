@@ -14,6 +14,24 @@ export const radius = {
   lg: 20,
 } as const;
 
+/** Corner radii and icon size that a color theme may override; see `shapeFor`. */
+export type Shape = {
+  radius: { card: number; button: number };
+  iconSize: number;
+};
+
+/** Shape used by every theme except those that override it. */
+export const defaultShape: Shape = {
+  radius: { card: radius.lg, button: radius.md },
+  iconSize: 20,
+};
+
+/** Rounder cards, pill-like buttons, and larger icons for the Playful theme. */
+export const playfulShape: Shape = {
+  radius: { card: 28, button: 24 },
+  iconSize: 24,
+};
+
 /** Four sizes, two weights (600 for emphasis, 700 only for the largest size). */
 export const typography = {
   body: { fontSize: 17, lineHeight: 24 },

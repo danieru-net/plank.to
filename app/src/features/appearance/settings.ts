@@ -1,5 +1,5 @@
 import { colorThemes, defaultColorTheme, type ColorTheme } from '@/theme/colors';
-import { spacing } from '@/theme/tokens';
+import { defaultShape, playfulShape, spacing, type Shape } from '@/theme/tokens';
 
 export type Density = 'comfortable' | 'compact';
 /** "system" follows the device's Reduce Motion setting. */
@@ -91,4 +91,9 @@ export function spacingFor(density: Density): Spacing {
   return Object.fromEntries(
     Object.entries(spacing).map(([k, v]) => [k, Math.round(v * compactSpacingFactor)]),
   ) as Spacing;
+}
+
+/** Shape tokens for a color theme; only Playful differs from the default. */
+export function shapeFor(theme: ColorTheme): Shape {
+  return theme === 'playful' ? playfulShape : defaultShape;
 }
