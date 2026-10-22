@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { NativeTabs } from 'expo-router/native-tabs';
 
 import { useAppearance } from '@/features/appearance/context';
+import { visibleFeatures } from '@/features/appearance/simpleMode';
 import { tint } from '@/theme';
 
 /**
@@ -9,7 +10,8 @@ import { tint } from '@/theme';
  * SF Symbols on iOS; Ionicons stand in on Android so no extra symbol package is needed.
  */
 export default function TabsLayout() {
-  const { palette: theme } = useAppearance();
+  const { palette: theme, settings } = useAppearance();
+  const visible = visibleFeatures(settings.simpleMode);
   return (
     <NativeTabs
       tintColor={theme.primary}
@@ -25,7 +27,12 @@ export default function TabsLayout() {
         />
         <NativeTabs.Trigger.Label>Today</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="routines" accessibilityLabel="Routines" testID="tab-routines">
+      <NativeTabs.Trigger
+        name="routines"
+        hidden={!visible.routinesTab}
+        accessibilityLabel="Routines"
+        testID="tab-routines"
+      >
         <NativeTabs.Trigger.Icon
           sf="arrow.triangle.2.circlepath"
           src={<NativeTabs.Trigger.VectorIcon family={Ionicons} name="repeat" />}

@@ -40,6 +40,7 @@ const keyFor = {
   picturesFirst: 'display.picturesFirst',
   readAloud: 'display.readAloud',
   completionMoment: 'display.completionMoment',
+  simpleMode: 'display.simpleMode',
 } as const;
 
 /** Loads saved appearance settings, applies them app-wide, and saves changes locally. */

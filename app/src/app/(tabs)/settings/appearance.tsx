@@ -120,6 +120,12 @@ export default function AppearanceScreen() {
           checked={settings.readAloud}
           onChange={(readAloud) => update({ readAloud })}
         />
+        <ToggleRow
+          label="Simple mode"
+          description="Shows only Today and Settings. Hides weather, clothing ideas and the Routines tab. Nothing is deleted, and routines you already set up still appear on their days."
+          checked={settings.simpleMode}
+          onChange={(simpleMode) => update({ simpleMode })}
+        />
       </Card>
 
       {error ? <InlineNotice tone="error" message={error} /> : null}
