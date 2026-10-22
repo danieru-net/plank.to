@@ -14,6 +14,8 @@ export type AppearanceSettings = {
   motion: Motion;
   haptics: boolean;
   taskActions: TaskActions;
+  /** Shows a task's picture or symbol large, above its title. */
+  picturesFirst: boolean;
 };
 
 export const textScaleOptions = [
@@ -46,6 +48,7 @@ export const defaultAppearance: AppearanceSettings = {
   motion: 'system',
   haptics: true,
   taskActions: 'compact',
+  picturesFirst: false,
 };
 
 /** Reads stored preference values, ignoring anything missing or invalid (defaults apply). */
@@ -56,6 +59,7 @@ export function parseAppearance(stored: Record<string, unknown>): AppearanceSett
   const motion = stored['display.motion'];
   const haptics = stored['display.haptics'];
   const taskActions = stored['display.taskActions'];
+  const picturesFirst = stored['display.picturesFirst'];
   return {
     textScale: textScaleOptions.some((o) => o.value === scale)
       ? (scale as number)
@@ -72,6 +76,8 @@ export function parseAppearance(stored: Record<string, unknown>): AppearanceSett
       taskActions === 'compact' || taskActions === 'buttons'
         ? taskActions
         : defaultAppearance.taskActions,
+    picturesFirst:
+      typeof picturesFirst === 'boolean' ? picturesFirst : defaultAppearance.picturesFirst,
   };
 }
 

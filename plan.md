@@ -47,7 +47,6 @@ Widen the stated audience from autistic people to also include people with ADHD 
 - [ ] Add optional **task duration** (e.g. 15 min) to tasks and routines so the time indicator and the timeline can show how long things take.
 - [ ] Add a **timeline layout** for Today (time down the side, blocks sized by duration) as a choice next to the current list, saved in Appearance.
 - [ ] Add a **transition heads-up** reminder ("In 5 minutes: getting ready for school") separate from the task reminder, so changes between activities are predictable. Reuse reminder reconciliation.
-- [ ] Show **pictures and symbols** on tasks, which the README promises but no screen renders: an emoji or symbol picker plus the existing local image (`imageUri`), shown on Today, Now/Next and the timeline. Add a "Pictures first" option that makes the picture larger than the text, for people who read pictures more easily than text.
 - [ ] Add **reordering** for untimed tasks (drag plus accessible "Move up" and "Move down" actions), as the README promises.
 - [ ] Add a **quick capture inbox**: a one-field "Add a thought" that saves undated tasks to an Inbox list, to be scheduled later. Reachable from Today in one tap.
 - [ ] Add a **"What changed" notice**: when a routine occurrence was moved, edited or skipped, Today shows a calm note at the top ("Swimming moved to 17:00 today") so changes are never a surprise.
@@ -93,4 +92,3 @@ If children are a target audience, the app needs a caregiver setup flow, and the
 ## Housekeeping
 
 - [ ] Delete the committed `*.ts-E` files in `app/src` (leftover backups from `sed -i -E` on macOS) and add `*-E` to [app/.gitignore](app/.gitignore).
-- [ ] Remove `imageUri` from the task model or ship the picture UI above. Either way, don't keep fields that no screen uses.

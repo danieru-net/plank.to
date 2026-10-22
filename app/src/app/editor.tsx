@@ -20,6 +20,7 @@ import {
   type TaskFormValues,
 } from '@/features/tasks/taskForm';
 import { useReconcileReminders } from '@/features/notifications/useReminderReconciler';
+import { PictureField, usePictureCleanup } from '@/features/pictures/PictureField';
 import { useTaskRepository } from '@/features/tasks/useTaskRepository';
 import { useAppearance } from '@/features/appearance/context';
 
@@ -31,6 +32,7 @@ export default function EditorScreen() {
   const { spacing } = useAppearance();
   const repo = useTaskRepository();
   const reconcile = useReconcileReminders();
+  const pictures = usePictureCleanup();
   const editing = !!id;
 
   const [values, setValues] = useState<TaskFormValues>(() =>
@@ -41,6 +43,7 @@ export default function EditorScreen() {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [savedImageUri, setSavedImageUri] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -48,8 +51,10 @@ export default function EditorScreen() {
     repo.getTask(id).then(
       (task) => {
         if (cancelled) return;
-        if (task) setValues(taskToForm(task));
-        else setLoadError('That task could not be found. It may have been deleted.');
+        if (task) {
+          setValues(taskToForm(task));
+          setSavedImageUri(task.imageUri);
+        } else setLoadError('That task could not be found. It may have been deleted.');
         setLoading(false);
       },
       (e: unknown) => {
@@ -75,6 +80,8 @@ export default function EditorScreen() {
       const input = formToInput(values);
       if (id) await repo.updateTask(id, input);
       else await repo.createTask(input);
+      pictures.track(savedImageUri);
+      await pictures.committed(input.imageUri ?? null);
       await reconcile();
       router.back();
     } catch (e) {
@@ -99,6 +106,10 @@ export default function EditorScreen() {
         onPress: () => {
           repo
             .deleteTask(id)
+            .then(() => {
+              pictures.track(savedImageUri);
+              return pictures.committed(null);
+            })
             .then(() => reconcile())
             .then(
               () => router.back(),
@@ -164,6 +175,14 @@ export default function EditorScreen() {
           optional
         />
       </Card>
+      <PictureField
+        symbol={values.symbol}
+        imageUri={values.imageUri}
+        onChangeSymbol={(s) => set('symbol', s)}
+        onChangeImage={(uri) => set('imageUri', uri)}
+        onPicked={pictures.track}
+        error={errors.imageUri ?? errors.symbol}
+      />
 
       {saveError ? <InlineNotice tone="error" message={saveError} /> : null}
       <Button label={saving ? 'Saving…' : 'Save task'} onPress={onSave} disabled={saving} />

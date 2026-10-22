@@ -35,7 +35,7 @@ Privacy policy URL: `[[PLACEHOLDER: https://plank.to/privacy]]`
 | Purpose | App functionality |
 | Processed ephemerally? | Plank does not retain it on a server; on-device it is stored as rounded coordinates. Open-Meteo's retention is outside Plank's control, so do not claim "ephemeral". |
 | Precise location | Not collected (fine location is blocked in the manifest). |
-| Personal info, financial, health, messages, photos, audio, files, calendar, contacts, app activity, web history, device IDs | Not collected |
+| Personal info, financial, health, messages, photos, audio, files, calendar, contacts, app activity, web history, device IDs | Not collected. Photos the user adds to tasks are copied into app storage on the device and never leave it, which the stores do not count as collection. |
 | Data encrypted in transit | Yes (HTTPS only) |
 | Users can request data deletion | Not applicable: no account and no server copy. Local data is removed by turning weather off, Settings reset, or uninstalling. State this in the policy. Device backups (Google) are under Google's control. |
 | Independent security review | No |

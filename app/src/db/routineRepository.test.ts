@@ -96,6 +96,7 @@ describe('routine repository', () => {
         time: '25:00',
         weekdays: [],
         startDate: '2026-02-30',
+        symbol: 'unicorn',
         imageUri: 'https://example.com/a.png',
         reminderAdvanceMinutes: -5,
       }),
@@ -105,6 +106,7 @@ describe('routine repository', () => {
       'time',
       'weekdays',
       'startDate',
+      'symbol',
       'imageUri',
       'reminderAdvanceMinutes',
     ]);

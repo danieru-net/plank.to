@@ -17,6 +17,7 @@ import {
   taskActionOptions,
   textScaleOptions,
 } from '@/features/appearance/settings';
+import { TaskPicture } from '@/features/pictures/TaskPicture';
 import {
   colorThemeLabels,
   colorThemes,
@@ -96,6 +97,15 @@ export default function AppearanceScreen() {
         footer="Labelled buttons show Complete and Dismiss under every task on Today."
       />
 
+      <Card style={{ paddingVertical: spacing.xs }}>
+        <ToggleRow
+          label="Pictures first"
+          description="Shows each task’s photo or symbol large, above its title, for reading pictures before words."
+          checked={settings.picturesFirst}
+          onChange={(picturesFirst) => update({ picturesFirst })}
+        />
+      </Card>
+
       {error ? <InlineNotice tone="error" message={error} /> : null}
       <Button label="Reset appearance" variant="plainDanger" inline onPress={reset} />
     </Screen>
@@ -105,6 +115,7 @@ export default function AppearanceScreen() {
 /** A sample task drawn with the current settings, so changes are visible straight away. */
 function Preview() {
   const { palette: theme, spacing, settings } = useAppearance();
+  const { picturesFirst } = settings;
   return (
     <View style={{ gap: spacing.sm }}>
       <SectionLabel>Preview</SectionLabel>
@@ -112,10 +123,11 @@ function Preview() {
         <Text variant="bodyStrong" tabular>
           07:30
         </Text>
-        <Text style={{ fontSize: 24 * settings.textScale, lineHeight: 30 * settings.textScale }}>
-          🚿
-        </Text>
-        <Text style={styles.grow}>Shower</Text>
+        {!picturesFirst ? <TaskPicture symbol="shower" imageUri={null} size={36} /> : null}
+        <View style={[styles.grow, { gap: spacing.xs }]}>
+          {picturesFirst ? <TaskPicture symbol="shower" imageUri={null} size={96} /> : null}
+          <Text>Shower</Text>
+        </View>
         <View style={[styles.dot, { borderColor: theme.border }]} />
       </Card>
     </View>

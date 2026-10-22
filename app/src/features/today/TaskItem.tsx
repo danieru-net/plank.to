@@ -8,6 +8,7 @@ import { Text } from '@/components/Text';
 import type { Task } from '@/db/taskRepository';
 import { useAppearance } from '@/features/appearance/context';
 import { useFeedback } from '@/features/appearance/feedback';
+import { pictureLabel, TaskPicture } from '@/features/pictures/TaskPicture';
 import { minTouchTarget, tint } from '@/theme';
 import { statusText } from './agenda';
 
@@ -25,7 +26,8 @@ type Props = {
 const SETTLE_MS = 350;
 
 /**
- * One task in Today's grouped list: time and title. Actions follow the "Task
+ * One task in Today's grouped list: time, picture or symbol, and title. With "Pictures first"
+ * the picture is shown large above the title. Actions follow the "Task
  * actions" setting: a check circle plus a menu, or labelled buttons. Either way the same actions
  * are offered to screen readers as named actions on the row.
  */
@@ -36,6 +38,7 @@ export function TaskItem({ task, next, onOpen, onComplete, onReopen, onDismiss }
   const pending = task.status === 'pending';
   const editable = task.routineId === null;
   const compact = settings.taskActions === 'compact';
+  const picturesFirst = settings.picturesFirst;
   const [settling, setSettling] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   useEffect(() => () => clearTimeout(timer.current), []);
@@ -71,7 +74,8 @@ export function TaskItem({ task, next, onOpen, onComplete, onReopen, onDismiss }
 
   const done = !pending || settling;
   const undoLabel = `Undo ${status?.toLowerCase()} for ${task.title}`;
-  const rowLabel = `${task.title}${task.time ? `, ${task.time}` : ', any time'}${next ? ', next' : ''}${status ? `, ${status}` : ''}${editable ? '. Edit' : ''}`;
+  const symbolLabel = pictureLabel(task.symbol, task.imageUri);
+  const rowLabel = `${task.title}${symbolLabel ? `, ${symbolLabel}` : ''}${task.time ? `, ${task.time}` : ', any time'}${next ? ', next' : ''}${status ? `, ${status}` : ''}${editable ? '. Edit' : ''}`;
 
   return (
     <Animated.View layout={motion ? LinearTransition.duration(200) : undefined}>
@@ -132,7 +136,13 @@ export function TaskItem({ task, next, onOpen, onComplete, onReopen, onDismiss }
               {task.time}
             </Text>
           ) : null}
-          <View style={styles.body}>
+          {!picturesFirst ? (
+            <TaskPicture symbol={task.symbol} imageUri={task.imageUri} size={36} muted={done} />
+          ) : null}
+          <View style={[styles.body, picturesFirst ? { gap: spacing.xs } : null]}>
+            {picturesFirst ? (
+              <TaskPicture symbol={task.symbol} imageUri={task.imageUri} size={96} muted={done} />
+            ) : null}
             <Text muted={done} style={done && !settling ? styles.struck : undefined}>
               {task.title}
             </Text>

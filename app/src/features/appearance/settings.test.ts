@@ -22,6 +22,7 @@ describe('parseAppearance', () => {
         'display.taskActions': 'buttons',
       }),
     ).toEqual({ ...defaultAppearance, motion: 'off', haptics: false, taskActions: 'buttons' });
+    expect(parseAppearance({ 'display.picturesFirst': true }).picturesFirst).toBe(true);
   });
 
   it('falls back per field for invalid values', () => {
@@ -38,6 +39,7 @@ describe('parseAppearance', () => {
         'display.motion': 'fast',
         'display.haptics': 'yes',
         'display.taskActions': 'swipe',
+        'display.picturesFirst': 'yes',
       }),
     ).toEqual(defaultAppearance);
   });

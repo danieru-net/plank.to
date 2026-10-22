@@ -31,6 +31,8 @@ describe('taskForm', () => {
       date: '2026-03-01',
       time: '08:30',
       notes: null,
+      symbol: 'walk',
+      imageUri: null,
       reminderEnabled: true,
       reminderAdvanceMinutes: 15,
     } as Task;
@@ -39,9 +41,19 @@ describe('taskForm', () => {
       date: '2026-03-01',
       time: '08:30',
       notes: '',
+      symbol: 'walk',
+      imageUri: '',
       reminderEnabled: true,
       reminderAdvanceMinutes: 15,
     });
+  });
+
+  it('passes no symbol or picture as null and a chosen one as is', () => {
+    const blank = { ...emptyForm('2026-03-01'), title: 'Bath' };
+    expect(formToInput(blank)).toMatchObject({ symbol: null, imageUri: null });
+    expect(
+      formToInput({ ...blank, symbol: 'bath', imageUri: 'file:///pictures/a.jpg' }),
+    ).toMatchObject({ symbol: 'bath', imageUri: 'file:///pictures/a.jpg' });
   });
 
   it('starts with reminders off and passes the choice to the repository input', () => {
@@ -57,11 +69,15 @@ describe('taskForm', () => {
       { field: 'title', message: 'Enter a title for the task.' },
       { field: 'time', message: 'Bad time.' },
       { field: 'reminderAdvanceMinutes', message: 'Pick a lead time.' },
+      { field: 'imageUri', message: 'Choose a picture saved on this device.' },
+      { field: 'symbol', message: 'Choose a symbol from the list.' },
     ]);
     expect(errorsFrom(err)).toEqual({
       title: 'Enter a title for the task.',
       time: 'Bad time.',
       reminderAdvanceMinutes: 'Pick a lead time.',
+      imageUri: 'Choose a picture saved on this device.',
+      symbol: 'Choose a symbol from the list.',
     });
     expect(errorsFrom(new Error('x'))).toBeNull();
   });

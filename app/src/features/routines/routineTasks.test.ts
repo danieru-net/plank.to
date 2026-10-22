@@ -46,11 +46,19 @@ describe('createRoutineTasksForDate', () => {
       time: '07:30',
       weekdays: [3],
       startDate: '2026-06-01',
+      symbol: 'exercise',
+      imageUri: 'file:///pictures/stretch.jpg',
     });
     expect(await createRoutineTasksForDate(tasks, routines, '2026-06-11')).toBe(0);
     expect(await createRoutineTasksForDate(tasks, routines, '2026-06-10')).toBe(1);
     const [t] = await tasks.listTasksForDate('2026-06-10');
-    expect(t).toMatchObject({ title: 'Stretch', time: '07:30', status: 'pending' });
+    expect(t).toMatchObject({
+      title: 'Stretch',
+      time: '07:30',
+      status: 'pending',
+      symbol: 'exercise',
+      imageUri: 'file:///pictures/stretch.jpg',
+    });
     expect(t.routineId).not.toBeNull();
   });
 

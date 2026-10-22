@@ -8,6 +8,7 @@ function task(id: string, time: string | null, createdAt = 1): Task {
     notes: null,
     date: '2026-03-01',
     time,
+    symbol: null,
     imageUri: null,
     status: 'pending',
     statusChangedAt: null,

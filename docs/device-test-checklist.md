@@ -82,6 +82,19 @@ Static guards are in `app/src/accessibility.test.ts`. Still needed on devices:
 - [ ] State is understandable in grayscale or with color filters (selected, completed, paused, errors).
 - [ ] Reduce Motion and Bold Text on iOS do not break layout. Native Alert dialogs (delete confirmations) are announced and focus returns afterward.
 
+## Pictures and symbols
+
+Automated coverage: `features/pictures/` (which files the app may delete), the task and routine repository tests (symbol and photo validation, the photo-in-use check), `routineTasks.test.ts` (a routine passes its symbol and photo to the tasks it creates), and the Maestro flow `task-symbol` (choose and remove a symbol). The photo picker is a system screen, so these need a person on a dev build:
+
+- [ ] Choose a photo for a new task: the square crop appears, and after saving the photo shows on Today next to the title. No permission prompt appears on iOS or Android.
+- [ ] Close the picker without choosing: nothing changes and no error shows.
+- [ ] Replace a task's photo and save, then remove it and save: Today shows the new photo, then the symbol (or nothing). In the simulator, `xcrun simctl get_app_container booted to.plank.app data` then `Documents/pictures` holds only photos still in use.
+- [ ] Pick a photo and then Cancel the editor: the new copy is deleted from `Documents/pictures`.
+- [ ] Give a routine a photo: the next generated task shows it. Deleting the routine removes the copy.
+- [ ] Delete the photo file by hand: Today falls back to the symbol, and the editor says the photo could not be found and offers another or Remove.
+- [ ] Settings > Appearance > Pictures first: the preview and Today show the picture large above the title, at every text size, and done tasks fade their picture.
+- [ ] VoiceOver and TalkBack: the symbols read as a radio group named "Symbol" with each symbol's name and the selected one; a task row reads its symbol's name after the title; photos are not read on their own.
+
 ## Feedback screen
 
 Open Settings > Feedback > Suggest a feature or improvement (and Report a problem). Static fixes are described in done.md. These still need a person:

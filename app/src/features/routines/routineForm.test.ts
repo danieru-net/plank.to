@@ -57,11 +57,13 @@ describe('routineForm', () => {
     const err = new ValidationError([
       { field: 'weekdays', message: 'Choose at least one day of the week.' },
       { field: 'time', message: 'Bad time.' },
-      { field: 'imageUri', message: 'Other.' },
+      { field: 'imageUri', message: 'Choose a picture saved on this device.' },
+      { field: 'paused', message: 'Other.' },
     ]);
     expect(routineErrorsFrom(err)).toEqual({
       weekdays: 'Choose at least one day of the week.',
       time: 'Bad time.',
+      imageUri: 'Choose a picture saved on this device.',
       title: 'Other.',
     });
     expect(routineErrorsFrom(new Error('x'))).toBeNull();

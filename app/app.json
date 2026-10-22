@@ -43,7 +43,15 @@
         }
       ],
       "@react-native-community/datetimepicker",
-      "expo-mail-composer"
+      "expo-mail-composer",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Plank lets you choose a photo from your library to show on a task. The photo stays on your device.",
+          "cameraPermission": false,
+          "microphonePermission": false
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

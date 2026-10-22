@@ -25,6 +25,7 @@ import {
 } from '@/features/routines/routineForm';
 import { ReminderFields } from '@/features/notifications/ReminderFields';
 import { useReconcileReminders } from '@/features/notifications/useReminderReconciler';
+import { PictureField, usePictureCleanup } from '@/features/pictures/PictureField';
 import { useRoutineRepository } from '@/features/routines/useRoutineRepository';
 import { toLocalDateString } from '@/features/tasks/taskForm';
 import { minTouchTarget, radius, tint } from '@/theme';
@@ -35,6 +36,8 @@ export default function RoutineScreen() {
   const { palette: theme, spacing } = useAppearance();
   const repo = useRoutineRepository();
   const reconcile = useReconcileReminders();
+  const pictures = usePictureCleanup();
+  const [savedImageUri, setSavedImageUri] = useState<string | null>(null);
 
   const [values, setValues] = useState<RoutineFormValues>(() =>
     // New routines default to starting today with a reminder 10 minutes before.
@@ -53,8 +56,10 @@ export default function RoutineScreen() {
     repo.getRoutine(id).then(
       (routine) => {
         if (cancelled) return;
-        if (routine) setValues(routineToForm(routine));
-        else setLoadError('That routine could not be found. It may have been deleted.');
+        if (routine) {
+          setValues(routineToForm(routine));
+          setSavedImageUri(routine.imageUri);
+        } else setLoadError('That routine could not be found. It may have been deleted.');
         setLoading(false);
       },
       (e: unknown) => {
@@ -83,6 +88,8 @@ export default function RoutineScreen() {
       const input = formToRoutineInput({ ...values, reminderAdvanceMinutes: advanceMinutes });
       if (id) await repo.updateRoutine(id, input);
       else await repo.createRoutine(input);
+      pictures.track(savedImageUri);
+      await pictures.committed(input.imageUri ?? null);
       await reconcile();
       router.back();
     } catch (e) {
@@ -112,6 +119,10 @@ export default function RoutineScreen() {
           onPress: () => {
             repo
               .deleteRoutine(id)
+              .then(() => {
+                pictures.track(savedImageUri);
+                return pictures.committed(null);
+              })
               .then(() => reconcile())
               .then(
                 () => router.back(),
@@ -187,6 +198,14 @@ export default function RoutineScreen() {
           error={errors.time}
         />
       </Card>
+      <PictureField
+        symbol={values.symbol}
+        imageUri={values.imageUri}
+        onChangeSymbol={(s) => set('symbol', s)}
+        onChangeImage={(uri) => set('imageUri', uri)}
+        onPicked={pictures.track}
+        error={errors.imageUri ?? errors.symbol}
+      />
 
       <View style={{ gap: spacing.sm }}>
         <Text variant="bodyStrong">Repeats on</Text>
