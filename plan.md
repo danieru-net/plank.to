@@ -41,14 +41,7 @@ Widen the stated audience from autistic people to also include people with ADHD 
 
 ### Tasks
 
-- [ ] Bring back **task steps** (the `steps` table was dropped in a migration): optional ordered sub-steps on tasks and routines, ticked off one at a time on Today, with progress shown as "2 of 5 steps". Add a new migration and tests, and don't revert the old one.
-- [ ] Add a **Now / Next view**: one large card for the current task (with its steps) and a smaller "Next" card, reachable from Today and from a reminder notification. Helps people who find a full list overwhelming.
-- [ ] Add an optional **visual time indicator** for time blindness: a shrinking ring or bar showing time until the next task and, for tasks with a duration, time left. Neutral wording ("20 min until Lunch"), no red or alarm styling, and it follows the Animations setting.
-- [ ] Add optional **task duration** (e.g. 15 min) to tasks and routines so the time indicator and the timeline can show how long things take.
-- [ ] Add a **timeline layout** for Today (time down the side, blocks sized by duration) as a choice next to the current list, saved in Appearance.
-- [ ] Add a **transition heads-up** reminder ("In 5 minutes: getting ready for school") separate from the task reminder, so changes between activities are predictable. Reuse reminder reconciliation.
 - [ ] Add **reordering** for untimed tasks (drag plus accessible "Move up" and "Move down" actions), as the README promises.
-- [ ] Add a **quick capture inbox**: a one-field "Add a thought" that saves undated tasks to an Inbox list, to be scheduled later. Reachable from Today in one tap.
 - [ ] Add a **"What changed" notice**: when a routine occurrence was moved, edited or skipped, Today shows a calm note at the top ("Swimming moved to 17:00 today") so changes are never a surprise.
 - [ ] Add **read aloud** (`expo-speech`) for a task's title and steps, for people who prefer listening, younger users, and anyone who finds reading tiring.
 - [ ] Add an optional, gentle **completion moment** (a short check animation and sound, or nothing). Off by default, never a streak or score, and it follows the Animations and Haptics settings.
