@@ -14,6 +14,8 @@ export type Palette = {
   danger: string;
   onDanger: string;
   focus: string;
+  /** Secondary color for decoration only; never the sole cue for meaning or state. */
+  accent: string;
 };
 
 export const palettes: Record<ColorScheme, Palette> = {
@@ -29,6 +31,7 @@ export const palettes: Record<ColorScheme, Palette> = {
     danger: '#A12D2D',
     onDanger: '#FFFFFF',
     focus: '#1F4E7A',
+    accent: '#2B5C8A',
   },
   dark: {
     background: '#121212',
@@ -42,10 +45,20 @@ export const palettes: Record<ColorScheme, Palette> = {
     danger: '#F0A3A3',
     onDanger: '#2A0B0B',
     focus: '#A9CDF0',
+    accent: '#8DB8E3',
   },
 };
 
-export const colorThemes = ['system', 'light', 'dark', 'sage', 'plum', 'clay', 'blossom'] as const;
+export const colorThemes = [
+  'system',
+  'light',
+  'dark',
+  'sage',
+  'plum',
+  'clay',
+  'blossom',
+  'playful',
+] as const;
 export type ColorTheme = (typeof colorThemes)[number];
 export const defaultColorTheme: ColorTheme = 'system';
 
@@ -57,6 +70,7 @@ export const colorThemeLabels: Record<ColorTheme, string> = {
   plum: 'Plum (purple accent)',
   clay: 'Clay (orange accent)',
   blossom: 'Blossom (pink)',
+  playful: 'Playful (bright colors)',
 };
 
 type Override = Partial<Palette>;
@@ -100,6 +114,27 @@ const overrides: Record<OverrideTheme, Record<ColorScheme, Override>> = {
       danger: '#FF9E8F',
       onDanger: '#2A0B0B',
       focus: '#F0A9C4',
+    },
+  },
+  playful: {
+    light: {
+      background: '#FFF7E8',
+      surface: '#FFFFFF',
+      separator: '#F0E1C4',
+      primary: '#5B2FD0',
+      onPrimary: '#FFFFFF',
+      focus: '#5B2FD0',
+      accent: '#FF7A1A',
+    },
+    dark: {
+      background: '#16122B',
+      surface: '#221C3E',
+      border: '#9A90C2',
+      separator: '#3A3260',
+      primary: '#B9A8FF',
+      onPrimary: '#1B0F4A',
+      focus: '#B9A8FF',
+      accent: '#FFB54D',
     },
   },
 };
