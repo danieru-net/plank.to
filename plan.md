@@ -41,7 +41,6 @@ Widen the stated audience from autistic people to also include people with ADHD 
 
 ### Tasks
 
-- [ ] Update the product description in [README.md](README.md), [index.astro](web/src/pages/index.astro), [help.astro](web/src/pages/help.astro) and [docs/release/store-listing.md](docs/release/store-listing.md) to name autistic people and people with ADHD, with no efficacy claims.
 - [ ] Bring back **task steps** (the `steps` table was dropped in a migration): optional ordered sub-steps on tasks and routines, ticked off one at a time on Today, with progress shown as "2 of 5 steps". Add a new migration and tests, and don't revert the old one.
 - [ ] Add a **Now / Next view**: one large card for the current task (with its steps) and a smaller "Next" card, reachable from Today and from a reminder notification. Helps people who find a full list overwhelming.
 - [ ] Add an optional **visual time indicator** for time blindness: a shrinking ring or bar showing time until the next task and, for tasks with a duration, time left. Neutral wording ("20 min until Lunch"), no red or alarm styling, and it follows the Animations setting.

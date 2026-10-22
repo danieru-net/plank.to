@@ -2,14 +2,14 @@
 
 ## Product plan
 
-Build a configurable daily planner for autistic people and others who benefit from clear routines and visual supports. Personalization and user control are core requirements; no single layout, reminder style, or set of supports should be assumed to work for everyone.
+Build a configurable daily planner for autistic people, people with ADHD, and others who benefit from clear routines and visual supports. Personalization and user control are core requirements; no single layout, reminder style, or set of supports should be assumed to work for everyone.
 
 The app and website have separate responsibilities:
 
 - **Expo app:** local-first planner, routines, and on-device reminders.
 - **Astro website:** static product information, help, and privacy pages, hosted on Firebase Hosting. It does not collect or display planner data.
 
-The cited research in the product brief is a starting point for requirements, not evidence that this particular app is clinically effective. Involve autistic people with varied needs and preferences in co-design and usability testing. Avoid therapeutic or efficacy claims unless supported by suitable evidence.
+The cited research in the product brief is a starting point for requirements, not evidence that this particular app is clinically effective. Involve autistic people and people with ADHD, with varied needs and preferences in co-design and usability testing. Avoid therapeutic or efficacy claims unless supported by suitable evidence.
 
 ## MVP features
 
@@ -67,7 +67,7 @@ The weekly schedule is the initial recurrence scope. Handle timezone and dayligh
 
 ## Delivery phases
 
-1. **Co-design and requirements:** Validate the agenda, routine creation, reminder controls, weather/location permission flow, and clothing-profile choices with autistic people and other intended users. Include varied support needs, sensory preferences, and attitudes to location sharing.
+1. **Co-design and requirements:** Validate the agenda, routine creation, reminder controls, weather/location permission flow, and clothing-profile choices with autistic people, people with ADHD, and other intended users. Include varied support needs, sensory preferences, and attitudes to location sharing.
 2. **Prototype and usability testing:** Test whether participants can understand and change the schedule, create a weekly routine, control reminders, interpret weather, and understand or dismiss clothing suggestions. Ask whether location and profile controls feel clear and optional.
 3. **App foundation:** Set up Expo, local storage and migrations, navigation, design tokens, recurring schedule representation, and notification scheduling.
 4. **Planner MVP:** Build the Today view, task and routine editing, personalization, and local reminders. Core planner use must not require sign-in, location, or connectivity.
