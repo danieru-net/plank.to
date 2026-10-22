@@ -36,6 +36,9 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
+# sed -i -E backups on macOS
+*-E
+
 # generated native folders
 /ios
 /android
