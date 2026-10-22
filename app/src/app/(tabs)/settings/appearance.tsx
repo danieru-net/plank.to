@@ -12,6 +12,7 @@ import { useAppearanceControls } from '@/features/appearance/AppearanceProvider'
 import { useAppearance } from '@/features/appearance/context';
 import { OptionGroup } from '@/features/appearance/OptionGroup';
 import {
+  completionMomentOptions,
   densityOptions,
   motionOptions,
   shapeFor,
@@ -96,6 +97,14 @@ export default function AppearanceScreen() {
         value={settings.taskActions}
         onChange={(taskActions) => update({ taskActions })}
         footer="Labelled buttons show Complete and Dismiss under every task on Today."
+      />
+
+      <OptionGroup
+        label="When a task is completed"
+        options={completionMomentOptions}
+        value={settings.completionMoment}
+        onChange={(completionMoment) => update({ completionMoment })}
+        footer="A short check, and optionally a soft sound that follows your device’s silent switch. The check is skipped when animations are off."
       />
 
       <Card style={{ paddingVertical: spacing.xs }}>

@@ -50,7 +50,6 @@ Widen the stated audience from autistic people to also include people with ADHD 
 
 ### Tasks
 
-- [ ] Add an optional, gentle **completion moment** (a short check animation and sound, or nothing). Off by default, never a streak or score, and it follows the Animations and Haptics settings.
 - [ ] Add a **Simple mode** that hides weather, clothing and the Routines tab, leaving only Today, for people who want fewer choices on screen.
 - [ ] Add **appearance presets** in [appearance.tsx](app/src/app/(tabs)/settings/appearance.tsx): "Calm (low stimulation)" (muted colors, no animation, no haptics, no emoji), "Focus" (Now/Next, larger text, labelled buttons) and "Playful" (the kids theme below). A preset only fills in the existing settings, and each one can still be changed afterwards.
 - [ ] Add a **readable font option** (e.g. Atkinson Hyperlegible, bundled locally) and a "More line spacing" toggle; update the [tokens.ts](app/src/theme/tokens.ts) typography to scale with it.
