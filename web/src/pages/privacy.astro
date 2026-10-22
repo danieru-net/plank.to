@@ -3,12 +3,12 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
 import { supportContact } from '../config';
 
-const lastUpdated = '2026-10-19';
+const lastUpdated = '2026-10-22';
 ---
 
 <BaseLayout
   title="Privacy"
-  description="How plank.to handles your data: local storage, device backups, notifications, optional weather and location sharing with Open-Meteo, and what is not collected."
+  description="How plank.to handles your data: local storage, device backups, notifications, optional weather and location sharing with Open-Meteo, feedback emails, and what is not collected."
 >
   <div class="container">
     <h1>Privacy policy</h1>
@@ -18,7 +18,7 @@ const lastUpdated = '2026-10-19';
     </p>
     <p>
       <strong>Last updated:</strong>
-      <time datetime={lastUpdated}>19 October 2026</time>
+      <time datetime={lastUpdated}>22 October 2026</time>
     </p>
     <p role="note">
       <strong>Draft.</strong> This policy has not yet been reviewed by a lawyer for the countries
@@ -43,6 +43,9 @@ const lastUpdated = '2026-10-19';
         </li>
         <li>
           <a href="#weather">Weather and location</a>
+        </li>
+        <li>
+          <a href="#feedback">Feedback emails</a>
         </li>
         <li>
           <a href="#attribution">Attribution</a>
@@ -73,6 +76,10 @@ const lastUpdated = '2026-10-19';
         with an approximate location.
       </li>
       <li>Reminders are off by default and are created on your device.</li>
+      <li>
+        If you send feedback, it is an ordinary email from your own mail app. Device details in it
+        are optional, and your plans and location are never added.
+      </li>
     </ul>
 
     <h2 id="local-data">Data stored on your device</h2>
@@ -150,6 +157,50 @@ const lastUpdated = '2026-10-19';
       Plank does not receive a copy of your requests.
     </p>
 
+    <h2 id="feedback">Feedback emails</h2>
+    <p>
+      You can suggest a feature or report a problem from Settings, under Feedback. The app never
+      asks you for feedback and sends nothing by itself. It writes an email and opens it in your
+      device's mail app, where you can read and change it. The email is sent only if you press Send
+      there, and it goes through your own email provider, not through a Plank server.
+    </p>
+    <h3>What a feedback email contains</h3>
+    <ul>
+      <li>
+        A subject line with the type you chose (idea, improvement, or problem) and the start of your
+        message.
+      </li>
+      <li>
+        The message you write and, for a problem, what you were trying to do, if you fill it in.
+      </li>
+      <li>
+        <strong>Device details, only if you leave "Include device details" on:</strong> the app
+        version and build number, your phone's operating system and version, the device model, and
+        the app's text size and color settings. The form shows these exact details before you send.
+        Turn the switch off and none of them are added.
+      </li>
+    </ul>
+    <p>
+      The app never adds your tasks, routines, notes, reminders, saved place or location, weather,
+      clothing choices, or any account, device, or advertising identifier. Anything you type into
+      the message yourself is sent as you wrote it.
+    </p>
+    <h3>What we receive and keep</h3>
+    <p>
+      Like any email, it reaches us with your email address, your name if your mail app adds one,
+      and the time it was sent. We use feedback emails only to read and reply to them and to improve
+      the app. Ideas and problems may be discussed in co-design and usability sessions without your
+      name or address. We do not add your address to a mailing list and do not share it. The emails
+      are stored by the provider that hosts our mailbox. You can ask us to delete your emails at any
+      time by writing to the same address.
+    </p>
+    <h3>Drafts</h3>
+    <p>
+      While you write, the app keeps an unsent draft in its database on your device, so it is not
+      lost if you leave the screen. The draft is deleted once the mail app reports the email as
+      sent. Like the rest of the app's data it may be included in device backups.
+    </p>
+
     <h2 id="attribution">Attribution</h2>
     <p>
       Weather data is provided by <a href="https://open-meteo.com/">Open-Meteo.com</a> and used
@@ -173,14 +224,19 @@ const lastUpdated = '2026-10-19';
       </li>
       <li>Your planner data stays on the device until you delete it or delete the app.</li>
       <li>
-        Plank keeps no copy on a server, so there is nothing on our side to retain or delete.
-        Open-Meteo's own retention is described in its policy, and device backups are covered above.
+        Plank keeps no copy of your planner data on a server, so there is nothing on our side to
+        retain or delete. The only things we receive are feedback emails you choose to send (see
+        above). Open-Meteo's own retention is described in its policy, and device backups are
+        covered above.
       </li>
     </ul>
 
     <h2 id="not-collected">What we do not do</h2>
     <ul>
       <li>No account, sign-in, or profile.</li>
+      <li>
+        No feedback sent without you pressing Send, and no prompts asking you to rate the app.
+      </li>
       <li>No cloud sync of your planner data.</li>
       <li>No analytics, tracking, or advertising, and no advertising identifiers.</li>
       <li>No selling or sharing of your data. Plank has none to sell or share.</li>

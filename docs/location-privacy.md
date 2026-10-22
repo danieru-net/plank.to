@@ -81,6 +81,20 @@ Also state in the privacy policy: the provider's name and link, the attribution 
 
 Pre-prompt screen for device location: explain why (nearby forecast), that it is approximate, that it is only checked while the app is open, and give "Search for a place instead" and "Not now" with equal weight.
 
+## Feedback emails
+
+Feedback (Settings → Feedback) is the only way data reaches Plank, and only when the user sends it. It never carries location data.
+
+- The app builds an email and opens it in the device's mail composer (`expo-mail-composer`), or through a `mailto:` link when no composer is available. Nothing is sent unless the user presses Send in their own mail app, and the mail goes through their own email provider, not a Plank server.
+- Subject: `Plank idea|improvement|problem: ` plus the first line of the message (up to 60 characters).
+- Body: the user's message and, for a problem, "What I was trying to do" if filled in.
+- Device details, only while "Include device details" is on (the default; the form shows the exact lines first): app version and build number, OS name and version, device model, in-app text size, and color theme. See [diagnostics.ts](../app/src/features/feedback/diagnostics.ts).
+- Never added by the app: task, routine, note, or reminder content; the saved place, coordinates, or forecast; weather mode; clothing preferences; any user, device, install, or advertising identifier. Text the user types into the message is sent as written.
+- The recipient sees the sender's email address (and name, if the mail app adds one) and the send time, as with any email. Use it only to read and reply; never add it to a mailing list.
+- The unsent draft is kept in the local preferences table (key `feedback.draft`) and removed once the composer reports Sent. Like other local data it may be in device backups.
+
+The privacy policy ("Feedback emails" in [privacy.astro](../web/src/pages/privacy.astro)) repeats this for users.
+
 ## Verification (for task 4.9)
 
 - With weather off, no request to Open-Meteo is made (assert in tests with a stubbed network).
