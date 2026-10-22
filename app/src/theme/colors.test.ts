@@ -21,6 +21,15 @@ describe('resolvePalette', () => {
       focus: '#F0B48F',
     });
   });
+
+  it('tints the background and surface for blossom in both schemes', () => {
+    const light = resolvePalette('blossom', 'light');
+    expect(light.background).toBe('#FFF4F7');
+    expect(light.surface).toBe('#FFFFFF');
+    const dark = resolvePalette('blossom', 'dark');
+    expect(dark.background).toBe('#1C1218');
+    expect(dark.surface).toBe('#2A1B24');
+  });
 });
 
 describe('allPalettes', () => {
