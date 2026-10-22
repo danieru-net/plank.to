@@ -63,7 +63,6 @@ If children are a target audience, the app needs a caregiver setup flow, and the
 
 ### Tasks
 
-- [ ] Add a **picture-first kids layout** option: large picture cards, read-aloud on tap, labelled Complete buttons, and no text-only rows.
 - [ ] Add a help page for caregivers on [help.astro](web/src/pages/help.astro) covering how to set up routines, pictures and the caregiver lock together with the child.
 
 ## Housekeeping

@@ -12,8 +12,11 @@ import { useAppearance } from '@/features/appearance/context';
 import { useFeedback } from '@/features/appearance/feedback';
 import { pictureLabel, TaskPicture } from '@/features/pictures/TaskPicture';
 import { ReadAloudButton } from '@/features/speech/ReadAloudButton';
+import { useReadAloud } from '@/features/speech/useReadAloud';
 import { minTouchTarget, tint } from '@/theme';
 import { statusText } from './agenda';
+import { CardPicture } from './CardPicture';
+import { cardControls } from './pictureCard';
 
 type Props = {
   task: Task;
@@ -33,11 +36,15 @@ type Props = {
 /** How long the filled check shows before the task moves to Done, when motion is on. */
 const SETTLE_MS = 350;
 
+/** Picture size in a picture card, before the text size setting is applied. */
+const CARD_PICTURE_SIZE = 160;
+
 /**
  * One task in Today's grouped list: time, picture or symbol, and title. With "Pictures first"
  * the picture is shown large above the title. Actions follow the "Task
  * actions" setting: a check circle plus a menu, or labelled buttons. Either way the same actions
- * are offered to screen readers as named actions on the row.
+ * are offered to screen readers as named actions on the row. With "Picture cards" the task is a
+ * large card instead (see the early return below).
  */
 export function TaskItem({
   task,
@@ -55,8 +62,11 @@ export function TaskItem({
   const status = statusText(task.status);
   const pending = task.status === 'pending';
   const editable = task.routineId === null;
-  const compact = settings.taskActions === 'compact';
+  const controls = cardControls(settings);
+  const cards = settings.pictureCards;
+  const compact = controls.compactControls;
   const picturesFirst = settings.picturesFirst;
+  const reader = useReadAloud(task);
   const [settling, setSettling] = useState(false);
   // Whether the optional completion check is showing while the task settles.
   const [check, setCheck] = useState(false);
@@ -101,6 +111,144 @@ export function TaskItem({
   const undoLabel = `Undo ${status?.toLowerCase()} for ${task.title}`;
   const symbolLabel = pictureLabel(task.symbol, task.imageUri);
   const rowLabel = `${task.title}${symbolLabel ? `, ${symbolLabel}` : ''}${task.time ? `, ${task.time}` : ', any time'}${next ? ', next' : ''}${status ? `, ${status}` : ''}${editable ? '. Edit' : ''}`;
+
+  if (cards)
+    return (
+      <Animated.View layout={motion ? LinearTransition.duration(200) : undefined}>
+        <View
+          style={[
+            styles.card,
+            { padding: spacing.md, gap: spacing.md, paddingBottom: spacing.md + spacing.xs },
+          ]}
+        >
+          {task.time || next ? (
+            <View style={[styles.meta, styles.cardMeta, { gap: spacing.sm }]}>
+              {task.time ? (
+                <Text variant="bodyStrong" tabular muted={done}>
+                  {task.time}
+                </Text>
+              ) : null}
+              {next ? (
+                <Text
+                  variant="caption"
+                  style={[
+                    styles.pill,
+                    { color: theme.primary, backgroundColor: tint(theme.primary, 0.12) },
+                  ]}
+                >
+                  Next
+                </Text>
+              ) : null}
+            </View>
+          ) : null}
+
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={
+              reader.speaking ? `Stop reading ${task.title}` : `Read ${task.title} aloud`
+            }
+            accessibilityHint="Speaks the title and notes"
+            onPress={reader.toggle}
+            style={({ pressed }) => [styles.cardPicture, { opacity: pressed ? 0.7 : 1 }]}
+          >
+            <CardPicture
+              title={task.title}
+              symbol={task.symbol}
+              imageUri={task.imageUri}
+              size={CARD_PICTURE_SIZE}
+              muted={done}
+            />
+            <View style={{ position: 'absolute', right: 0, bottom: 0 }}>
+              <Ionicons
+                name={reader.speaking ? 'stop-circle' : 'volume-high'}
+                size={28}
+                color={theme.primary}
+              />
+            </View>
+          </Pressable>
+
+          <Pressable
+            accessibilityLabel={rowLabel}
+            accessibilityRole={editable ? 'button' : 'text'}
+            accessibilityActions={[
+              ...(pending
+                ? [
+                    { name: 'complete', label: 'Complete' },
+                    { name: 'dismiss', label: 'Dismiss for today' },
+                  ]
+                : [{ name: 'reopen', label: 'Undo' }]),
+              ...(onMoveUp ? [{ name: 'moveUp', label: 'Move up' }] : []),
+              ...(onMoveDown ? [{ name: 'moveDown', label: 'Move down' }] : []),
+            ]}
+            onAccessibilityAction={(e) => {
+              if (e.nativeEvent.actionName === 'complete') onComplete();
+              if (e.nativeEvent.actionName === 'dismiss') onDismiss();
+              if (e.nativeEvent.actionName === 'reopen') onReopen();
+              if (e.nativeEvent.actionName === 'moveUp') onMoveUp?.();
+              if (e.nativeEvent.actionName === 'moveDown') onMoveDown?.();
+            }}
+            disabled={!editable}
+            onPress={onOpen}
+            style={({ pressed }) => [styles.cardTitle, { opacity: pressed ? 0.6 : 1 }]}
+          >
+            <Text
+              variant="title"
+              muted={done}
+              style={[styles.center, done && !settling ? styles.struck : undefined]}
+            >
+              {task.title}
+            </Text>
+            {status || !editable ? (
+              <Text variant="caption" muted style={styles.center}>
+                {[!editable ? 'Routine' : null, status].filter(Boolean).join(' · ')}
+              </Text>
+            ) : null}
+          </Pressable>
+
+          <View style={{ gap: spacing.sm }}>
+            {pending ? (
+              <>
+                <Button
+                  label="Complete"
+                  icon="checkmark-circle-outline"
+                  accessibilityLabel={`Complete ${task.title}`}
+                  disabled={settling}
+                  onPress={complete}
+                />
+                <Button
+                  label="Dismiss"
+                  icon="close-circle-outline"
+                  variant="secondary"
+                  accessibilityLabel={`Dismiss ${task.title}`}
+                  onPress={onDismiss}
+                />
+              </>
+            ) : (
+              <Button
+                label="Undo"
+                variant="secondary"
+                accessibilityLabel={undoLabel}
+                onPress={onReopen}
+              />
+            )}
+          </View>
+          {handle ? <View style={styles.cardHandle}>{handle}</View> : null}
+        </View>
+
+        {settling && check ? (
+          <Animated.View
+            pointerEvents="none"
+            accessibilityElementsHidden
+            importantForAccessibility="no-hide-descendants"
+            entering={FadeIn.duration(150)}
+            exiting={FadeOut.duration(150)}
+            style={[styles.moment, { backgroundColor: tint(theme.primary, 0.1) }]}
+          >
+            <Ionicons name="checkmark-circle" size={64} color={theme.primary} />
+          </Animated.View>
+        ) : null}
+      </Animated.View>
+    );
 
   return (
     <Animated.View layout={motion ? LinearTransition.duration(200) : undefined}>
@@ -222,7 +370,7 @@ export function TaskItem({
         </Animated.View>
       ) : null}
 
-      {settings.readAloud ? (
+      {controls.readAloudButton ? (
         <View
           style={[styles.actions, { paddingHorizontal: spacing.md, paddingBottom: spacing.sm }]}
         >
@@ -230,7 +378,7 @@ export function TaskItem({
         </View>
       ) : null}
 
-      {!compact ? (
+      {controls.labelledButtons ? (
         <View
           style={[
             styles.actions,
@@ -323,5 +471,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  card: { alignItems: 'stretch' },
+  cardMeta: { justifyContent: 'center' },
+  cardPicture: { alignSelf: 'center', minHeight: minTouchTarget, minWidth: minTouchTarget },
+  cardTitle: { alignItems: 'center', gap: 4, minHeight: minTouchTarget, justifyContent: 'center' },
+  cardHandle: { alignItems: 'center' },
+  center: { textAlign: 'center' },
   actions: { flexDirection: 'row', flexWrap: 'wrap' },
 });

@@ -155,6 +155,12 @@ export default function AppearanceScreen() {
           onChange={(picturesFirst) => update({ picturesFirst })}
         />
         <ToggleRow
+          label="Picture cards"
+          description="Shows each task on Today as a large card with a big picture and a labelled Complete button. Tap the picture to hear the task read aloud. Suits children and anyone who prefers pictures to words."
+          checked={settings.pictureCards}
+          onChange={(pictureCards) => update({ pictureCards })}
+        />
+        <ToggleRow
           label="Read aloud"
           description="Adds a Read aloud button to each task on Today. It speaks the title and notes, and you can stop it any time."
           checked={settings.readAloud}

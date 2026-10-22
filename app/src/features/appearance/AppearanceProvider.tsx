@@ -40,6 +40,7 @@ const keyFor = {
   haptics: 'display.haptics',
   taskActions: 'display.taskActions',
   picturesFirst: 'display.picturesFirst',
+  pictureCards: 'display.pictureCards',
   readAloud: 'display.readAloud',
   completionMoment: 'display.completionMoment',
   simpleMode: 'display.simpleMode',
