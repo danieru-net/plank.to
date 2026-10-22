@@ -50,7 +50,6 @@ Widen the stated audience from autistic people to also include people with ADHD 
 
 ### Tasks
 
-- [ ] Add routine **templates** (Morning, Bedtime, School day, Leaving the house) with example steps. These are starting points that people can change, not prescriptions.
 
 ## Color themes: Playful (kids) and Blossom (pink)
 

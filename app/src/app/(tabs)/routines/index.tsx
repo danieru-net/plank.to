@@ -6,7 +6,7 @@ import { Pressable, StyleSheet, Switch, View } from 'react-native';
 import { Button } from '@/components/Button';
 import { EmptyState } from '@/components/EmptyState';
 import { InlineNotice } from '@/components/InlineNotice';
-import { ListSection } from '@/components/List';
+import { ListRow, ListSection } from '@/components/List';
 import { Screen } from '@/components/Screen';
 import { Text } from '@/components/Text';
 import { StorageError } from '@/db/errors';
@@ -14,6 +14,7 @@ import type { Routine } from '@/db/routineRepository';
 import { useAppearance } from '@/features/appearance/context';
 import { useReconcileReminders } from '@/features/notifications/useReminderReconciler';
 import { weekdaysSpoken } from '@/features/routines/routineSummary';
+import { ROUTINE_TEMPLATES } from '@/features/routines/templates';
 import { useRoutineRepository } from '@/features/routines/useRoutineRepository';
 import { WeekdayDots } from '@/features/routines/WeekdayDots';
 import { toLocalDateString } from '@/features/tasks/taskForm';
@@ -62,6 +63,34 @@ export default function RoutinesScreen() {
 
   const today = toLocalDateString(new Date());
   const addRoutine = () => router.push({ pathname: '/routine', params: { date: today } });
+
+  const templates =
+    load.status === 'ready' ? (
+      <ListSection
+        title="Start from a template"
+        footer="Examples to start from. Change anything you like, and nothing is saved until you press Save."
+      >
+        <ListRow
+          title="Blank"
+          subtitle="Start with an empty routine"
+          chevron
+          onPress={addRoutine}
+          accessibilityLabel="Blank routine"
+        />
+        {ROUTINE_TEMPLATES.map((t) => (
+          <ListRow
+            key={t.id}
+            title={t.title}
+            subtitle={t.description}
+            chevron
+            accessibilityLabel={`${t.title} template, ${t.description}`}
+            onPress={() =>
+              router.push({ pathname: '/routine', params: { date: today, template: t.id } })
+            }
+          />
+        ))}
+      </ListSection>
+    ) : null;
 
   return (
     <Screen contentContainerStyle={{ gap: spacing.lg }}>
@@ -156,6 +185,7 @@ export default function RoutinesScreen() {
           })}
         </ListSection>
       ) : null}
+      {templates}
     </Screen>
   );
 }

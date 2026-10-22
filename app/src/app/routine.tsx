@@ -27,12 +27,17 @@ import {
 import { ReminderFields } from '@/features/notifications/ReminderFields';
 import { useReconcileReminders } from '@/features/notifications/useReminderReconciler';
 import { PictureField, usePictureCleanup } from '@/features/pictures/PictureField';
+import { findTemplate, templateToForm } from '@/features/routines/templates';
 import { useRoutineRepository } from '@/features/routines/useRoutineRepository';
 import { toLocalDateString } from '@/features/tasks/taskForm';
 import { minTouchTarget, radius, tint } from '@/theme';
 
 export default function RoutineScreen() {
-  const { id } = useLocalSearchParams<{ date?: string; id?: string }>();
+  const { id, template } = useLocalSearchParams<{
+    date?: string;
+    id?: string;
+    template?: string;
+  }>();
   const router = useRouter();
   const { palette: theme, spacing } = useAppearance();
   const repo = useRoutineRepository();
@@ -40,10 +45,14 @@ export default function RoutineScreen() {
   const pictures = usePictureCleanup();
   const [savedImageUri, setSavedImageUri] = useState<string | null>(null);
 
-  const [values, setValues] = useState<RoutineFormValues>(() =>
+  const [values, setValues] = useState<RoutineFormValues>(() => {
     // New routines default to starting today with a reminder 10 minutes before.
-    ({ ...emptyRoutineForm(toLocalDateString(new Date()), 10), reminderEnabled: true }),
-  );
+    const start = toLocalDateString(new Date());
+    // A template only fills in the form. Nothing is saved until the person presses Save.
+    const chosen = findTemplate(template);
+    const base = chosen ? templateToForm(chosen, start, 10) : emptyRoutineForm(start, 10);
+    return { ...base, reminderEnabled: true };
+  });
   const [errors, setErrors] = useState<RoutineFormErrors>({});
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -269,6 +278,7 @@ export default function RoutineScreen() {
 
       <MoreOptions
         summary="Picture, start date, notes, reminder"
+        initiallyOpen={!!findTemplate(template)}
         forceOpen={
           !!(
             errors.imageUri ||
