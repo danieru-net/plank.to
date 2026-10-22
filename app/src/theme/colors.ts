@@ -58,10 +58,15 @@ export const colorThemeLabels: Record<ColorTheme, string> = {
   clay: 'Clay (orange accent)',
 };
 
-type Accent = Pick<Palette, 'primary' | 'onPrimary' | 'focus'>;
+type Override = Partial<Palette>;
+type OverrideTheme = Exclude<ColorTheme, 'system' | 'light' | 'dark'>;
 
-/** Accent themes recolor buttons and links and follow the device's light/dark setting. */
-const accents: Record<'sage' | 'plum' | 'clay', Record<ColorScheme, Accent>> = {
+/**
+ * Per-scheme palette overrides, merged over the base palette. Accent themes only set
+ * primary/onPrimary/focus; a theme may override any `Palette` key. All follow the device's
+ * light/dark setting.
+ */
+const overrides: Record<OverrideTheme, Record<ColorScheme, Override>> = {
   sage: {
     light: { primary: '#2E6B47', onPrimary: '#FFFFFF', focus: '#2E6B47' },
     dark: { primary: '#8CCBA5', onPrimary: '#0F2417', focus: '#8CCBA5' },
@@ -92,7 +97,7 @@ export function tint(hex: string, alpha: number): string {
 export function resolvePalette(theme: ColorTheme, systemScheme: ColorScheme): Palette {
   if (theme === 'light' || theme === 'dark') return palettes[theme];
   if (theme === 'system') return palettes[systemScheme];
-  return { ...palettes[systemScheme], ...accents[theme][systemScheme] };
+  return { ...palettes[systemScheme], ...overrides[theme][systemScheme] };
 }
 
 /** Every palette a user can end up with, for contrast verification. */
@@ -100,8 +105,8 @@ export function allPalettes(): [string, Palette][] {
   const out: [string, Palette][] = [];
   for (const theme of colorThemes) {
     for (const scheme of ['light', 'dark'] as const) {
-      if ((theme === 'light' && scheme === 'dark') || (theme === 'dark' && scheme === 'light'))
-        continue;
+      // Fixed light/dark themes only ever render their own scheme.
+      if ((theme === 'light' || theme === 'dark') && theme !== scheme) continue;
       out.push([`${theme}/${scheme}`, resolvePalette(theme, scheme)]);
     }
   }
