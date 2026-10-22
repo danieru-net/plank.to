@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { DatabaseProvider } from '@/db/DatabaseProvider';
 import { AppearanceProvider } from '@/features/appearance/AppearanceProvider';
 import { useAppearance } from '@/features/appearance/context';
+import { CaregiverLockProvider } from '@/features/caregiver/CaregiverLockProvider';
 import { ReminderResponder } from '@/features/notifications/ReminderResponder';
 import { ReminderReconciler } from '@/features/notifications/useReminderReconciler';
 import { useStackScreenOptions } from '@/theme/navigation';
@@ -37,9 +38,11 @@ export default function RootLayout() {
   return (
     <DatabaseProvider>
       <AppearanceProvider>
-        <Navigator />
-        <ReminderReconciler />
-        <ReminderResponder />
+        <CaregiverLockProvider>
+          <Navigator />
+          <ReminderReconciler />
+          <ReminderResponder />
+        </CaregiverLockProvider>
       </AppearanceProvider>
     </DatabaseProvider>
   );

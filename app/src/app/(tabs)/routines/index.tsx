@@ -12,6 +12,7 @@ import { Text } from '@/components/Text';
 import { StorageError } from '@/db/errors';
 import type { Routine } from '@/db/routineRepository';
 import { useAppearance } from '@/features/appearance/context';
+import { CaregiverGuard } from '@/features/caregiver/CaregiverGate';
 import { useReconcileReminders } from '@/features/notifications/useReminderReconciler';
 import { weekdaysSpoken } from '@/features/routines/routineSummary';
 import { ROUTINE_TEMPLATES } from '@/features/routines/templates';
@@ -23,6 +24,14 @@ import { minTouchTarget } from '@/theme';
 type Load = { status: 'loading' } | { status: 'error'; message: string } | { status: 'ready' };
 
 export default function RoutinesScreen() {
+  return (
+    <CaregiverGuard what="Routines">
+      <RoutinesList />
+    </CaregiverGuard>
+  );
+}
+
+function RoutinesList() {
   const router = useRouter();
   const { palette: theme, spacing } = useAppearance();
   const repo = useRoutineRepository();

@@ -24,6 +24,7 @@ import { resolveOccurrence, weekdaysToMask } from '@/features/routines/recurrenc
 import { useReconcileReminders } from '@/features/notifications/useReminderReconciler';
 import { useRoutineRepository } from '@/features/routines/useRoutineRepository';
 import { useAppearance } from '@/features/appearance/context';
+import { CaregiverGuard } from '@/features/caregiver/CaregiverGate';
 import { formatDateHeading } from '@/features/today/agenda';
 
 type Params = { routineId?: string; date?: string };
@@ -33,6 +34,15 @@ type Params = { routineId?: string; date?: string };
  * stores an exception for this day only, and a separate button opens the whole routine.
  */
 export default function OccurrenceScreen() {
+  const router = useRouter();
+  return (
+    <CaregiverGuard what="Changing a day" sticky onCancel={() => router.back()}>
+      <OccurrenceScreenForm />
+    </CaregiverGuard>
+  );
+}
+
+function OccurrenceScreenForm() {
   const { routineId, date: occurrenceDate } = useLocalSearchParams<Params>();
   const router = useRouter();
   const { spacing } = useAppearance();

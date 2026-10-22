@@ -13,6 +13,7 @@ import { TextField } from '@/components/TextField';
 import { DateField, TimeField } from '@/components/TimeField';
 import { StorageError } from '@/db/errors';
 import { useAppearance } from '@/features/appearance/context';
+import { CaregiverGuard } from '@/features/caregiver/CaregiverGate';
 import {
   allWeekdays,
   emptyRoutineForm,
@@ -33,6 +34,15 @@ import { toLocalDateString } from '@/features/tasks/taskForm';
 import { minTouchTarget, radius, tint } from '@/theme';
 
 export default function RoutineScreen() {
+  const router = useRouter();
+  return (
+    <CaregiverGuard what="Editing routines" sticky onCancel={() => router.back()}>
+      <RoutineScreenForm />
+    </CaregiverGuard>
+  );
+}
+
+function RoutineScreenForm() {
   const { id, template } = useLocalSearchParams<{
     date?: string;
     id?: string;
