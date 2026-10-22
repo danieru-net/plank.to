@@ -28,7 +28,6 @@ Let users request features or report problems from inside the app without adding
 ### Tasks
 
 - [ ] Create the `feedback@plank.to` mailbox, confirm it receives mail, then set `mailboxLive` to `true` in [shared/support.json](shared/support.json). This is an owner task (it also completes 5.3).
-- [ ] Show a calm confirmation after sending ("Thanks — we read every message") with no follow-up prompts or rating requests.
 - [ ] Check accessibility: screen reader labels, dynamic text size, focus order, and keyboard avoidance on the feedback screen.
 - [ ] Update [contact.astro](web/src/pages/contact.astro) and [help.astro](web/src/pages/help.astro) with the feedback address and what to include in a request.
 - [ ] Update [privacy.astro](web/src/pages/privacy.astro) and [docs/location-privacy.md](docs/location-privacy.md) to describe what a feedback email contains and that device details are optional.
