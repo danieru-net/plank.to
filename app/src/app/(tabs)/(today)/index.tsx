@@ -14,6 +14,7 @@ import type { Task, TaskRepository } from '@/db/taskRepository';
 import { useAppearance } from '@/features/appearance/context';
 import { useReconcileReminders } from '@/features/notifications/useReminderReconciler';
 import { ReminderPermissionCard } from '@/features/notifications/ReminderPermissionCard';
+import { loadRoutineChanges, type RoutineChange } from '@/features/routines/routineChanges';
 import { createRoutineTasksForDate } from '@/features/routines/routineTasks';
 import { useRoutineRepository } from '@/features/routines/useRoutineRepository';
 import { toLocalDateString } from '@/features/tasks/taskForm';
@@ -34,6 +35,7 @@ export default function TodayScreen() {
   const reconcile = useReconcileReminders();
   const [today, setToday] = useState(() => toLocalDateString(new Date()));
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [changes, setChanges] = useState<RoutineChange[]>([]);
   const [load, setLoad] = useState<Load>({ status: 'loading' });
   const [actionError, setActionError] = useState<string | null>(null);
   const [showDone, setShowDone] = useState(false);
@@ -44,7 +46,12 @@ export default function TodayScreen() {
     try {
       // Routines scheduled for today become tasks, so the list below is only tasks.
       if ((await createRoutineTasksForDate(repo, routineRepo, date)) > 0) await reconcile();
-      setTasks(await repo.listTasksForDate(date));
+      const [dayTasks, dayChanges] = await Promise.all([
+        repo.listTasksForDate(date),
+        loadRoutineChanges(routineRepo, date),
+      ]);
+      setTasks(dayTasks);
+      setChanges(dayChanges);
       setLoad({ status: 'ready' });
     } catch (e) {
       setLoad({
@@ -138,6 +145,12 @@ export default function TodayScreen() {
       <Text variant="bodyStrong" muted style={{ marginTop: -spacing.sm }}>
         {formatDateHeading(today)}
       </Text>
+      {load.status === 'ready' && changes.length > 0 ? (
+        <InlineNotice
+          title="What changed today"
+          message={changes.map((c) => c.message).join('\n')}
+        />
+      ) : null}
       <TodaySummary />
 
       {actionError ? <InlineNotice tone="error" message={actionError} /> : null}
