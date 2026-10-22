@@ -25,6 +25,14 @@ describe('parseAppearance', () => {
     expect(parseAppearance({ 'display.picturesFirst': true }).picturesFirst).toBe(true);
   });
 
+  it('accepts the Blossom and Playful themes', () => {
+    for (const theme of ['blossom', 'playful'] as const) {
+      const parsed = parseAppearance({ 'display.colorTheme': theme });
+      expect(parsed.colorTheme).toBe(theme);
+      expect(parseAppearance({ 'display.colorTheme': parsed.colorTheme })).toEqual(parsed);
+    }
+  });
+
   it('falls back per field for invalid values', () => {
     expect(
       parseAppearance({
