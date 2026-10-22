@@ -13,6 +13,14 @@ describe('contrastRatio', () => {
 });
 
 describe('palettes', () => {
+  it('checks Blossom and Playful in light and dark', () => {
+    const names = allPalettes().map(([scheme]) => scheme);
+    for (const theme of ['blossom', 'playful']) {
+      expect(names).toContain(`${theme}/light`);
+      expect(names).toContain(`${theme}/dark`);
+    }
+  });
+
   for (const [scheme, palette] of allPalettes()) {
     for (const { fg, bg, min } of contrastRequirements) {
       it(`${scheme}: ${fg} on ${bg} meets ${min}:1`, () => {

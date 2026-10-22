@@ -88,3 +88,23 @@ appId: to.plank.app
 - assertVisible:
     text: 'Dark'
     selected: false
+# The new color themes can be selected and show their selection.
+- scrollUntilVisible:
+    element: 'Blossom (pink)'
+    centerElement: true
+- tapOn: 'Blossom (pink)'
+- assertVisible:
+    text: 'Blossom (pink)'
+    selected: true
+- takeScreenshot: appearance-blossom
+- scrollUntilVisible:
+    element: 'Playful (bright colors)'
+    centerElement: true
+- tapOn: 'Playful (bright colors)'
+- assertVisible:
+    text: 'Playful (bright colors)'
+    selected: true
+- assertVisible:
+    text: 'Blossom (pink)'
+    selected: false
+- takeScreenshot: appearance-playful

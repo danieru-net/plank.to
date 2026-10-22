@@ -40,7 +40,6 @@ Widen the stated audience from autistic people to also include people with ADHD 
 
 ### Tasks
 
-- [ ] Add unit tests in [settings.test.ts](app/src/features/appearance/settings.test.ts) and [contrast.test.ts](app/src/theme/contrast.test.ts) for parsing the new theme values and checking their contrast, and extend [visual-preferences.yaml](app/.maestro/visual-preferences.yaml) to switch to each new theme.
 
 
 ### Decisions
