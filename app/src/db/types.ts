@@ -94,6 +94,7 @@ export type PreferenceValues = {
   'display.taskActions': 'compact' | 'buttons';
   'display.picturesFirst': boolean;
   'display.readAloud': boolean;
+  'display.completionMoment': 'none' | 'check' | 'checkSound';
   /** The user chose "Not now" on the reminder explanation shown on Today. */
   'reminders.promptDismissed': boolean;
   'reminders.defaultAdvanceMinutes': number;

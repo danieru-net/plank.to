@@ -7,6 +7,9 @@ export type Motion = 'system' | 'on' | 'off';
 /** "compact" shows a check circle and a menu on each task; "buttons" shows labelled buttons. */
 export type TaskActions = 'compact' | 'buttons';
 
+/** What happens when a task is completed: nothing, a brief check, or a brief check and a soft sound. */
+export type CompletionMoment = 'none' | 'check' | 'checkSound';
+
 export type AppearanceSettings = {
   textScale: number;
   density: Density;
@@ -18,6 +21,8 @@ export type AppearanceSettings = {
   picturesFirst: boolean;
   /** Shows a Read aloud button on each task, which speaks its title and notes. */
   readAloud: boolean;
+  /** An optional gentle moment when a task is completed. Never a streak, score or praise. */
+  completionMoment: CompletionMoment;
 };
 
 export const textScaleOptions = [
@@ -43,6 +48,12 @@ export const taskActionOptions: { value: TaskActions; label: string }[] = [
   { value: 'buttons', label: 'Labelled buttons' },
 ];
 
+export const completionMomentOptions: { value: CompletionMoment; label: string }[] = [
+  { value: 'none', label: 'Nothing' },
+  { value: 'check', label: 'Check' },
+  { value: 'checkSound', label: 'Check and sound' },
+];
+
 export const defaultAppearance: AppearanceSettings = {
   textScale: 1,
   density: 'comfortable',
@@ -52,6 +63,7 @@ export const defaultAppearance: AppearanceSettings = {
   taskActions: 'compact',
   picturesFirst: false,
   readAloud: false,
+  completionMoment: 'none',
 };
 
 /** Reads stored preference values, ignoring anything missing or invalid (defaults apply). */
@@ -64,6 +76,7 @@ export function parseAppearance(stored: Record<string, unknown>): AppearanceSett
   const taskActions = stored['display.taskActions'];
   const picturesFirst = stored['display.picturesFirst'];
   const readAloud = stored['display.readAloud'];
+  const completionMoment = stored['display.completionMoment'];
   return {
     textScale: textScaleOptions.some((o) => o.value === scale)
       ? (scale as number)
@@ -83,6 +96,9 @@ export function parseAppearance(stored: Record<string, unknown>): AppearanceSett
     picturesFirst:
       typeof picturesFirst === 'boolean' ? picturesFirst : defaultAppearance.picturesFirst,
     readAloud: typeof readAloud === 'boolean' ? readAloud : defaultAppearance.readAloud,
+    completionMoment: completionMomentOptions.some((o) => o.value === completionMoment)
+      ? (completionMoment as CompletionMoment)
+      : defaultAppearance.completionMoment,
   };
 }
 

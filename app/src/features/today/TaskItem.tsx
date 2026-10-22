@@ -1,11 +1,13 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { ActionSheetIOS, Alert, Pressable, StyleSheet, View } from 'react-native';
-import Animated, { LinearTransition, ZoomIn } from 'react-native-reanimated';
+import Animated, { FadeIn, FadeOut, LinearTransition, ZoomIn } from 'react-native-reanimated';
 
 import { Button } from '@/components/Button';
 import { Text } from '@/components/Text';
 import type { Task } from '@/db/taskRepository';
+import { completionPlan } from '@/features/appearance/completionMoment';
+import { playCompletionSound } from '@/features/appearance/completionSound';
 import { useAppearance } from '@/features/appearance/context';
 import { useFeedback } from '@/features/appearance/feedback';
 import { pictureLabel, TaskPicture } from '@/features/pictures/TaskPicture';
@@ -56,12 +58,17 @@ export function TaskItem({
   const compact = settings.taskActions === 'compact';
   const picturesFirst = settings.picturesFirst;
   const [settling, setSettling] = useState(false);
+  // Whether the optional completion check is showing while the task settles.
+  const [check, setCheck] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   useEffect(() => () => clearTimeout(timer.current), []);
 
   const complete = () => {
     feedback.success();
+    const plan = completionPlan(settings.completionMoment, motion);
+    if (plan.sound) playCompletionSound();
     if (!motion) return onComplete();
+    setCheck(plan.check);
     setSettling(true);
     timer.current = setTimeout(onComplete, SETTLE_MS);
   };
@@ -202,6 +209,19 @@ export function TaskItem({
         {handle}
       </View>
 
+      {settling && check ? (
+        <Animated.View
+          pointerEvents="none"
+          accessibilityElementsHidden
+          importantForAccessibility="no-hide-descendants"
+          entering={FadeIn.duration(150)}
+          exiting={FadeOut.duration(150)}
+          style={[styles.moment, { backgroundColor: tint(theme.primary, 0.1) }]}
+        >
+          <Ionicons name="checkmark-circle" size={44} color={theme.primary} />
+        </Animated.View>
+      ) : null}
+
       {settings.readAloud ? (
         <View
           style={[styles.actions, { paddingHorizontal: spacing.md, paddingBottom: spacing.sm }]}
@@ -291,6 +311,15 @@ const styles = StyleSheet.create({
   more: {
     minWidth: minTouchTarget,
     minHeight: minTouchTarget,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  moment: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
     alignItems: 'center',
     justifyContent: 'center',
   },
