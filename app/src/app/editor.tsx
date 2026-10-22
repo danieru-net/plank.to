@@ -5,6 +5,7 @@ import { Alert } from 'react-native';
 import { Button } from '@/components/Button';
 import { Card } from '@/components/Card';
 import { InlineNotice } from '@/components/InlineNotice';
+import { MoreOptions } from '@/components/MoreOptions';
 import { Screen } from '@/components/Screen';
 import { Text } from '@/components/Text';
 import { TextField } from '@/components/TextField';
@@ -175,14 +176,16 @@ export default function EditorScreen() {
           optional
         />
       </Card>
-      <PictureField
-        symbol={values.symbol}
-        imageUri={values.imageUri}
-        onChangeSymbol={(s) => set('symbol', s)}
-        onChangeImage={(uri) => set('imageUri', uri)}
-        onPicked={pictures.track}
-        error={errors.imageUri ?? errors.symbol}
-      />
+      <MoreOptions summary="Picture or symbol" forceOpen={!!(errors.imageUri || errors.symbol)}>
+        <PictureField
+          symbol={values.symbol}
+          imageUri={values.imageUri}
+          onChangeSymbol={(s) => set('symbol', s)}
+          onChangeImage={(uri) => set('imageUri', uri)}
+          onPicked={pictures.track}
+          error={errors.imageUri ?? errors.symbol}
+        />
+      </MoreOptions>
 
       {saveError ? <InlineNotice tone="error" message={saveError} /> : null}
       <Button label={saving ? 'Saving…' : 'Save task'} onPress={onSave} disabled={saving} />

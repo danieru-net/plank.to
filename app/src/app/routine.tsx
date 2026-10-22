@@ -6,6 +6,7 @@ import { Alert, Pressable, StyleSheet, View } from 'react-native';
 import { Button } from '@/components/Button';
 import { Card } from '@/components/Card';
 import { InlineNotice } from '@/components/InlineNotice';
+import { MoreOptions } from '@/components/MoreOptions';
 import { Screen } from '@/components/Screen';
 import { Text } from '@/components/Text';
 import { TextField } from '@/components/TextField';
@@ -73,7 +74,6 @@ export default function RoutineScreen() {
     };
   }, [id, repo]);
 
-  const [advancedOpen, setAdvancedOpen] = useState(false);
   const advanceMinutes = values.reminderAdvanceMinutes;
 
   const set = <K extends keyof RoutineFormValues>(key: K, value: RoutineFormValues[K]) => {
@@ -198,14 +198,6 @@ export default function RoutineScreen() {
           error={errors.time}
         />
       </Card>
-      <PictureField
-        symbol={values.symbol}
-        imageUri={values.imageUri}
-        onChangeSymbol={(s) => set('symbol', s)}
-        onChangeImage={(uri) => set('imageUri', uri)}
-        onPicked={pictures.track}
-        error={errors.imageUri ?? errors.symbol}
-      />
 
       <View style={{ gap: spacing.sm }}>
         <Text variant="bodyStrong">Repeats on</Text>
@@ -275,57 +267,55 @@ export default function RoutineScreen() {
         ) : null}
       </View>
 
-      <View style={{ gap: spacing.md }}>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="More options"
-          accessibilityState={{ expanded: advancedOpen }}
-          onPress={() => setAdvancedOpen((o) => !o)}
-          style={styles.advancedHeader}
-        >
-          <Text variant="bodyStrong">More options</Text>
-          <Text variant="caption" muted style={styles.grow}>
-            {'  '}Start date, notes, reminder
-          </Text>
-          <Ionicons
-            name={advancedOpen ? 'chevron-up' : 'chevron-down'}
-            size={20}
-            color={theme.textMuted}
+      <MoreOptions
+        summary="Picture, start date, notes, reminder"
+        forceOpen={
+          !!(
+            errors.imageUri ||
+            errors.symbol ||
+            errors.startDate ||
+            errors.notes ||
+            errors.reminderAdvanceMinutes
+          )
+        }
+      >
+        <PictureField
+          symbol={values.symbol}
+          imageUri={values.imageUri}
+          onChangeSymbol={(s) => set('symbol', s)}
+          onChangeImage={(uri) => set('imageUri', uri)}
+          onPicked={pictures.track}
+          error={errors.imageUri ?? errors.symbol}
+        />
+        <Card>
+          <DateField
+            label="Starts on"
+            hint="Earlier days are not filled in."
+            value={values.startDate}
+            onChange={(t) => set('startDate', t)}
+            error={errors.startDate}
           />
-        </Pressable>
-        {advancedOpen ? (
-          <View style={{ gap: spacing.lg }}>
-            <Card>
-              <DateField
-                label="Starts on"
-                hint="Earlier days are not filled in."
-                value={values.startDate}
-                onChange={(t) => set('startDate', t)}
-                error={errors.startDate}
-              />
-            </Card>
-            <TextField
-              label="Notes (optional)"
-              value={values.notes}
-              onChangeText={(t) => set('notes', t)}
-              error={errors.notes}
-              multiline
-              textAlignVertical="top"
-            />
-            <ReminderFields
-              enabled={values.reminderEnabled}
-              advanceMinutes={advanceMinutes}
-              onChange={(p) => {
-                if (p.enabled !== undefined) set('reminderEnabled', p.enabled);
-                if (p.advanceMinutes !== undefined) {
-                  set('reminderAdvanceMinutes', p.advanceMinutes);
-                }
-              }}
-              error={errors.reminderAdvanceMinutes}
-            />
-          </View>
-        ) : null}
-      </View>
+        </Card>
+        <TextField
+          label="Notes (optional)"
+          value={values.notes}
+          onChangeText={(t) => set('notes', t)}
+          error={errors.notes}
+          multiline
+          textAlignVertical="top"
+        />
+        <ReminderFields
+          enabled={values.reminderEnabled}
+          advanceMinutes={advanceMinutes}
+          onChange={(p) => {
+            if (p.enabled !== undefined) set('reminderEnabled', p.enabled);
+            if (p.advanceMinutes !== undefined) {
+              set('reminderAdvanceMinutes', p.advanceMinutes);
+            }
+          }}
+          error={errors.reminderAdvanceMinutes}
+        />
+      </MoreOptions>
 
       {saveError ? <InlineNotice tone="error" message={saveError} /> : null}
       <Button label={saving ? 'Saving…' : 'Save routine'} onPress={onSave} disabled={saving} />
@@ -342,12 +332,6 @@ export default function RoutineScreen() {
 }
 
 const styles = StyleSheet.create({
-  advancedHeader: {
-    minHeight: minTouchTarget,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  grow: { flex: 1 },
   wrap: { flexDirection: 'row', flexWrap: 'wrap' },
   chip: {
     minHeight: minTouchTarget - 8,
