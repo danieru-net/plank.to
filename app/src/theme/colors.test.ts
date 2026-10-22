@@ -30,6 +30,18 @@ describe('resolvePalette', () => {
     expect(dark.background).toBe('#1C1218');
     expect(dark.surface).toBe('#2A1B24');
   });
+
+  it('uses a warm background, violet primary, and a decorative accent for playful', () => {
+    const light = resolvePalette('playful', 'light');
+    expect(light.background).toBe('#FFF7E8');
+    expect(light.surface).toBe('#FFFFFF');
+    expect(light.primary).toBe('#5B2FD0');
+    expect(light.accent).toBe('#FF7A1A');
+    const dark = resolvePalette('playful', 'dark');
+    expect(dark.background).toBe('#16122B');
+    expect(dark.primary).toBe('#B9A8FF');
+    expect(dark.accent).toBe('#FFB54D');
+  });
 });
 
 describe('allPalettes', () => {

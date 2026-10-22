@@ -27,7 +27,6 @@ Let users request features or report problems from inside the app without adding
 
 ### Tasks
 
-- [ ] Create the `feedback@plank.to` mailbox, confirm it receives mail, then set `mailboxLive` to `true` in [shared/support.json](shared/support.json). This is an owner task (it also completes 5.3).
 
 ## Audience: autistic people and people with ADHD
 
@@ -41,7 +40,6 @@ Widen the stated audience from autistic people to also include people with ADHD 
 
 ### Tasks
 
-- [ ] Add a **Playful** theme: warm light background, white surface, strong blue or violet primary, with a secondary accent color used only for decoration, never as the only cue. Provide a dark variant.
 - [ ] Add optional shape tokens (`radius.card`, `radius.button`, icon size) to [tokens.ts](app/src/theme/tokens.ts) so Playful can use rounder cards and larger icons; [Card.tsx](app/src/components/Card.tsx) and [Button.tsx](app/src/components/Button.tsx) read them from appearance context.
 - [ ] Update the Swatch and Preview in [appearance.tsx](app/src/app/(tabs)/settings/appearance.tsx) to show the tinted background and shape, so people can judge a theme before choosing it.
 - [ ] Add unit tests in [settings.test.ts](app/src/features/appearance/settings.test.ts) and [contrast.test.ts](app/src/theme/contrast.test.ts) for parsing the new theme values and checking their contrast, and extend [visual-preferences.yaml](app/.maestro/visual-preferences.yaml) to switch to each new theme.
@@ -62,7 +60,6 @@ Widen the stated audience from autistic people to also include people with ADHD 
 - [ ] Add **appearance presets** in [appearance.tsx](app/src/app/(tabs)/settings/appearance.tsx): "Calm (low stimulation)" (muted colors, no animation, no haptics, no emoji), "Focus" (Now/Next, larger text, labelled buttons) and "Playful" (the kids theme below). A preset only fills in the existing settings, and each one can still be changed afterwards.
 - [ ] Add a **readable font option** (e.g. Atkinson Hyperlegible, bundled locally) and a "More line spacing" toggle; update the [tokens.ts](app/src/theme/tokens.ts) typography to scale with it.
 - [ ] Add routine **templates** (Morning, Bedtime, School day, Leaving the house) with example steps. These are starting points that people can change, not prescriptions.
-- [ ] Run co-design and usability sessions with people with ADHD, and with autistic children and their caregivers, alongside the existing sessions with autistic adults. Record findings in `docs/`.
 
 ## Color themes: Playful (kids) and Blossom (pink)
 
@@ -76,7 +73,6 @@ If children are a target audience, the app needs a caregiver setup flow, and the
 
 ### Tasks
 
-- [ ] Decide whether to list the app in the App Store Kids Category or Google Play's Families program. Both restrict external links, require a parental gate before leaving the app (including the feedback `mailto:`), and set rules for third-party network calls (check the weather API). Record the decision in [docs/release/](docs/release/).
 - [ ] Add an optional **caregiver lock**: a simple parental gate (e.g. hold a button and answer a question) before Settings, routine editing and deleting, so a child can complete tasks without changing the schedule by accident.
 - [ ] Add a **picture-first kids layout** option: large picture cards, read-aloud on tap, labelled Complete buttons, and no text-only rows.
 - [ ] Add a help page for caregivers on [help.astro](web/src/pages/help.astro) covering how to set up routines, pictures and the caregiver lock together with the child.
@@ -84,3 +80,11 @@ If children are a target audience, the app needs a caregiver setup flow, and the
 ## Housekeeping
 
 - [ ] Delete the committed `*.ts-E` files in `app/src` (leftover backups from `sed -i -E` on macOS) and add `*-E` to [app/.gitignore](app/.gitignore).
+
+## Review
+
+Tasks an agent cannot do: they need the owner, real people, or a business decision.
+
+- [ ] Create the `feedback@plank.to` mailbox, confirm it receives mail, then set `mailboxLive` to `true` in [shared/support.json](shared/support.json). This is an owner task (it also completes 5.3).
+- [ ] Run co-design and usability sessions with people with ADHD, and with autistic children and their caregivers, alongside the existing sessions with autistic adults. Record findings in `docs/`.
+- [ ] Decide whether to list the app in the App Store Kids Category or Google Play's Families program. Both restrict external links, require a parental gate before leaving the app (including the feedback `mailto:`), and set rules for third-party network calls (check the weather API). Record the decision in [docs/release/](docs/release/).
