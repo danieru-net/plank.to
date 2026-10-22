@@ -14,6 +14,7 @@ import { OptionGroup } from '@/features/appearance/OptionGroup';
 import {
   densityOptions,
   motionOptions,
+  shapeFor,
   taskActionOptions,
   textScaleOptions,
 } from '@/features/appearance/settings';
@@ -114,22 +115,57 @@ export default function AppearanceScreen() {
 
 /** A sample task drawn with the current settings, so changes are visible straight away. */
 function Preview() {
-  const { palette: theme, spacing, settings } = useAppearance();
+  const { palette: theme, shape, spacing, settings } = useAppearance();
   const { picturesFirst } = settings;
   return (
     <View style={{ gap: spacing.sm }}>
       <SectionLabel>Preview</SectionLabel>
-      <Card style={[styles.row, { gap: spacing.sm }]}>
-        <Text variant="bodyStrong" tabular>
-          07:30
-        </Text>
-        {!picturesFirst ? <TaskPicture symbol="shower" imageUri={null} size={36} /> : null}
-        <View style={[styles.grow, { gap: spacing.xs }]}>
-          {picturesFirst ? <TaskPicture symbol="shower" imageUri={null} size={96} /> : null}
-          <Text>Shower</Text>
+      {/* The frame is painted with the theme's own background and given a border, so the tint reads even though the screen behind it is tinted too. */}
+      <View
+        style={[
+          styles.frame,
+          {
+            backgroundColor: theme.background,
+            borderColor: theme.border,
+            borderRadius: shape.radius.card + spacing.sm,
+            padding: spacing.md,
+            gap: spacing.md,
+          },
+        ]}
+      >
+        <Card style={[styles.row, { gap: spacing.sm }]}>
+          <Text variant="bodyStrong" tabular>
+            07:30
+          </Text>
+          {!picturesFirst ? <TaskPicture symbol="shower" imageUri={null} size={36} /> : null}
+          <View style={[styles.grow, { gap: spacing.xs }]}>
+            {picturesFirst ? <TaskPicture symbol="shower" imageUri={null} size={96} /> : null}
+            <Text>Shower</Text>
+          </View>
+          <View
+            style={[
+              styles.dot,
+              {
+                width: shape.iconSize + 6,
+                height: shape.iconSize + 6,
+                borderRadius: (shape.iconSize + 6) / 2,
+                borderColor: theme.border,
+              },
+            ]}
+          />
+        </Card>
+        {/* A sample button shows the theme's primary color and button corners. */}
+        <View
+          style={[
+            styles.sampleButton,
+            { backgroundColor: theme.primary, borderRadius: shape.radius.button },
+          ]}
+        >
+          <Text variant="bodyStrong" style={{ color: theme.onPrimary }}>
+            Complete
+          </Text>
         </View>
-        <View style={[styles.dot, { borderColor: theme.border }]} />
-      </Card>
+      </View>
     </View>
   );
 }
@@ -138,28 +174,54 @@ function Preview() {
 function Swatch({ theme }: { theme: ColorTheme }) {
   const { scheme } = useAppearance();
   const p = resolvePalette(theme, scheme);
+  const shape = shapeFor(theme);
+  // Corners follow the theme's card radius, kept small enough for the compact size.
+  const outer = Math.min(SWATCH_HEIGHT / 2, shape.radius.card / 2);
   return (
     <View
       accessibilityElementsHidden
       importantForAccessibility="no-hide-descendants"
-      style={[styles.swatch, { backgroundColor: p.background, borderColor: p.border }]}
+      style={[
+        styles.swatch,
+        { backgroundColor: p.background, borderColor: p.border, borderRadius: outer },
+      ]}
     >
-      <View style={[styles.swatchAccent, { backgroundColor: p.primary }]} />
+      <View
+        style={[
+          styles.swatchSurface,
+          { backgroundColor: p.surface, borderColor: p.separator, borderRadius: outer - 3 },
+        ]}
+      >
+        <View
+          style={[
+            styles.swatchAccent,
+            { backgroundColor: p.primary, borderRadius: Math.min(5, shape.radius.button / 4) },
+          ]}
+        />
+      </View>
     </View>
   );
 }
 
+const SWATCH_HEIGHT = 32;
+
 const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center' },
   grow: { flex: 1 },
-  dot: { width: 26, height: 26, borderRadius: 13, borderWidth: 2 },
+  frame: { borderWidth: 1 },
+  sampleButton: { minHeight: 48, alignItems: 'center', justifyContent: 'center' },
+  dot: { borderWidth: 2 },
   swatch: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+    width: 44,
+    height: SWATCH_HEIGHT,
+    borderWidth: 1,
+    padding: 3,
+  },
+  swatchSurface: {
+    flex: 1,
     borderWidth: StyleSheet.hairlineWidth,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  swatchAccent: { width: 14, height: 14, borderRadius: 7 },
+  swatchAccent: { width: 16, height: 10 },
 });
