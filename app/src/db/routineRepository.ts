@@ -6,6 +6,7 @@ import {
   weekdaysToMask,
   type OccurrenceException,
 } from '@/features/routines/recurrence';
+import { isSymbolId } from '@/features/pictures/symbols';
 import { addDays } from '@/features/today/agenda';
 
 import { StorageError, toStorageError, ValidationError, type ValidationIssue } from './errors';
@@ -39,6 +40,8 @@ export type Routine = {
   weekdays: number[];
   /** The routine never generates occurrences before this date. */
   startDate: LocalDate;
+  /** A symbol id from features/pictures/symbols.ts. */
+  symbol: string | null;
   imageUri: string | null;
   paused: boolean;
   reminderEnabled: boolean;
@@ -54,6 +57,7 @@ export type RoutineInput = {
   weekdays: readonly number[];
   startDate: LocalDate;
   notes?: string | null;
+  symbol?: string | null;
   imageUri?: string | null;
   reminderEnabled?: boolean;
   reminderAdvanceMinutes?: number;
@@ -68,6 +72,7 @@ type Normalized = {
   weekdays: number;
   startDate: LocalDate;
   notes: string | null;
+  symbol: string | null;
   imageUri: string | null;
   reminderEnabled: boolean;
   reminderAdvanceMinutes: number;
@@ -105,6 +110,10 @@ export function validateRoutine(input: RoutineInput): Normalized {
   if (notes !== null && notes.length > MAX_NOTES_LENGTH)
     issues.push({ field: 'notes', message: `Keep notes under ${MAX_NOTES_LENGTH} characters.` });
 
+  const symbol = blankToNull(input.symbol);
+  if (symbol !== null && !isSymbolId(symbol))
+    issues.push({ field: 'symbol', message: 'Choose a symbol from the list.' });
+
   const imageUri = blankToNull(input.imageUri);
   if (imageUri !== null && !isLocalImageUri(imageUri))
     issues.push({ field: 'imageUri', message: 'Choose a picture saved on this device.' });
@@ -123,6 +132,7 @@ export function validateRoutine(input: RoutineInput): Normalized {
     weekdays,
     startDate: input.startDate,
     notes,
+    symbol,
     imageUri,
     reminderEnabled: input.reminderEnabled ?? false,
     reminderAdvanceMinutes: advance,
@@ -180,6 +190,7 @@ export function createRoutineRepository(db: TaskDb, options: RepositoryOptions =
       time: r.time,
       weekdays: maskToWeekdays(r.weekdays),
       startDate: r.start_date,
+      symbol: r.symbol,
       imageUri: r.image_uri,
       paused: r.paused === 1,
       reminderEnabled: r.reminder_enabled === 1,
@@ -211,9 +222,9 @@ export function createRoutineRepository(db: TaskDb, options: RepositoryOptions =
     try {
       await db.withTransactionAsync(async () => {
         await db.runAsync(
-          `INSERT INTO routines (id, title, notes, time, weekdays, start_date, image_uri,
+          `INSERT INTO routines (id, title, notes, time, weekdays, start_date, symbol, image_uri,
              paused, reminder_enabled, reminder_advance_minutes, created_at, updated_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?, 0, ?, ?, ?, ?)`,
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?, ?, ?)`,
           [
             id,
             v.title,
@@ -221,6 +232,7 @@ export function createRoutineRepository(db: TaskDb, options: RepositoryOptions =
             v.time,
             v.weekdays,
             v.startDate,
+            v.symbol,
             v.imageUri,
             v.reminderEnabled ? 1 : 0,
             v.reminderAdvanceMinutes,
@@ -243,6 +255,7 @@ export function createRoutineRepository(db: TaskDb, options: RepositoryOptions =
       weekdays: current.weekdays,
       startDate: current.startDate,
       notes: current.notes,
+      symbol: current.symbol,
       imageUri: current.imageUri,
       reminderEnabled: current.reminderEnabled,
       reminderAdvanceMinutes: current.reminderAdvanceMinutes,
@@ -253,7 +266,7 @@ export function createRoutineRepository(db: TaskDb, options: RepositoryOptions =
       await db.withTransactionAsync(async () => {
         await db.runAsync(
           `UPDATE routines SET title = ?, notes = ?, time = ?, weekdays = ?, start_date = ?,
-             image_uri = ?, reminder_enabled = ?, reminder_advance_minutes = ?,
+             symbol = ?, image_uri = ?, reminder_enabled = ?, reminder_advance_minutes = ?,
              updated_at = ?
            WHERE id = ?`,
           [
@@ -262,6 +275,7 @@ export function createRoutineRepository(db: TaskDb, options: RepositoryOptions =
             v.time,
             v.weekdays,
             v.startDate,
+            v.symbol,
             v.imageUri,
             v.reminderEnabled ? 1 : 0,
             v.reminderAdvanceMinutes,

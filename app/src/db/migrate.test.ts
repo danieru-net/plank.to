@@ -60,6 +60,20 @@ describe('migrate', () => {
     expect(count(raw, 'tasks')).toBe(1);
   });
 
+  it('adds an empty symbol column to existing tasks and routines', async () => {
+    const { raw, db } = newDb();
+    await migrate(db, migrations.slice(0, 5));
+    raw.exec(
+      "INSERT INTO tasks (id, title, date, created_at, updated_at) VALUES ('t1', 'Keep me', '2026-01-01', 1, 1)",
+    );
+    await migrate(db);
+    expect(raw.prepare('SELECT title, symbol FROM tasks').all()).toEqual([
+      { title: 'Keep me', symbol: null },
+    ]);
+    const columns = raw.prepare('PRAGMA table_info(routines)').all() as { name: string }[];
+    expect(columns.map((c) => c.name)).toContain('symbol');
+  });
+
   it('rolls back a failing migration and reports a StorageError', async () => {
     const { raw, db } = newDb();
     await migrate(db, migrations.slice(0, 1));

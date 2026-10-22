@@ -6,6 +6,10 @@ export type TaskFormValues = {
   date: string;
   time: string;
   notes: string;
+  /** Symbol id, or '' for none. */
+  symbol: string;
+  /** Local picture URI, or '' for none. */
+  imageUri: string;
   reminderEnabled: boolean;
   reminderAdvanceMinutes: number;
 };
@@ -24,6 +28,8 @@ export function emptyForm(date: string, advance = 10): TaskFormValues {
     date,
     time: '',
     notes: '',
+    symbol: '',
+    imageUri: '',
     reminderEnabled: false,
     reminderAdvanceMinutes: advance,
   };
@@ -35,6 +41,8 @@ export function taskToForm(task: Task): TaskFormValues {
     date: task.date,
     time: task.time ?? '',
     notes: task.notes ?? '',
+    symbol: task.symbol ?? '',
+    imageUri: task.imageUri ?? '',
     reminderEnabled: task.reminderEnabled,
     reminderAdvanceMinutes: task.reminderAdvanceMinutes,
   };
@@ -53,6 +61,8 @@ export function formToInput(values: TaskFormValues): TaskInput {
     date: values.date.trim(),
     time: normalizeTimeText(values.time) || null,
     notes: values.notes,
+    symbol: values.symbol || null,
+    imageUri: values.imageUri || null,
     reminderEnabled: values.reminderEnabled,
     reminderAdvanceMinutes: values.reminderAdvanceMinutes,
   };
@@ -63,6 +73,8 @@ const FIELDS: ReadonlySet<string> = new Set([
   'date',
   'time',
   'notes',
+  'symbol',
+  'imageUri',
   'reminderAdvanceMinutes',
 ]);
 

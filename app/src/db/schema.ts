@@ -177,6 +177,15 @@ export const migrations: Migration[] = [
     description: 'Remove the unused steps table',
     statements: [`DROP TABLE steps`],
   },
+  {
+    version: 6,
+    description: 'Add an optional symbol to tasks and routines, shown next to the title',
+    // Holds a symbol id from features/pictures/symbols.ts, not the emoji itself.
+    statements: [
+      `ALTER TABLE tasks ADD COLUMN symbol TEXT`,
+      `ALTER TABLE routines ADD COLUMN symbol TEXT`,
+    ],
+  },
 ];
 
 export const SCHEMA_VERSION = migrations[migrations.length - 1].version;

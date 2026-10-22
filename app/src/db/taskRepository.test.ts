@@ -1,6 +1,7 @@
 import { DatabaseSync, type SQLInputValue } from 'node:sqlite';
 
 import { StorageError, ValidationError } from './errors';
+import { isImageInUse } from './localImage';
 import { migrate } from './migrate';
 import { createTaskRepository, type TaskDb } from './taskRepository';
 
@@ -116,6 +117,28 @@ describe('task repository', () => {
     expect(task.imageUri).toBe('file:///a.png');
     expect((await repo.updateTask(task.id, { title: 'Bath' })).imageUri).toBe('file:///a.png');
     expect((await repo.updateTask(task.id, { imageUri: null })).imageUri).toBeNull();
+  });
+
+  it('knows whether a picture is still used by a task or routine', async () => {
+    const { raw, repo } = await setup();
+    const db = adapt(raw);
+    const task = await repo.createTask({ ...base, imageUri: 'file:///pictures/a.jpg' });
+    raw.exec(`INSERT INTO routines (id, title, time, weekdays, start_date, image_uri, created_at, updated_at)
+      VALUES ('r1', 'Swim', '17:00', 2, '2026-10-01', 'file:///pictures/b.jpg', 1, 1)`);
+    expect(await isImageInUse(db, 'file:///pictures/a.jpg')).toBe(true);
+    expect(await isImageInUse(db, 'file:///pictures/b.jpg')).toBe(true);
+    expect(await isImageInUse(db, 'file:///pictures/c.jpg')).toBe(false);
+    await repo.updateTask(task.id, { imageUri: null });
+    expect(await isImageInUse(db, 'file:///pictures/a.jpg')).toBe(false);
+  });
+
+  it('stores a known symbol, rejects an unknown one, and can remove it', async () => {
+    const { repo } = await setup();
+    expect(await issuesOf(repo.createTask({ ...base, symbol: '🚿' }))).toEqual(['symbol']);
+    const task = await repo.createTask({ ...base, symbol: 'shower' });
+    expect(task.symbol).toBe('shower');
+    expect((await repo.updateTask(task.id, { title: 'Bath' })).symbol).toBe('shower');
+    expect((await repo.updateTask(task.id, { symbol: null })).symbol).toBeNull();
   });
 
   it('treats a blank time as untimed', async () => {

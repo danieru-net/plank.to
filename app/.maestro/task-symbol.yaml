@@ -1,0 +1,38 @@
+# Give a new task a symbol, check Today reads it out, then remove it. Starts from the seeded
+# state. The photo picker is a system screen and is checked by hand (docs/device-test-checklist.md).
+appId: to.plank.app
+---
+- runFlow:
+    file: helpers/launch.yaml
+    env:
+      SCENARIO: seeded
+- scrollUntilVisible:
+    element: 'Add a task'
+    centerElement: true
+- tapOn: 'Add a task'
+- assertVisible: 'New task'
+- tapOn: 'What would you like to do?'
+- inputText: 'Maestro bath time'
+# The Done key, not hideKeyboard: its tap can land on "Choose a photo" and open the picker.
+- pressKey: Enter
+- assertVisible: 'Choose a photo'
+- scrollUntilVisible:
+    element: 'Bath'
+    centerElement: true
+- tapOn: 'Bath'
+- scrollUntilVisible:
+    element: 'Save task'
+    centerElement: true
+- tapOn: 'Save task'
+- assertVisible: 'Maestro bath time, Bath, any time. Edit'
+# Remove the symbol again
+- tapOn: 'Maestro bath time, Bath, any time. Edit'
+- scrollUntilVisible:
+    element: 'No symbol'
+    centerElement: true
+- tapOn: 'No symbol'
+- scrollUntilVisible:
+    element: 'Save task'
+    centerElement: true
+- tapOn: 'Save task'
+- assertVisible: 'Maestro bath time, any time. Edit'

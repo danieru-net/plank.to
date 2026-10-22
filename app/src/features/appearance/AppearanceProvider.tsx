@@ -37,6 +37,7 @@ const keyFor = {
   motion: 'display.motion',
   haptics: 'display.haptics',
   taskActions: 'display.taskActions',
+  picturesFirst: 'display.picturesFirst',
 } as const;
 
 /** Loads saved appearance settings, applies them app-wide, and saves changes locally. */

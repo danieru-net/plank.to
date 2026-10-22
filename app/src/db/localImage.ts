@@ -2,11 +2,10 @@
  * Local image references for tasks and routines. The database stores only a URI string
  * (`image_uri`); the image file itself stays on the device and is never uploaded.
  *
- * Picking images is deferred (see done.md, task 2.7), but references are validated and
- * resolved here so the picker can be added without changing the data model: the picker saves
- * a URI with `updateTask({ imageUri })`, removal is `updateTask({ imageUri: null })`, and the
- * UI calls `resolveImage` before rendering so a moved or deleted file shows a fallback
- * instead of a broken image.
+ * The picker (features/pictures/pictureStorage.ts) copies the chosen photo into app storage and
+ * saves that file's URI with `updateTask({ imageUri })`; removal is `updateTask({ imageUri:
+ * null })`. The UI calls `resolveImage` before rendering so a moved or deleted file shows a
+ * fallback instead of a broken image.
  */
 
 export const MAX_IMAGE_URI_LENGTH = 2048;
@@ -43,4 +42,20 @@ export async function resolveImage(
   } catch {
     return { status: 'missing', uri };
   }
+}
+
+/**
+ * Whether any task or routine still points at `uri`. A routine's picture is shared with the
+ * tasks it generates, so a file may only be deleted once nothing references it.
+ */
+export async function isImageInUse(
+  db: { getFirstAsync<T>(sql: string, params: string[]): Promise<T | null> },
+  uri: string,
+): Promise<boolean> {
+  const row = await db.getFirstAsync<{ found: number }>(
+    `SELECT 1 AS found WHERE EXISTS (SELECT 1 FROM tasks WHERE image_uri = ?)
+       OR EXISTS (SELECT 1 FROM routines WHERE image_uri = ?)`,
+    [uri, uri],
+  );
+  return row !== null;
 }

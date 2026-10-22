@@ -1,4 +1,6 @@
 import { StorageError, toStorageError, ValidationError, type ValidationIssue } from './errors';
+import { isSymbolId } from '@/features/pictures/symbols';
+
 import { isLocalImageUri } from './localImage';
 import type { Id, LocalDate, LocalTime, TaskRow, Timestamp } from './types';
 
@@ -16,6 +18,8 @@ export type Task = {
   notes: string | null;
   date: LocalDate;
   time: LocalTime | null;
+  /** A symbol id from features/pictures/symbols.ts. */
+  symbol: string | null;
   imageUri: string | null;
   status: TaskRow['status'];
   statusChangedAt: Timestamp | null;
@@ -33,6 +37,7 @@ export type TaskInput = {
   date: LocalDate;
   time?: LocalTime | null;
   notes?: string | null;
+  symbol?: string | null;
   imageUri?: string | null;
   reminderEnabled?: boolean;
   reminderAdvanceMinutes?: number;
@@ -76,6 +81,7 @@ type Normalized = {
   date: LocalDate;
   time: LocalTime | null;
   notes: string | null;
+  symbol: string | null;
   imageUri: string | null;
   reminderEnabled: boolean;
   reminderAdvanceMinutes: number;
@@ -111,6 +117,10 @@ export function validateTask(input: TaskInput): Normalized {
       message: `Keep notes under ${MAX_NOTES_LENGTH} characters.`,
     });
 
+  const symbol = blankToNull(input.symbol);
+  if (symbol !== null && !isSymbolId(symbol))
+    issues.push({ field: 'symbol', message: 'Choose a symbol from the list.' });
+
   const imageUri = blankToNull(input.imageUri);
   if (imageUri !== null && !isLocalImageUri(imageUri))
     issues.push({ field: 'imageUri', message: 'Choose a picture saved on this device.' });
@@ -128,6 +138,7 @@ export function validateTask(input: TaskInput): Normalized {
     date: input.date,
     time,
     notes,
+    symbol,
     imageUri,
     reminderEnabled: input.reminderEnabled ?? false,
     reminderAdvanceMinutes: advance,
@@ -150,6 +161,7 @@ export function createTaskRepository(db: TaskDb, options: RepositoryOptions = {}
       notes: r.notes,
       date: r.date,
       time: r.time,
+      symbol: r.symbol,
       imageUri: r.image_uri,
       status: r.status,
       statusChangedAt: r.status_changed_at,
@@ -187,16 +199,17 @@ export function createTaskRepository(db: TaskDb, options: RepositoryOptions = {}
     try {
       await db.withTransactionAsync(async () => {
         await db.runAsync(
-          `INSERT INTO tasks (id, title, notes, date, time, image_uri, status,
+          `INSERT INTO tasks (id, title, notes, date, time, symbol, image_uri, status,
              reminder_enabled, reminder_advance_minutes, created_at, updated_at,
              routine_id, routine_occurrence_date)
-           VALUES (?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?, ?, ?, ?)`,
+           VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?, ?, ?, ?)`,
           [
             id,
             v.title,
             v.notes,
             v.date,
             v.time,
+            v.symbol,
             v.imageUri,
             v.reminderEnabled ? 1 : 0,
             v.reminderAdvanceMinutes,
@@ -220,6 +233,7 @@ export function createTaskRepository(db: TaskDb, options: RepositoryOptions = {}
       date: current.date,
       time: current.time,
       notes: current.notes,
+      symbol: current.symbol,
       imageUri: current.imageUri,
       reminderEnabled: current.reminderEnabled,
       reminderAdvanceMinutes: current.reminderAdvanceMinutes,
@@ -229,7 +243,8 @@ export function createTaskRepository(db: TaskDb, options: RepositoryOptions = {}
     try {
       await db.withTransactionAsync(async () => {
         await db.runAsync(
-          `UPDATE tasks SET title = ?, notes = ?, date = ?, time = ?, image_uri = ?,
+          `UPDATE tasks SET title = ?, notes = ?, date = ?, time = ?, symbol = ?,
+             image_uri = ?,
              reminder_enabled = ?, reminder_advance_minutes = ?, updated_at = ?
            WHERE id = ?`,
           [
@@ -237,6 +252,7 @@ export function createTaskRepository(db: TaskDb, options: RepositoryOptions = {}
             v.notes,
             v.date,
             v.time,
+            v.symbol,
             v.imageUri,
             v.reminderEnabled ? 1 : 0,
             v.reminderAdvanceMinutes,

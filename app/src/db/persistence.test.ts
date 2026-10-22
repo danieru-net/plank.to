@@ -133,13 +133,17 @@ describe('upgrade from an earlier schema version with data present', () => {
                ('t2', 'Untimed', NULL, '2026-10-19', NULL, 'pending', NULL, 0, 0, 1, 1);
       INSERT INTO routines (id, title, time, weekdays, start_date, paused, created_at, updated_at)
         VALUES ('r1', 'Brush teeth', '21:00', 42, '2026-10-01', 1, 1, 1);
-      INSERT INTO steps (id, task_id, routine_id, position, title, created_at, updated_at)
-        VALUES ('s1', 't1', NULL, 0, 'Lunch', 1, 1), ('s2', NULL, 'r1', 0, 'Floss', 1, 1);
       INSERT INTO occurrence_overrides (id, routine_id, occurrence_date, status, moved_time, created_at, updated_at)
         VALUES ('o1', 'r1', '2026-10-05', 'dismissed', '22:00', 1, 1);
       INSERT INTO preferences (key, value, created_at, updated_at)
         VALUES ('display.textScale', '1.5', 1, 1);
     `);
+    // The steps table existed from version 1 until version 5 dropped it.
+    if (version < 5)
+      raw.exec(`
+        INSERT INTO steps (id, task_id, routine_id, position, title, created_at, updated_at)
+          VALUES ('s1', 't1', NULL, 0, 'Lunch', 1, 1), ('s2', NULL, 'r1', 0, 'Floss', 1, 1);
+      `);
   }
 
   it.each(priorVersions)('from v%i: keeps every row and reaches the latest version', async (v) => {
@@ -160,6 +164,8 @@ describe('upgrade from an earlier schema version with data present', () => {
       status: 'completed',
       reminderEnabled: true,
       reminderAdvanceMinutes: 10,
+      symbol: null,
+      imageUri: null,
     });
     expect(await app.tasks.listTasksForDate('2026-10-19')).toHaveLength(2);
     expect(await app.routines.getRoutine('r1')).toMatchObject({
