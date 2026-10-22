@@ -3,7 +3,7 @@ import { StyleSheet, TextInput, View, type TextInputProps } from 'react-native';
 
 import { Text } from './Text';
 import { useAppearance } from '@/features/appearance/context';
-import { borderWidth, minTouchTarget, radius, typography } from '@/theme';
+import { borderWidth, minTouchTarget, radius } from '@/theme';
 
 type Props = Omit<TextInputProps, 'style'> & {
   /** Visible label, shown above the input and used as the accessible name. */
@@ -14,7 +14,7 @@ type Props = Omit<TextInputProps, 'style'> & {
 };
 
 export function TextField({ label, hint, error, onFocus, onBlur, ...rest }: Props) {
-  const { palette: theme, spacing, settings, maxFontMultiplier } = useAppearance();
+  const { palette: theme, spacing, typography, maxFontMultiplier } = useAppearance();
   const [focused, setFocused] = useState(false);
 
   // The input carries the label and hint, so screen readers skip the visible copies above it
@@ -47,8 +47,9 @@ export function TextField({ label, hint, error, onFocus, onBlur, ...rest }: Prop
         style={[
           styles.input,
           {
-            fontSize: typography.body.fontSize * settings.textScale,
-            lineHeight: typography.body.lineHeight * settings.textScale,
+            fontSize: typography.body.fontSize,
+            lineHeight: typography.body.lineHeight,
+            fontFamily: typography.body.fontFamily,
             paddingVertical: spacing.sm,
             paddingHorizontal: spacing.md,
             color: theme.text,

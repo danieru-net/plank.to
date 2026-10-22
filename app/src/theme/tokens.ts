@@ -43,6 +43,61 @@ export const typography = {
 
 export type TextVariant = keyof typeof typography;
 
+/** Which typeface the app uses; "readable" is Atkinson Hyperlegible, bundled with the app. */
+export type FontChoice = 'system' | 'readable';
+
+/** Extra line height (as a multiple of font size) added by the "More line spacing" setting. */
+export const moreLineSpacingExtra = 0.2;
+
+/** Atkinson Hyperlegible has Regular and Bold only, so 600 and 700 both map to Bold. */
+export const readableFontFamily = {
+  regular: 'AtkinsonHyperlegible_400Regular',
+  bold: 'AtkinsonHyperlegible_700Bold',
+} as const;
+
+export type TextStyleTokens = {
+  fontSize: number;
+  lineHeight: number;
+  fontFamily?: string;
+  fontWeight?: '600' | '700';
+  letterSpacing?: number;
+};
+
+export type ScaledTypography = { [K in TextVariant]: TextStyleTokens };
+
+/**
+ * Text styles for a text scale, typeface and line spacing.
+ * Custom fonts on Android ignore fontWeight, so the readable font picks a weight-specific family
+ * and leaves fontWeight out. Line height scales with font size, and "more spacing" adds
+ * `moreLineSpacingExtra` times the font size on top of each variant's own ratio.
+ */
+export function buildTypography(
+  textScale: number,
+  font: FontChoice,
+  moreLineSpacing: boolean,
+): ScaledTypography {
+  const out = {} as ScaledTypography;
+  for (const variant of Object.keys(typography) as TextVariant[]) {
+    const base = typography[variant] as {
+      fontSize: number;
+      lineHeight: number;
+      fontWeight?: '600' | '700';
+      letterSpacing?: number;
+    };
+    const fontSize = base.fontSize * textScale;
+    const ratio = base.lineHeight / base.fontSize + (moreLineSpacing ? moreLineSpacingExtra : 0);
+    const style: TextStyleTokens = { fontSize, lineHeight: Math.round(fontSize * ratio) };
+    if (base.letterSpacing !== undefined) style.letterSpacing = base.letterSpacing;
+    if (font === 'readable') {
+      style.fontFamily = base.fontWeight ? readableFontFamily.bold : readableFontFamily.regular;
+    } else if (base.fontWeight) {
+      style.fontWeight = base.fontWeight;
+    }
+    out[variant] = style;
+  }
+  return out;
+}
+
 /** Minimum touch target (points); meets iOS 44pt and Android 48dp guidance. */
 export const minTouchTarget = 48;
 

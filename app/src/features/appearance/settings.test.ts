@@ -25,6 +25,8 @@ describe('parseAppearance', () => {
     expect(parseAppearance({ 'display.picturesFirst': true }).picturesFirst).toBe(true);
     expect(parseAppearance({ 'display.readAloud': true }).readAloud).toBe(true);
     expect(parseAppearance({ 'display.simpleMode': true }).simpleMode).toBe(true);
+    expect(parseAppearance({ 'display.font': 'readable' }).font).toBe('readable');
+    expect(parseAppearance({ 'display.moreLineSpacing': true }).moreLineSpacing).toBe(true);
     expect(parseAppearance({ 'display.completionMoment': 'checkSound' }).completionMoment).toBe(
       'checkSound',
     );
@@ -56,6 +58,8 @@ describe('parseAppearance', () => {
         'display.readAloud': 'yes',
         'display.completionMoment': 'confetti',
         'display.simpleMode': 'yes',
+        'display.font': 'comic',
+        'display.moreLineSpacing': 'yes',
       }),
     ).toEqual(defaultAppearance);
   });

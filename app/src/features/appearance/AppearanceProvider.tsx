@@ -7,11 +7,13 @@ import {
   useState,
   type ReactNode,
 } from 'react';
+import { isLoaded, loadAsync } from 'expo-font';
 import { useColorScheme } from 'react-native';
 import { useReducedMotion } from 'react-native-reanimated';
 
 import { useDatabase } from '@/db/DatabaseProvider';
 import { createPreferenceRepository } from '@/db/preferenceRepository';
+import { readableFontFiles } from './fonts';
 import { AppearanceContext, buildAppearance } from './context';
 import { defaultAppearance, parseAppearance, type AppearanceSettings } from './settings';
 
@@ -41,6 +43,8 @@ const keyFor = {
   readAloud: 'display.readAloud',
   completionMoment: 'display.completionMoment',
   simpleMode: 'display.simpleMode',
+  font: 'display.font',
+  moreLineSpacing: 'display.moreLineSpacing',
 } as const;
 
 /** Loads saved appearance settings, applies them app-wide, and saves changes locally. */
@@ -93,9 +97,28 @@ export function AppearanceProvider({ children }: { children: ReactNode }) {
     });
   }, [repo]);
 
+  // The font files ship inside the app. They load only once the readable font is chosen, and the
+  // system font is used until then (and if loading fails).
+  // useFonts only loads on mount, so the font is loaded here whenever it becomes the choice.
+  const [fontsLoaded, setFontsLoaded] = useState(() =>
+    Object.keys(readableFontFiles).every((family) => isLoaded(family)),
+  );
+  useEffect(() => {
+    if (settings.font !== 'readable' || fontsLoaded) return;
+    let active = true;
+    loadAsync(readableFontFiles).then(
+      () => active && setFontsLoaded(true),
+      (e: unknown) => console.warn(e),
+    );
+    return () => {
+      active = false;
+    };
+  }, [settings.font, fontsLoaded]);
+  const readableReady = settings.font === 'readable' && fontsLoaded;
+
   const appearance = useMemo(
-    () => buildAppearance(settings, scheme, reducedMotion),
-    [settings, scheme, reducedMotion],
+    () => buildAppearance(settings, scheme, reducedMotion, readableReady),
+    [settings, scheme, reducedMotion, readableReady],
   );
   const controls = useMemo(() => ({ update, reset, error }), [update, reset, error]);
 

@@ -16,6 +16,7 @@ import { appearancePresets } from '@/features/appearance/presets';
 import {
   completionMomentOptions,
   densityOptions,
+  fontOptions,
   motionOptions,
   shapeFor,
   taskActionOptions,
@@ -25,8 +26,8 @@ import { TaskPicture } from '@/features/pictures/TaskPicture';
 import {
   colorThemeLabels,
   colorThemes,
+  buildTypography,
   resolvePalette,
-  typography,
   type ColorTheme,
 } from '@/theme';
 
@@ -61,11 +62,32 @@ export default function AppearanceScreen() {
         value={settings.textScale}
         onChange={(textScale) => update({ textScale })}
         // Each choice is shown at the size it gives.
-        labelStyle={(scale) => ({
-          fontSize: typography.body.fontSize * scale,
-          lineHeight: typography.body.lineHeight * scale,
-        })}
+        labelStyle={(scale) => {
+          const { fontSize, lineHeight } = buildTypography(
+            scale,
+            'system',
+            settings.moreLineSpacing,
+          ).body;
+          return { fontSize, lineHeight };
+        }}
       />
+
+      <OptionGroup
+        label="Font"
+        options={fontOptions}
+        value={settings.font}
+        onChange={(font) => update({ font })}
+        footer="Atkinson Hyperlegible was designed for easy reading, with letters that are hard to mix up. It is stored in the app, so it works offline."
+      />
+
+      <Card style={{ paddingVertical: spacing.xs }}>
+        <ToggleRow
+          label="More line spacing"
+          description="Adds extra space between lines of text."
+          checked={settings.moreLineSpacing}
+          onChange={(moreLineSpacing) => update({ moreLineSpacing })}
+        />
+      </Card>
 
       <View style={{ gap: spacing.sm }}>
         <SectionLabel>Spacing</SectionLabel>

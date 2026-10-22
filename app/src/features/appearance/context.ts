@@ -3,7 +3,12 @@ import { useColorScheme } from 'react-native';
 import { useReducedMotion } from 'react-native-reanimated';
 
 import { resolvePalette, schemeFor, type ColorScheme, type Palette } from '@/theme/colors';
-import { maxFontSizeMultiplier, type Shape } from '@/theme/tokens';
+import {
+  buildTypography,
+  maxFontSizeMultiplier,
+  type ScaledTypography,
+  type Shape,
+} from '@/theme/tokens';
 import {
   defaultAppearance,
   shapeFor,
@@ -20,6 +25,8 @@ export type Appearance = {
   spacing: Spacing;
   /** Corner radii and icon size for the chosen color theme. */
   shape: Shape;
+  /** Text styles for the chosen text size, typeface and line spacing. */
+  typography: ScaledTypography;
   /** Cap for system text scaling so in-app size times system size stays within the overall cap. */
   maxFontMultiplier: number;
   /** False when the user turned animations off, or chose "Match device" and the device reduces motion. */
@@ -30,6 +37,8 @@ export function buildAppearance(
   settings: AppearanceSettings,
   systemScheme: 'light' | 'dark',
   systemReducesMotion = false,
+  /** Whether the readable font files have loaded; until then the system font is used. */
+  readableFontReady = false,
 ): Appearance {
   return {
     settings,
@@ -37,6 +46,11 @@ export function buildAppearance(
     scheme: schemeFor(settings.colorTheme, systemScheme),
     spacing: spacingFor(settings.density),
     shape: shapeFor(settings.colorTheme),
+    typography: buildTypography(
+      settings.textScale,
+      settings.font === 'readable' && readableFontReady ? 'readable' : 'system',
+      settings.moreLineSpacing,
+    ),
     maxFontMultiplier: Math.max(1, maxFontSizeMultiplier / settings.textScale),
     motion: settings.motion === 'on' || (settings.motion === 'system' && !systemReducesMotion),
   };
