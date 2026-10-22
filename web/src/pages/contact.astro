@@ -5,13 +5,16 @@ import { supportContact } from '../config';
 
 <BaseLayout
   title="Contact"
-  description="How to reach plank.to for support, accessibility feedback, or privacy questions."
+  description="How to reach plank.to with ideas, suggestions, problems, accessibility feedback, or privacy questions."
 >
   <div class="container">
     <h1>Contact</h1>
-    <p class="lede">Questions, problems, or accessibility feedback are welcome.</p>
+    <p class="lede">
+      Ideas, suggestions, problems, and accessibility feedback are all welcome. Every message is
+      read.
+    </p>
 
-    <h2 id="route">Support route</h2>
+    <h2 id="route">Email us</h2>
     {supportContact.isPlaceholder && (
       <p class="note">
         <strong>Not live yet.</strong> The address below has been chosen, but its mailbox is not set
@@ -27,14 +30,34 @@ import { supportContact } from '../config';
       )}
     </p>
 
+    <h2 id="in-app">From inside the app</h2>
+    <p>
+      In the app, open <strong>Settings</strong> and choose "Suggest a feature or improvement" or
+      "Report a problem" under <strong>Feedback</strong>. The app writes the email for you and opens
+      it in your mail app. Nothing is sent until you press Send there. If no mail app is set up on
+      your device, the app shows this address so you can copy it, and you can write from any email
+      account.
+    </p>
+
     <h2 id="what">What to include</h2>
+    <h3>An idea or suggestion</h3>
+    <ul>
+      <li>What you would like the app to do, or what could work better.</li>
+      <li>When it would help you, for example "on school mornings" or "when plans change".</li>
+    </ul>
+    <h3>A problem</h3>
     <ul>
       <li>What you were trying to do and what happened instead.</li>
-      <li>Your device, operating system version, and the app text size setting, if relevant.</li>
+      <li>
+        Your device, operating system version, app version, and text size setting, if you are
+        comfortable sharing them. When you write from the app, these are added for you, and you can
+        turn them off with "Include device details".
+      </li>
       <li>For accessibility issues, any assistive technology you use.</li>
     </ul>
     <p>
-      Please do not send planner contents or personal details you do not want to share. The website
+      Please do not send planner contents or personal details you do not want to share. The app
+      never adds your tasks, routines, location, or clothing choices to an email, and the website
       cannot see your planner data.
     </p>
 

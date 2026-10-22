@@ -1,10 +1,11 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { supportContact } from '../config';
 ---
 
 <BaseLayout
   title="Help"
-  description="How to use plank.to: first-run setup, tasks, weekly routines, optional reminders, weather and location controls, and clothing preferences."
+  description="How to use plank.to: first-run setup, tasks, weekly routines, optional reminders, weather and location controls, clothing preferences, and how to send feedback."
 >
   <div class="container">
     <h1>Help</h1>
@@ -36,6 +37,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         </li>
         <li>
           <a href="#appearance">Text size and colors</a>
+        </li>
+        <li>
+          <a href="#feedback">Ideas and problems</a>
         </li>
       </ul>
     </nav>
@@ -199,10 +203,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     <h3>What Today shows</h3>
     <p>
       At the top of Today: an icon, conditions and temperature (including feels like, the day's high
-      and low, and chance of precipitation). The clothing
-      ideas come next, then your tasks. If the forecast is old, the app says so and shows how old.
-      If there is no connection, no permission, or the provider has a problem, a short message
-      explains it with a Try again or settings option, and your tasks stay available.
+      and low, and chance of precipitation). The clothing ideas come next, then your tasks. If the
+      forecast is old, the app says so and shows how old. If there is no connection, no permission,
+      or the provider has a problem, a short message explains it with a Try again or settings
+      option, and your tasks stay available.
     </p>
     <p>
       Forecasts come from <a href="https://open-meteo.com/">Open-Meteo</a>, which receives the
@@ -243,6 +247,47 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       spacing, and a color theme: match your device, light, dark, or sage, plum, or clay accents.
       "Reset" restores the defaults. These choices are saved on your device.
     </p>
+
+    <h2 id="feedback">Ideas and problems</h2>
+    <p>
+      You can suggest a feature or report a problem from inside the app. The app never asks you for
+      feedback, so it is only sent when you choose to write.
+    </p>
+    <ul>
+      <li>
+        In Settings, under Feedback, choose "Suggest a feature or improvement" or "Report a
+        problem". You can switch between Idea, Improvement, and Problem at the top of the form.
+      </li>
+      <li>
+        For an idea, say what you would like the app to do and when it would help. For a problem,
+        say what happened, and use "What were you trying to do?" if it helps explain.
+      </li>
+      <li>
+        "Include device details" adds the app version, your phone's system and model, and your text
+        size and color settings. The form shows exactly what will be added, and you can turn it off.
+        Your tasks, routines, location, and clothing choices are never added.
+      </li>
+      <li>
+        "Open in mail app" opens an email addressed to{' '}
+        {supportContact.href ? (
+          <a href={supportContact.href}>{supportContact.value}</a>
+        ) : (
+          <strong>{supportContact.value}</strong>
+        )}
+        . Nothing is sent until you press Send in your mail app. If you leave the screen first, what
+        you wrote is kept on your device for next time.
+      </li>
+      <li>
+        If no mail app is set up, the app shows the address with a "Copy address" button so you can
+        write from any email account. The <a href="/contact/">Contact</a> page has the same address.
+      </li>
+    </ul>
+    {supportContact.isPlaceholder && (
+      <p class="note">
+        <strong>Not live yet.</strong> This address has been chosen, but its mailbox is not set up
+        yet, so please do not send messages to it.
+      </p>
+    )}
 
     <p class="note">
       plank.to is a planning tool. It does not provide medical, therapeutic, or safety advice.
