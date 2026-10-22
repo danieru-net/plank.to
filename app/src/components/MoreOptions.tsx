@@ -11,13 +11,20 @@ type Props = {
   summary: string;
   /** Opens the section so an error inside it is never hidden. */
   forceOpen?: boolean;
+  /** Starts open, for example when a template has filled in fields inside. */
+  initiallyOpen?: boolean;
   children: ReactNode;
 };
 
 /** A collapsed "More options" section for optional fields, closed until it is opened. */
-export function MoreOptions({ summary, forceOpen = false, children }: Props) {
+export function MoreOptions({
+  summary,
+  forceOpen = false,
+  initiallyOpen = false,
+  children,
+}: Props) {
   const { palette: theme, spacing } = useAppearance();
-  const [toggled, setToggled] = useState(false);
+  const [toggled, setToggled] = useState(initiallyOpen);
   const open = toggled || forceOpen;
   return (
     <View style={{ gap: spacing.md }}>
