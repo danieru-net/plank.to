@@ -15,6 +15,8 @@ export type WeatherFacts = {
   snowy: boolean;
   /** Clear or mostly clear. */
   sunny: boolean;
+  /** Highest wind speed today in km/h, or null when unknown. */
+  windKmh: number | null;
 };
 
 export type Outfit = { id: string; label: string; top: string; bottom: string };
@@ -59,6 +61,47 @@ export function outfitFor(highC: number): Outfit {
   return { id, label, top, bottom };
 }
 
+export type Extra = { id: string; label: string };
+
+/** Every wording an extra can have, so tests can check it. */
+export const EXTRA_LABELS = {
+  rain: 'Raincoat or umbrella',
+  rainLight: 'Light rain jacket or umbrella',
+  umbrellaMaybe: 'Small umbrella, just in case',
+  snowBoots: 'Waterproof boots',
+  rainShoes: 'Shoes that keep your feet dry',
+  hatGloves: 'Warm hat, scarf and gloves',
+  wind: 'Windproof layer',
+  layer: 'Extra layer for the cooler morning or evening',
+  sun: 'Sunglasses and a sun hat',
+} as const;
+
+/**
+ * Weather-aware extras on top of the outfit, in a fixed order. Temperatures are Celsius and every
+ * threshold is inclusive. Returns an empty list when nothing applies.
+ */
+export function extrasFor(facts: WeatherFacts): Extra[] {
+  const { highC, lowC, precipChance, wet, snowy, sunny, windKmh } = facts;
+  const chance = precipChance ?? 0;
+  const extras: Extra[] = [];
+  const rain = wet || chance >= 50;
+  if (rain) {
+    const label = highC >= 20 ? EXTRA_LABELS.rainLight : EXTRA_LABELS.rain;
+    extras.push({ id: 'rain', label });
+  } else if (chance >= 30) {
+    extras.push({ id: 'umbrella_maybe', label: EXTRA_LABELS.umbrellaMaybe });
+  }
+  if (snowy) extras.push({ id: 'boots', label: EXTRA_LABELS.snowBoots });
+  else if (wet && highC < 15) extras.push({ id: 'rain_shoes', label: EXTRA_LABELS.rainShoes });
+  if (lowC <= 2 || snowy) extras.push({ id: 'hat_gloves', label: EXTRA_LABELS.hatGloves });
+  if (windKmh !== null && windKmh >= 30 && highC < 28) {
+    extras.push({ id: 'wind', label: EXTRA_LABELS.wind });
+  }
+  if (highC - lowC >= 10 && highC >= 15) extras.push({ id: 'layer', label: EXTRA_LABELS.layer });
+  if (sunny && highC >= 20) extras.push({ id: 'sun', label: EXTRA_LABELS.sun });
+  return extras;
+}
+
 const WET_CODES = new Set([51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82, 95, 96, 99]);
 const SNOW_CODES = new Set([71, 73, 75, 77, 85, 86]);
 const SUNNY_CODES = new Set([0, 1]);
@@ -66,6 +109,21 @@ const SUNNY_CODES = new Set([0, 1]);
 /** Rounded to 2 decimals so float error cannot push an exact threshold (like 44.6F = 7C) across. */
 export const toCelsius = (value: number, units: Forecast['units']): number =>
   units === 'imperial' ? Math.round((((value - 32) * 5) / 9) * 100) / 100 : value;
+
+const KMH_PER_MPH = 1.609344;
+
+/** Highest hourly wind speed for the current local day (else the current wind), in km/h. */
+function windKmhFor(forecast: Forecast): number | null {
+  const { current, units } = forecast;
+  const today = current.time.slice(0, 10);
+  const speeds = (forecast.hourly ?? [])
+    .filter((h) => h.time.startsWith(today))
+    .map((h) => h.windSpeed)
+    .filter((v): v is number => v !== null && Number.isFinite(v));
+  const top = speeds.length > 0 ? Math.max(...speeds) : current.windSpeed;
+  if (top === null || top === undefined || !Number.isFinite(top)) return null;
+  return units === 'imperial' ? Math.round(top * KMH_PER_MPH * 100) / 100 : top;
+}
 
 /**
  * Reduces a forecast to the facts the rules use, for the forecast's current local day. Falls back
@@ -87,6 +145,7 @@ export function weatherFacts(forecast: Forecast): WeatherFacts | null {
     wet: codes.some((x) => WET_CODES.has(x)),
     snowy: codes.some((x) => SNOW_CODES.has(x)),
     sunny: SUNNY_CODES.has(current.weatherCode),
+    windKmh: windKmhFor(forecast),
   };
 }
 
