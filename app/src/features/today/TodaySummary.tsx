@@ -8,6 +8,7 @@ import { Text } from '@/components/Text';
 import { clothingCopy, clothingNote } from '@/features/clothing/clothingCopy';
 import { useClothingDismissed } from '@/features/clothing/useClothingDismissed';
 import {
+  extrasFor,
   forecastForSuggestions,
   outfitFor,
   weatherFacts,
@@ -38,6 +39,7 @@ export function TodaySummary() {
   const facts = forecast ? weatherFacts(forecast) : null;
   const { dismissed, dismiss, error } = useClothingDismissed();
   const outfit = facts ? outfitFor(facts.highC) : null;
+  const extras = facts ? extrasFor(facts) : [];
 
   const onAction = (action: WeatherAction) => {
     if (action === 'retry') retry();
@@ -156,12 +158,17 @@ export function TodaySummary() {
           <>
             <View
               accessible
-              accessibilityLabel={`${clothingCopy.intro} ${outfit.label}. ${clothingCopy.top}: ${outfit.top}. ${clothingCopy.bottom}: ${outfit.bottom}.`}
+              accessibilityLabel={`${clothingCopy.intro} ${outfit.label}. ${clothingCopy.top}: ${outfit.top}. ${clothingCopy.bottom}: ${outfit.bottom}.${extras.length > 0 ? ` ${clothingCopy.extras}: ${extras.map((e) => e.label).join(', ')}.` : ''}`}
             >
               <Text variant="bodyStrong">{outfit.label}</Text>
               <Text>
                 {clothingCopy.top}: {outfit.top} · {clothingCopy.bottom}: {outfit.bottom}
               </Text>
+              {extras.length > 0 ? (
+                <Text>
+                  {clothingCopy.extras}: {extras.map((e) => e.label).join(' · ')}
+                </Text>
+              ) : null}
             </View>
             <Text variant="caption" muted>
               {clothingNote}

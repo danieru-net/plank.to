@@ -12,4 +12,5 @@ export const clothingCopy = {
   dismiss: 'Dismiss',
   top: 'Top',
   bottom: 'Bottom',
+  extras: 'Also',
 } as const;
