@@ -19,8 +19,8 @@ export const appearancePresets: readonly AppearancePreset[] = [
   {
     id: 'calm',
     label: 'Calm (low stimulation)',
-    description: 'Sage colors, animations off, no haptic feedback, and no completion moment.',
-    settings: { colorTheme: 'sage', motion: 'off', haptics: false, completionMoment: 'none' },
+    description: 'Device colors, animations off, no haptic feedback, and no completion moment.',
+    settings: { colorTheme: 'system', motion: 'off', haptics: false, completionMoment: 'none' },
   },
   {
     id: 'focus',

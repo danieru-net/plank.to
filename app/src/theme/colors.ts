@@ -49,16 +49,7 @@ export const palettes: Record<ColorScheme, Palette> = {
   },
 };
 
-export const colorThemes = [
-  'system',
-  'light',
-  'dark',
-  'sage',
-  'plum',
-  'clay',
-  'blossom',
-  'playful',
-] as const;
+export const colorThemes = ['system', 'light', 'dark', 'blossom', 'playful'] as const;
 export type ColorTheme = (typeof colorThemes)[number];
 export const defaultColorTheme: ColorTheme = 'system';
 
@@ -66,9 +57,6 @@ export const colorThemeLabels: Record<ColorTheme, string> = {
   system: 'Match device',
   light: 'Light',
   dark: 'Dark',
-  sage: 'Sage (green accent)',
-  plum: 'Plum (purple accent)',
-  clay: 'Clay (orange accent)',
   blossom: 'Blossom (pink)',
   playful: 'Playful (bright colors)',
 };
@@ -77,23 +65,10 @@ type Override = Partial<Palette>;
 type OverrideTheme = Exclude<ColorTheme, 'system' | 'light' | 'dark'>;
 
 /**
- * Per-scheme palette overrides, merged over the base palette. Accent themes only set
- * primary/onPrimary/focus; a theme may override any `Palette` key. All follow the device's
- * light/dark setting.
+ * Per-scheme palette overrides, merged over the base palette. A theme may override any
+ * `Palette` key. All follow the device's light/dark setting.
  */
 const overrides: Record<OverrideTheme, Record<ColorScheme, Override>> = {
-  sage: {
-    light: { primary: '#2E6B47', onPrimary: '#FFFFFF', focus: '#2E6B47' },
-    dark: { primary: '#8CCBA5', onPrimary: '#0F2417', focus: '#8CCBA5' },
-  },
-  plum: {
-    light: { primary: '#7A3D7A', onPrimary: '#FFFFFF', focus: '#7A3D7A' },
-    dark: { primary: '#D9A6D9', onPrimary: '#2A112A', focus: '#D9A6D9' },
-  },
-  clay: {
-    light: { primary: '#9A4A1F', onPrimary: '#FFFFFF', focus: '#9A4A1F' },
-    dark: { primary: '#F0B48F', onPrimary: '#2E1606', focus: '#F0B48F' },
-  },
   blossom: {
     light: {
       background: '#FFF4F7',

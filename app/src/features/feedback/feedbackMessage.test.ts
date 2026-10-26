@@ -6,7 +6,7 @@ const details: DiagnosticLine[] = [
   { label: 'System', value: 'iOS 27.0' },
   { label: 'Device', value: 'iPhone 17' },
   { label: 'Text size', value: 'Larger' },
-  { label: 'Colors', value: 'Sage (green accent)' },
+  { label: 'Colors', value: 'Blossom (pink)' },
 ];
 
 const detailsBlock = [
@@ -15,7 +15,7 @@ const detailsBlock = [
   'System: iOS 27.0',
   'Device: iPhone 17',
   'Text size: Larger',
-  'Colors: Sage (green accent)',
+  'Colors: Blossom (pink)',
 ].join('\n');
 
 const form = (overrides: Partial<FeedbackForm>): FeedbackForm => ({

@@ -7,7 +7,7 @@ const details: DeviceDetails = {
   osVersion: '27.0',
   deviceModel: 'iPhone 17',
   textScale: 1.3,
-  colorTheme: 'sage',
+  colorTheme: 'blossom',
 };
 
 describe('diagnosticLines', () => {
@@ -17,7 +17,7 @@ describe('diagnosticLines', () => {
       { label: 'System', value: 'iOS 27.0' },
       { label: 'Device', value: 'iPhone 17' },
       { label: 'Text size', value: 'Larger' },
-      { label: 'Colors', value: 'Sage (green accent)' },
+      { label: 'Colors', value: 'Blossom (pink)' },
     ]);
   });
 

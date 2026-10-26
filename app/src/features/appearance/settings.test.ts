@@ -12,9 +12,9 @@ describe('parseAppearance', () => {
       parseAppearance({
         'display.textScale': 1.3,
         'display.density': 'compact',
-        'display.colorTheme': 'sage',
+        'display.colorTheme': 'blossom',
       }),
-    ).toEqual({ ...defaultAppearance, textScale: 1.3, density: 'compact', colorTheme: 'sage' });
+    ).toEqual({ ...defaultAppearance, textScale: 1.3, density: 'compact', colorTheme: 'blossom' });
     expect(
       parseAppearance({
         'display.motion': 'off',
@@ -46,9 +46,12 @@ describe('parseAppearance', () => {
       parseAppearance({
         'display.textScale': 9,
         'display.density': 'tiny',
-        'display.colorTheme': 'sage',
+        'display.colorTheme': 'blossom',
       }),
-    ).toEqual({ ...defaultAppearance, colorTheme: 'sage' });
+    ).toEqual({ ...defaultAppearance, colorTheme: 'blossom' });
+    expect(parseAppearance({ 'display.colorTheme': 'sage' }).colorTheme).toBe(
+      defaultAppearance.colorTheme,
+    );
     expect(parseAppearance({ 'display.colorTheme': 42 }).colorTheme).toBe('system');
     expect(
       parseAppearance({
@@ -91,7 +94,7 @@ describe('shapeFor', () => {
 describe('allPalettes', () => {
   it('covers every theme in light and dark where applicable', () => {
     const names = allPalettes().map(([n]) => n);
-    expect(names).toContain('sage/dark');
+    expect(names).toContain('blossom/dark');
     expect(names).toContain('light/light');
     expect(names).not.toContain('light/dark');
   });
