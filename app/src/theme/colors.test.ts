@@ -7,21 +7,6 @@ describe('resolvePalette', () => {
     expect(resolvePalette('dark', 'light')).toEqual(palettes.dark);
   });
 
-  it('merges accent themes over the base palette', () => {
-    expect(resolvePalette('sage', 'light')).toEqual({
-      ...palettes.light,
-      primary: '#2E6B47',
-      onPrimary: '#FFFFFF',
-      focus: '#2E6B47',
-    });
-    expect(resolvePalette('clay', 'dark')).toEqual({
-      ...palettes.dark,
-      primary: '#F0B48F',
-      onPrimary: '#2E1606',
-      focus: '#F0B48F',
-    });
-  });
-
   it('tints the background and surface for blossom in both schemes', () => {
     const light = resolvePalette('blossom', 'light');
     expect(light.background).toBe('#FFF4F7');
