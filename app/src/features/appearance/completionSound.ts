@@ -1,7 +1,7 @@
 import { createAudioPlayer, setAudioModeAsync, type AudioPlayer } from 'expo-audio';
 
 // A soft 0.4 s chime made by scripts/make-completion-sound.mjs.
-const source = require('../../assets/sounds/complete.wav');
+const source = require('../../../assets/sounds/complete.wav');
 
 let player: AudioPlayer | undefined;
 
