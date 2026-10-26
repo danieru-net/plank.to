@@ -38,7 +38,7 @@ export function TodaySummary() {
   const forecast = forecastForSuggestions(state);
   const facts = forecast ? weatherFacts(forecast) : null;
   const { dismissed, dismiss, error } = useClothingDismissed();
-  const outfit = facts ? outfitFor(facts.highC) : null;
+  const outfit = facts ? outfitFor(facts.highC, facts.lowC) : null;
   const extras = facts ? extrasFor(facts) : [];
 
   const onAction = (action: WeatherAction) => {

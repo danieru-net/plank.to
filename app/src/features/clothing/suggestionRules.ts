@@ -1,6 +1,7 @@
 /**
- * Outfit suggestions. A fixed table maps today's high temperature (Celsius) to a top and a bottom;
- * imperial forecasts are converted first. The wording is informational, not advice.
+ * Outfit suggestions. A fixed table maps how today feels overall (Celsius, from the high and the
+ * low) to a top and a bottom; imperial forecasts are converted first. The wording is
+ * informational, not advice.
  */
 import type { Forecast } from '@/features/weather/forecast';
 import type { TodayWeatherState } from '@/features/weather/weatherDisplay';
@@ -21,42 +22,64 @@ export type WeatherFacts = {
 
 export type Outfit = { id: string; label: string; top: string; bottom: string };
 
-/** Each band covers `minHighC` up to (not including) the next band's `minHighC`. Coldest first. */
-export const OUTFITS: readonly (Outfit & { minHighC: number })[] = [
+/**
+ * One temperature for the whole day, weighted toward the high but pulled down by the low, so a
+ * day of 16°C/10°C reads as cool rather than warm. Rounded to 1 decimal.
+ */
+export const dayFeelC = (highC: number, lowC: number): number =>
+  Math.round((highC * 0.6 + lowC * 0.4) * 10) / 10;
+
+/** Each band covers `minFeelC` up to (not including) the next band's `minFeelC`. Coldest first. */
+export const OUTFITS: readonly (Outfit & { minFeelC: number })[] = [
   {
-    id: 'very_cold',
-    label: 'Very cold (below 5°C)',
-    minHighC: -Infinity,
-    top: 'Thick sweater under a heavy coat',
+    id: 'freezing',
+    label: 'Freezing',
+    minFeelC: -Infinity,
+    top: 'Warm base layer, thick sweater and a heavy coat',
     bottom: 'Warm lined trousers',
   },
   {
     id: 'cold',
-    label: 'Cold (5 to 14°C)',
-    minHighC: 5,
-    top: 'Sweater or long-sleeve top with a jacket',
+    label: 'Cold',
+    minFeelC: 3,
+    top: 'Sweater under a warm coat',
+    bottom: 'Trousers or jeans',
+  },
+  {
+    id: 'cool',
+    label: 'Cool',
+    minFeelC: 9,
+    top: 'Long-sleeve top or light sweater with a jacket',
+    bottom: 'Trousers or jeans',
+  },
+  {
+    id: 'mild',
+    label: 'Mild',
+    minFeelC: 15,
+    top: 'T-shirt or long-sleeve top with a light jacket',
     bottom: 'Trousers or jeans',
   },
   {
     id: 'warm',
-    label: 'Warm (15 to 27°C)',
-    minHighC: 15,
+    label: 'Warm',
+    minFeelC: 20,
     top: 'T-shirt',
     bottom: 'Light trousers or shorts',
   },
   {
-    id: 'very_hot',
-    label: 'Very hot (28°C and above)',
-    minHighC: 28,
+    id: 'hot',
+    label: 'Hot',
+    minFeelC: 26,
     top: 'Light, breathable tank top or t-shirt',
     bottom: 'Shorts',
   },
 ];
 
-/** The outfit for today's high temperature in Celsius. */
-export function outfitFor(highC: number): Outfit {
+/** The outfit for today's high and low in Celsius. */
+export function outfitFor(highC: number, lowC: number): Outfit {
+  const feel = dayFeelC(highC, lowC);
   let match = OUTFITS[0];
-  for (const o of OUTFITS) if (highC >= o.minHighC) match = o;
+  for (const o of OUTFITS) if (feel >= o.minFeelC) match = o;
   const { id, label, top, bottom } = match;
   return { id, label, top, bottom };
 }
