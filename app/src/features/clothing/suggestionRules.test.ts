@@ -3,6 +3,7 @@ import {
   EXTRA_LABELS,
   OUTFITS,
   type WeatherFacts,
+  dayFeelC,
   extrasFor,
   forecastForSuggestions,
   outfitFor,
@@ -22,23 +23,37 @@ const forecast = (o: Partial<Forecast> = {}): Forecast =>
 
 describe('outfitFor', () => {
   it.each([
-    [-10, 'very_cold'],
-    [4.9, 'very_cold'],
-    [5, 'cold'],
-    [14.9, 'cold'],
-    [15, 'warm'],
-    [23, 'warm'],
-    [27.9, 'warm'],
-    [28, 'very_hot'],
-    [40, 'very_hot'],
-  ])('%s°C is %s', (c, id) => {
-    expect(outfitFor(c).id).toBe(id);
+    [-5, -12, 'freezing'],
+    [5, -1, 'freezing'], // feels 2.6
+    [5, 0, 'cold'], // feels 3
+    [12, 4, 'cold'], // feels 8.8
+    [16, 10, 'cool'], // feels 13.6
+    [18, 10, 'cool'], // feels 14.8
+    [19, 9, 'mild'], // feels 15
+    [23, 15, 'mild'], // feels 19.8
+    [24, 14, 'warm'], // feels 20
+    [30, 18, 'warm'], // feels 25.2
+    [32, 18, 'hot'], // feels 26.4
+    [40, 28, 'hot'],
+  ])('high %s°C, low %s°C is %s', (high, low, id) => {
+    expect(outfitFor(high, low).id).toBe(id);
   });
 
-  it('suggests a t-shirt and light trousers or shorts at 23°C', () => {
-    const o = outfitFor(23);
+  it('does not suggest a t-shirt alone for a 16°C high and 10°C low', () => {
+    const o = outfitFor(16, 10);
+    expect(o.top).toMatch(/jacket/i);
+    expect(o.bottom).not.toMatch(/shorts/i);
+  });
+
+  it('suggests a t-shirt and light trousers or shorts on a warm day', () => {
+    const o = outfitFor(27, 18);
     expect(o.top).toMatch(/t-shirt/i);
     expect(o.bottom).toMatch(/shorts/i);
+  });
+
+  it('weights the high more than the low', () => {
+    expect(dayFeelC(16, 10)).toBe(13.6);
+    expect(dayFeelC(20, 20)).toBe(20);
   });
 
   it('has a top and bottom for every band', () => {
