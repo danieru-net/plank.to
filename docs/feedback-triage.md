@@ -1,6 +1,6 @@
 # Feedback triage
 
-How we sort and review the emails that arrive at `feedback@plank.to` (see [shared/support.json](../shared/support.json)). What the emails contain, and what the privacy policy promises about them, is in [location-privacy.md](location-privacy.md#feedback-emails).
+How we sort and review the emails that arrive at `danielsilvajobs@gmail.com` (see [shared/support.json](../shared/support.json)). What the emails contain, and what the privacy policy promises about them, is in [location-privacy.md](location-privacy.md#feedback-emails).
 
 Keep it light: one person can run this in a few minutes a week, with nothing but the mailbox.
 

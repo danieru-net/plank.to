@@ -68,7 +68,6 @@ If children are a target audience, the app needs a caregiver setup flow, and the
 
 Tasks an agent cannot do: they need the owner, real people, or a business decision.
 
-- [ ] Create the `feedback@plank.to` mailbox, confirm it receives mail, then set `mailboxLive` to `true` in [shared/support.json](shared/support.json). This is an owner task (it also completes 5.3).
 - [ ] Run co-design and usability sessions with people with ADHD, and with autistic children and their caregivers, alongside the existing sessions with autistic adults. Record findings in `docs/`.
 - [ ] Decide whether to list the app in the App Store Kids Category or Google Play's Families program. Both restrict external links, require a parental gate before leaving the app (including the feedback `mailto:`), and set rules for third-party network calls (check the weather API). Record the decision in [docs/release/](docs/release/).
 - [ ] Add screenshots of both themes to [docs/release/screenshots.md](docs/release/screenshots.md). This needs the app running on a simulator or device.
