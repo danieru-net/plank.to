@@ -22,7 +22,7 @@ Workflows: [web-preview.yml](../.github/workflows/web-preview.yml) deploys a 7-d
 One-time setup (owner):
 
 1. Create a Firebase project and enable Hosting.
-2. Replace `REPLACE_WITH_FIREBASE_PROJECT_ID` in [.firebaserc](../.firebaserc).
+2. Set the project id in [.firebaserc](../.firebaserc) (done: `plank-to`).
 3. Add the repository variable `FIREBASE_PROJECT_ID` (Settings > Secrets and variables > Actions > Variables).
 4. Add the repository secret `FIREBASE_SERVICE_ACCOUNT`: the JSON key of a service account with the Firebase Hosting Admin role (and Cloud Run Viewer / API Keys Viewer as the action docs require). `firebase init hosting:github` can create it, but do not let it overwrite these files.
 
