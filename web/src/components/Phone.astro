@@ -1,0 +1,22 @@
+---
+interface Props {
+  src: string;
+  alt: string;
+  class?: string;
+  loading?: 'eager' | 'lazy';
+}
+
+const { src, alt, class: className, loading = 'lazy' } = Astro.props;
+---
+
+<div class:list={['phone', className]}>
+  <img
+    class="phone__screen"
+    src={src}
+    alt={alt}
+    width="780"
+    height="1696"
+    loading={loading}
+    decoding="async"
+  />
+</div>

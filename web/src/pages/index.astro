@@ -1,39 +1,540 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Phone from '../components/Phone.astro';
+import StoreBadges from '../components/StoreBadges.astro';
+import '../styles/home.css';
+
+// Screenshots come from the iOS simulator with seeded sample data (see docs/release/screenshots.md).
+// Bands are horizontal slices of the Today screen, in screen order, at 780 px wide.
+const bands = [
+  { src: '/screens/band-weather.webp', height: 338 },
+  { src: '/screens/band-clothing.webp', height: 535 },
+  { src: '/screens/band-scheduled.webp', height: 612 },
+  { src: '/screens/band-anytime.webp', height: 238 },
+];
+
+const steps = [
+  {
+    title: 'Weather, only if you want it',
+    text: 'Turn it on to see the forecast for your location or a place you pick. It stays off until you choose.',
+  },
+  {
+    title: 'Ideas for what to wear',
+    text: 'Suggestions from the day’s high and low, using only the clothes you said you wear.',
+  },
+  {
+    title: 'Your day in time order',
+    text: 'Tasks and routines with a time sit together, earliest first. The next one is marked.',
+  },
+  {
+    title: 'Room for the rest',
+    text: 'Things without a set time wait in their own list, away from the clock.',
+  },
+];
+
+const looks = [
+  { src: '/screens/today-light.webp', name: 'Light', note: 'Clear and quiet.' },
+  { src: '/screens/today-playful.webp', name: 'Playful', note: 'Bright colors, rounder corners.' },
+  { src: '/screens/today-blossom.webp', name: 'Blossom', note: 'Soft pink.' },
+  { src: '/screens/today-dark.webp', name: 'Dark', note: 'Easy on the eyes at night.' },
+  {
+    src: '/screens/appearance-playful.webp',
+    name: 'Presets',
+    note: 'Calm, Focus and Playful set several options at once. Change any of them after.',
+  },
+];
+
+const lookChoices = [
+  { id: 'auto', label: 'Auto' },
+  { id: 'light', label: 'Light' },
+  { id: 'dark', label: 'Dark' },
+  { id: 'playful', label: 'Playful' },
+  { id: 'blossom', label: 'Blossom' },
+];
 ---
 
 <BaseLayout
   title="plank.to"
-  description="A configurable daily planner for autistic people, people with ADHD, and anyone who wants clear routines, optional reminders, and visual supports."
+  description="A calm daily planner for autistic people, people with ADHD, and anyone who wants a predictable day. Tasks, weekly routines, optional reminders, weather and clothing ideas."
+  bodyClass="home"
+  hideFooter
+  headerCta={{ href: '#get', label: 'Get the app' }}
 >
-  <div class="container">
-    <h1>A daily planner you control</h1>
-    <p class="lede">
-      plank.to is made for autistic people, people with ADHD, and anyone who wants a clear,
-      predictable day. It helps you see your day clearly, set up weekly routines, and choose the
-      reminders and visual supports that work for you.
-    </p>
+  <section
+    class="act hero"
+    data-act="pin"
+    data-ground="hero"
+    style="--span: 1.6"
+    aria-labelledby="hero-title"
+  >
+    <div class="stage hero__stage">
+      <div class="hero__copy">
+        <h1 id="hero-title">
+          Your day, in an order you can <em>see</em>.
+        </h1>
+        <p class="hero__lede">
+          A calm daily planner for autistic people, people with ADHD, and anyone who wants a
+          predictable day.
+        </p>
+        <StoreBadges noteId="store-note-hero" />
+      </div>
 
-    <h2>What the app does</h2>
-    <ul>
-      <li>Shows your day as a clear agenda of tasks.</li>
-      <li>Repeats routines on the weekdays you pick, or every day.</li>
-      <li>Offers optional reminders you can turn off or adjust.</li>
-      <li>Can show the weather and suggest clothing, only if you turn it on.</li>
-    </ul>
+      <div class="hero__scene">
+        <div class="hero__plane hero__shapes" aria-hidden="true">
+          <span class="shape shape--sun"></span>
+          <span class="shape shape--pink"></span>
+          <span class="shape shape--mint"></span>
+          <span class="shape shape--ring"></span>
+        </div>
+        <div class="hero__plane hero__phone">
+          <Phone
+            src="/screens/today-tasks.webp"
+            alt="The Today screen in Plank: clothing ideas for a cool day, then scheduled tasks and routines in time order, and a task for any time."
+            loading="eager"
+          />
+        </div>
+        <img
+          class="hero__plane hero__cut hero__cut--days"
+          src="/screens/cut-days.webp"
+          alt=""
+          width="790"
+          height="315"
+        />
+        <img
+          class="hero__plane hero__cut hero__cut--weather"
+          src="/screens/cut-weather.webp"
+          alt=""
+          width="790"
+          height="360"
+        />
+        <img
+          class="hero__plane hero__cut hero__cut--calm"
+          src="/screens/cut-calm.webp"
+          alt=""
+          width="790"
+          height="182"
+        />
+        <div class="hero__plane hero__dots" aria-hidden="true"></div>
+      </div>
+    </div>
+  </section>
 
-    <h2>Learn more</h2>
-    <ul>
-      <li>
-        <a href="/help/">Help</a>: how to use the app.
-      </li>
-      <li>
-        <a href="/accessibility/">Accessibility</a>: what we have built in and what we are still
-        checking.
-      </li>
-      <li>
-        <a href="/privacy/">Privacy</a>: what is stored and what is shared.
-      </li>
-    </ul>
-  </div>
+  <section class="act recog" data-act="flow" data-ground="sun" aria-labelledby="recog-title">
+    <div class="wrap recog__inner">
+      <h2 id="recog-title" data-in>
+        Some days arrive all at once.
+      </h2>
+      <p class="recog__line recog__line--soft" data-in style="--i: 1">
+        The dentist. The rent. The gym bag for later.
+      </p>
+      <p class="recog__line recog__line--turn" data-in style="--i: 2">
+        Plank lays them out in order, so you can always see <em>what comes next</em>.
+      </p>
+    </div>
+  </section>
+
+  <section
+    class="act assemble"
+    data-act="pin"
+    data-ground="hero"
+    style="--span: 4.2"
+    aria-labelledby="assemble-title"
+  >
+    <div class="stage assemble__stage">
+      <div class="assemble__notes">
+        <h2 id="assemble-title">Watch a day come together.</h2>
+        <ol class="steps">
+          {steps.map((step, i) => (
+            <li class="step" data-step={i}>
+              <h3>{step.title}</h3>
+              <p>{step.text}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
+
+      <div class="assemble__device">
+        <div
+          class="phone assemble__phone"
+          role="img"
+          aria-label="The Today screen in Plank, top to bottom: the date, weather, clothing ideas, scheduled tasks and routines in time order, and tasks for any time."
+        >
+          <div class="phone__screen assemble__screen">
+            <div class="assemble__day">
+              <img src="/screens/band-header.webp" alt="" width="780" height="440" />
+              {bands.map((band, i) => (
+                <img
+                  class="band"
+                  data-band={i}
+                  src={band.src}
+                  alt=""
+                  width="780"
+                  height={band.height}
+                  loading="lazy"
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="assemble__flyers" aria-hidden="true"></div>
+    </div>
+  </section>
+
+  <section
+    class="act routines"
+    data-act="reveal"
+    data-ground="mint"
+    aria-labelledby="routines-title"
+  >
+    <div class="wrap routines__grid">
+      <div class="routines__copy">
+        <h2 id="routines-title" data-in>
+          Routines that repeat on the days you pick.
+        </h2>
+        <p data-in style="--i: 1">
+          Every day, weekdays, weekends, or any mix. Start from a template or a blank page.
+        </p>
+        <ul class="chips" aria-label="Routine templates" data-in style="--i: 2">
+          <li>Morning</li>
+          <li>Bedtime</li>
+          <li>School day</li>
+          <li>Leaving the house</li>
+        </ul>
+        <p data-in style="--i: 3">
+          Need to move just one Thursday? Change that day on its own, and the rest of the routine
+          stays as it was.
+        </p>
+      </div>
+      <div class="routines__shots">
+        <figure class="shot shot--a" data-wipe="0">
+          <Phone
+            src="/screens/routines.webp"
+            alt="The Routines tab: Morning stretch at 07:30 every day and Weekday standup at 10:00 Monday to Friday, then templates to start from."
+          />
+        </figure>
+        <figure class="shot shot--b" data-wipe="1">
+          <Phone
+            src="/screens/routine-editor.webp"
+            alt="Editing the Morning stretch routine: title, time 07:30, and repeats every day, with Weekdays and Weekends shortcuts."
+          />
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section
+    class="act looks"
+    data-act="pan"
+    data-ground="sky"
+    style="--span: 3"
+    aria-labelledby="looks-title"
+  >
+    <div class="stage looks__stage">
+      <div class="looks__rail">
+        <div class="looks__lead">
+          <h2 id="looks-title">Make it look the way you like.</h2>
+          <p>
+            Light, dark, bright or pink. Bigger text, more space, fewer animations. Everything is a
+            setting, and every setting can change.
+          </p>
+          <div class="looks__control">
+            <p class="looks__try" id="looks-try">
+              Try a look on this page:
+            </p>
+            <div class="looks__buttons" role="group" aria-labelledby="looks-try">
+              {lookChoices.map((choice) => (
+                <button
+                  class="look-btn"
+                  type="button"
+                  data-look={choice.id}
+                  aria-pressed={choice.id === 'auto' ? 'true' : 'false'}
+                >
+                  {choice.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+        {looks.map((look) => (
+          <figure class="look">
+            <Phone src={look.src} alt={`Plank with the ${look.name} look.`} />
+            <figcaption>
+              <strong>{look.name}</strong>
+              {look.note}
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section
+    class="act close"
+    id="get"
+    data-act="flow"
+    data-ground="night"
+    aria-labelledby="get-title"
+  >
+    <div class="wrap close__grid">
+      <ul class="promises">
+        <li data-in>
+          No account.
+          <span>Your plans stay on your phone and work offline.</span>
+        </li>
+        <li data-in style="--i: 1">
+          No streaks, scores or nagging.
+          <span>Finish things at your own pace.</span>
+        </li>
+        <li data-in style="--i: 2">
+          Reminders only if you want them.
+          <span>Turn them on per task, or not at all.</span>
+        </li>
+        <li data-in style="--i: 3">
+          A Calm preset.
+          <span>Device colors, no animations, no haptics.</span>
+        </li>
+      </ul>
+      <div class="close__cta" data-in style="--i: 2">
+        <h2 id="get-title">Plan today, your way.</h2>
+        <StoreBadges noteId="store-note-get" />
+      </div>
+    </div>
+    <footer class="wrap close__foot">
+      <p>This website does not collect or display planner data.</p>
+      <nav aria-label="Footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/help/">Help</a>
+          </li>
+          <li>
+            <a href="/accessibility/">Accessibility</a>
+          </li>
+          <li>
+            <a href="/privacy/">Privacy</a>
+          </li>
+          <li>
+            <a href="/contact/">Contact</a>
+          </li>
+        </ul>
+      </nav>
+    </footer>
+  </section>
+
+  <script>
+    // Scroll driver for the home page. Each pinned act gets --p (0 to 1) as it
+    // scrolls past; the peak and the looks rail run their own small choreography
+    // off it. Nothing here moves when reduced motion is on.
+    const root = document.documentElement;
+    const body = document.body;
+    const clamp = (v: number, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+    const ease = (t: number) => 1 - Math.pow(1 - t, 3);
+
+    // Looks: one control regrades the whole page. Works with or without motion.
+    const lookButtons = [...document.querySelectorAll<HTMLButtonElement>('.look-btn')];
+    for (const btn of lookButtons) {
+      btn.addEventListener('click', () => {
+        const look = btn.dataset.look;
+        if (!look || look === 'auto') delete root.dataset.look;
+        else root.dataset.look = look;
+        for (const b of lookButtons) b.setAttribute('aria-pressed', String(b === btn));
+      });
+    }
+
+    // Ground drift: the section crossing the middle of the screen sets the background.
+    const groundObserver = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) body.dataset.ground = (e.target as HTMLElement).dataset.ground;
+        }
+      },
+      { rootMargin: '-50% 0px -50% 0px' },
+    );
+    for (const el of document.querySelectorAll<HTMLElement>('[data-ground]')) {
+      groundObserver.observe(el);
+    }
+
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (!reduced) {
+      root.classList.add('motion');
+
+      // Entrances
+      const inObserver = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) {
+            if (e.isIntersecting) {
+              e.target.classList.add('is-in');
+              inObserver.unobserve(e.target);
+            }
+          }
+        },
+        { threshold: 0.2 },
+      );
+      for (const el of document.querySelectorAll('[data-in]')) inObserver.observe(el);
+
+      const pinned = [
+        ...document.querySelectorAll<HTMLElement>('.act[data-act="pin"], .act[data-act="pan"]'),
+      ];
+      const hero = document.querySelector<HTMLElement>('.hero')!;
+      const assemble = document.querySelector<HTMLElement>('.assemble')!;
+      const looksAct = document.querySelector<HTMLElement>('.looks')!;
+      const rail = looksAct.querySelector<HTMLElement>('.looks__rail')!;
+      const routines = document.querySelector<HTMLElement>('.routines')!;
+      const shots = [...routines.querySelectorAll<HTMLElement>('[data-wipe]')];
+
+      // The peak: every band has a twin "flyer" outside the phone. The flyers start
+      // scattered around the stage and land, in screen order, exactly on top of
+      // their band; then the band takes over and the flyer fades.
+      const stage = assemble.querySelector<HTMLElement>('.assemble__stage')!;
+      const screen = assemble.querySelector<HTMLElement>('.assemble__screen')!;
+      const day = assemble.querySelector<HTMLElement>('.assemble__day')!;
+      const steps = [...assemble.querySelectorAll<HTMLElement>('.step')];
+      const bands = [...assemble.querySelectorAll<HTMLImageElement>('.band')];
+      const flyerLayer = assemble.querySelector<HTMLElement>('.assemble__flyers')!;
+      const flyers = bands.map((band) => {
+        const img = document.createElement('img');
+        img.className = 'flyer';
+        img.src = band.src;
+        img.alt = '';
+        flyerLayer.append(img);
+        return img;
+      });
+      // Wide screens: where each piece waits, beside the phone. `x` is in screen
+      // widths past the phone's right edge, `y` a fraction of the stage height.
+      const scatterWide = [
+        { x: 0.1, y: 0.22, r: 8 },
+        { x: 0.22, y: 0.45, r: -6 },
+        { x: 0.04, y: 0.66, r: 5 },
+        { x: 0.2, y: 0.85, r: -9 },
+      ];
+      // Narrow screens: no room beside the phone, so pieces are offset from their
+      // landing spot, in screen widths, and pile over the phone.
+      const scatterNarrow = [
+        { x: -0.55, y: 0.35, r: -9 },
+        { x: 0.5, y: 0.1, r: 7 },
+        { x: -0.45, y: -0.2, r: 6 },
+        { x: 0.55, y: -0.85, r: -8 },
+      ];
+      const window0 = 0.06;
+      const windowLen = 0.17;
+      const narrow = window.matchMedia('(max-width: 47.99rem)');
+      const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+      const progress = (el: HTMLElement) => {
+        const r = el.getBoundingClientRect();
+        const run = r.height - window.innerHeight;
+        return run > 0 ? clamp(-r.top / run) : 0;
+      };
+
+      const updateAssemble = (p: number) => {
+        const W = screen.clientWidth;
+        const isNarrow = narrow.matches;
+        const origin = stage.getBoundingClientRect();
+        const screenRight = screen.getBoundingClientRect().right - origin.left;
+        let active = 0;
+        bands.forEach((band, i) => {
+          const a = window0 + i * windowLen;
+          const t = clamp((p - a) / windowLen);
+          if (p >= a) active = i;
+          const e = ease(t);
+          band.style.opacity = String(clamp((t - 0.82) / 0.18));
+          const r = band.getBoundingClientRect();
+          const fx = r.left - origin.left;
+          const fy = r.top - origin.top;
+          let sx: number;
+          let sy: number;
+          let r0: number;
+          if (isNarrow) {
+            const s = scatterNarrow[i];
+            sx = fx + s.x * W;
+            sy = fy + s.y * W;
+            r0 = s.r;
+          } else {
+            const s = scatterWide[i];
+            sx = screenRight + s.x * W;
+            sy = origin.height * s.y - r.height / 2;
+            r0 = s.r;
+          }
+          const flyer = flyers[i];
+          flyer.style.width = `${r.width}px`;
+          flyer.style.opacity = String(t >= 1 ? 0 : 1 - clamp((t - 0.82) / 0.18));
+          flyer.style.transform =
+            `translate3d(${fx + (sx - fx) * (1 - e)}px, ${fy + (sy - fy) * (1 - e)}px, 0) ` +
+            `rotate(${r0 * (1 - e)}deg) scale(${1 - 0.16 * (1 - e)})`;
+        });
+        steps.forEach((step, i) => {
+          step.classList.toggle('is-active', i === active);
+          step.classList.toggle('is-done', i < active);
+        });
+        // Once everything has landed, scroll the screen to show the end of the day.
+        const overflow = day.scrollHeight - screen.clientHeight;
+        const s = ease(clamp((p - 0.8) / 0.15));
+        day.style.transform = `translate3d(0, ${-overflow * s}px, 0)`;
+      };
+
+      const updateRail = (p: number) => {
+        const last = rail.lastElementChild as HTMLElement;
+        const end =
+          last.offsetLeft + last.offsetWidth + parseFloat(getComputedStyle(rail).paddingLeft);
+        const overflow = end - looksAct.clientWidth;
+        const t = clamp((p - 0.05) / 0.9);
+        rail.style.setProperty('--pan-x', `${-Math.max(0, overflow) * t}px`);
+      };
+
+      const updateShots = () => {
+        const r = routines.getBoundingClientRect();
+        const q = clamp((window.innerHeight - r.top) / (window.innerHeight * 0.9));
+        shots.forEach((shot, i) => {
+          shot.style.setProperty('--r', ease(clamp((q - 0.12 - i * 0.18) / 0.45)).toFixed(4));
+        });
+      };
+
+      // Pointer depth on the hero: a small, eased drift on fine pointers only.
+      let mx = 0;
+      let my = 0;
+      let tx = 0;
+      let ty = 0;
+      if (finePointer) {
+        hero.addEventListener('pointermove', (e) => {
+          tx = (e.clientX / window.innerWidth) * 2 - 1;
+          ty = (e.clientY / window.innerHeight) * 2 - 1;
+          schedule();
+        });
+        hero.addEventListener('pointerleave', () => {
+          tx = 0;
+          ty = 0;
+          schedule();
+        });
+      }
+
+      let queued = false;
+      const frame = () => {
+        queued = false;
+        for (const act of pinned) {
+          const p = progress(act);
+          act.style.setProperty('--p', p.toFixed(4));
+          if (act === assemble) updateAssemble(p);
+          else if (act === looksAct) updateRail(p);
+        }
+        updateShots();
+        mx += (tx - mx) * 0.12;
+        my += (ty - my) * 0.12;
+        hero.style.setProperty('--mx', mx.toFixed(3));
+        hero.style.setProperty('--my', my.toFixed(3));
+        if (Math.abs(tx - mx) > 0.002 || Math.abs(ty - my) > 0.002) schedule();
+      };
+      const schedule = () => {
+        if (!queued) {
+          queued = true;
+          requestAnimationFrame(frame);
+        }
+      };
+
+      window.addEventListener('scroll', schedule, { passive: true });
+      window.addEventListener('resize', schedule);
+      window.addEventListener('load', schedule);
+      schedule();
+    }
+  </script>
 </BaseLayout>
