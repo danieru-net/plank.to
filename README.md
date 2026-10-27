@@ -87,3 +87,154 @@ The weekly schedule is the initial recurrence scope. Handle timezone and dayligh
 - The static website can be served independently and receives no planner data.
 - Privacy information accurately describes local storage, location use, weather-provider data sharing, device backups, and any future optional cloud features.
 - Usability testing asks participants whether the schedule and routines are understandable, reminders are useful or disruptive, weather and suggestions are clear, and the app feels helpful and under their control.
+
+## Store listings
+
+Copy for App Store Connect and the Google Play Console. Paste the text blocks as they are; neither store renders Markdown. Follow the claims rules in [docs/release/store-listing.md](docs/release/store-listing.md): no clinical, therapeutic or efficacy claims, weather is described as optional, and nothing says data "never leaves your device".
+
+### Apple App Store
+
+| Field | Text | Limit |
+|---|---|---|
+| Name | Plank | 30 |
+| Subtitle | Calm daily planner, no account | 30 |
+| Primary category | Productivity | |
+| Secondary category | Lifestyle | |
+
+**Promotional text** (170 characters, can be changed without review)
+
+```text
+Plan today and your weekly routines at your own pace. Pictures, read aloud and reminders are all optional, and everything works offline without an account.
+```
+
+**Keywords** (100 characters, comma-separated, no spaces)
+
+```text
+planner,routine,visual,schedule,checklist,reminders,daily,tasks,weekly,to-do,offline,pictures
+```
+
+**Description**
+
+```text
+Plank is a calm daily planner for tasks and weekly routines. It is made for autistic people, people with ADHD, and anyone who wants a clear, predictable day. You don't need an account, and it works without a connection.
+
+TODAY
+• See the day as one clear list, with the next thing easy to spot.
+• Add a task with an optional time, notes, steps, a symbol or a photo from your library.
+• Complete, move or dismiss a task. Nothing is marked as failed.
+• Reorder tasks that don't have a set time.
+
+WEEKLY ROUTINES
+• Repeat a routine every day or only on the days you choose.
+• Start from a template (Morning, Bedtime, School day, Leaving the house) and change it to suit you.
+• Change or skip one day without touching the rest of the routine. When you edit, you choose: just this day, or the whole routine.
+
+REMINDERS, IF YOU WANT THEM
+• Reminders are notifications that stay on your device. They are off until you turn them on.
+• No streaks, no scores and no repeated nagging.
+
+MAKE IT YOURS
+• Text size, spacing, density and color theme, including Playful (bright colors) and Blossom (pink).
+• A readable font option (Atkinson Hyperlegible) and more line spacing.
+• Starting presets such as Calm (low stimulation) and Focus. Every setting can still be changed on its own.
+• Read aloud: have a task's title and notes spoken to you.
+• Picture cards: each task becomes a large card with its picture first.
+• Simple mode hides routines and weather for a shorter screen.
+• An optional check, with or without a sound, when you finish a task.
+
+SETTING IT UP FOR SOMEONE ELSE
+• A caregiver lock stops settings, routines and tasks being edited by accident. Tasks can still be completed. It is optional and off by default.
+
+WEATHER AND CLOTHING IDEAS (OPTIONAL)
+• Weather is off by default. Use your approximate location, or type a city instead.
+• See a short forecast and a clothing idea based on the clothes you choose to include. Suggestions are only ideas, and you can dismiss them.
+• Turning weather off removes the saved location and forecast.
+• Forecast data by Open-Meteo.com.
+
+PRIVACY
+• Your tasks, routines and settings are stored on your device. Plank has no accounts, ads, analytics or subscriptions.
+• Your phone's own backup may include a copy, depending on your settings.
+• Feedback is sent from your own mail app, only when you press Send.
+
+Privacy policy: https://plank.to/privacy
+```
+
+**What's new in 1.0.0**
+
+```text
+First release: daily tasks, weekly routines with templates, optional reminders, pictures and read aloud, and optional weather with clothing ideas.
+```
+
+| Field | Value |
+|---|---|
+| Support URL | https://plank.to/contact |
+| Marketing URL | https://plank.to |
+| Privacy policy URL | https://plank.to/privacy |
+
+### Google Play
+
+| Field | Text | Limit |
+|---|---|---|
+| App name | Plank: Calm Daily Planner | 30 |
+| Category | Productivity | |
+| Contact email | danielsilvajobs@gmail.com | |
+| Website | https://plank.to | |
+| Privacy policy | https://plank.to/privacy | |
+
+**Short description** (80 characters)
+
+```text
+A calm daily planner with visual routines and optional reminders. No account.
+```
+
+**Full description** (4000 characters)
+
+```text
+Plank is a calm daily planner for tasks and weekly routines. It is made for autistic people, people with ADHD, and anyone who wants a clear, predictable day. You don't need an account, and it works offline.
+
+★ Today, in one clear list
+• See what's planned for today, with the next thing easy to spot.
+• Add a task with an optional time, notes, steps, a symbol or a photo from your gallery.
+• Complete, move or dismiss a task. Nothing is marked as failed.
+• Reorder tasks that don't have a set time.
+
+★ Weekly routines
+• Repeat a routine every day or only on the days you pick.
+• Start from a template (Morning, Bedtime, School day, Leaving the house) and make it your own.
+• Change or skip one day without touching the rest. When you edit, you choose: just this day, or the whole routine.
+
+★ Reminders only if you want them
+• Reminders are notifications that stay on your phone. They are off until you turn them on.
+• No streaks, no scores and no repeated nagging.
+
+★ Make it yours
+• Text size, spacing, density and color theme, including Playful (bright colors) and Blossom (pink).
+• A readable font option (Atkinson Hyperlegible) and more line spacing.
+• Starting presets such as Calm (low stimulation) and Focus. You can still change each setting on its own.
+• Read aloud: have a task's title and notes spoken to you.
+• Picture cards: each task shows as a large card with its picture first.
+• Simple mode hides routines and weather for a shorter screen.
+• An optional check, with or without a sound, when you finish a task.
+
+★ Setting it up for someone else
+• An optional caregiver lock stops settings, routines and tasks being edited by accident. Tasks can still be completed.
+
+★ Weather and clothing ideas (optional)
+• Weather is off by default. Use your approximate location, or type a city instead.
+• See a short forecast and a clothing idea based on the clothes you choose to include. Suggestions are only ideas, and you can dismiss them.
+• Turning weather off removes the saved location and forecast.
+• Forecast data by Open-Meteo.com.
+
+★ Privacy
+• Your tasks, routines and settings are stored on your phone. Plank has no accounts, ads, analytics or subscriptions.
+• Android's own backup may include a copy, depending on your settings.
+• Feedback is sent from your own email app, only when you press Send.
+
+Privacy policy: https://plank.to/privacy
+```
+
+**Release notes for 1.0.0**
+
+```text
+First release: daily tasks, weekly routines with templates, optional reminders, pictures and read aloud, and optional weather with clothing ideas.
+```
