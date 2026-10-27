@@ -4,7 +4,7 @@ Order is a suggestion. "Owner" items need the owner's accounts or decisions.
 
 ## A. Owner input (from plan.md "Owner input needed")
 
-- [ ] Support contact (5.3): the address `feedback@plank.to` is set in `shared/support.json`; create the mailbox, confirm it receives mail, then set `mailboxLive` to true there.
+- [x] Support contact (5.3): `danielsilvajobs@gmail.com` is set in `shared/support.json` with `mailboxLive` true.
 - [ ] Firebase project (5.4): create it; set repo variable `FIREBASE_PROJECT_ID` and secret `FIREBASE_SERVICE_ACCOUNT`; replace the id in `.firebaserc`.
 - [ ] Open-Meteo attribution and terms (4.1/4.9): approve the attribution line, confirm caching and non-commercial terms on the live license page.
 - [ ] Privacy policy legal review (5.2) for the release countries; remove the draft notice.
