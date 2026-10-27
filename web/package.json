@@ -16,6 +16,8 @@
     "check:independence": "node scripts/check-independence.mjs"
   },
   "dependencies": {
+    "@fontsource-variable/bricolage-grotesque": "^5.3.0",
+    "@fontsource/atkinson-hyperlegible": "^5.3.0",
     "astro": "^7.4.1"
   },
   "devDependencies": {

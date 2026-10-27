@@ -1,9 +1,10 @@
 ---
 interface Props {
   currentPath: string;
+  cta?: { href: string; label: string } | undefined;
 }
 
-const { currentPath } = Astro.props;
+const { currentPath, cta } = Astro.props;
 
 const links = [
   { href: '/', label: 'Overview' },
@@ -19,6 +20,7 @@ const normalize = (path: string) => (path.endsWith('/') ? path : `${path}/`);
 <header class="site-header">
   <div class="container header-inner">
     <a class="brand" href="/">
+      <span class="brand__mark" aria-hidden="true"></span>
       plank.to
     </a>
     <nav aria-label="Main">
@@ -35,5 +37,10 @@ const normalize = (path: string) => (path.endsWith('/') ? path : `${path}/`);
         ))}
       </ul>
     </nav>
+    {cta && (
+      <a class="header-cta" href={cta.href}>
+        {cta.label}
+      </a>
+    )}
   </div>
 </header>

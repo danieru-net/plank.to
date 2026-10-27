@@ -1,22 +1,27 @@
 :root {
-  --bg: #ffffff;
-  --fg: #1d2330;
-  --muted: #4a5365;
-  --surface: #f1f4f9;
-  --border: #c9d0dc;
-  --accent: #1f4fa3;
+  --bg: #f6f4ff;
+  --fg: #1b1640;
+  --muted: #4a4470;
+  --surface: #ffffff;
+  --border: #d6d1f0;
+  --accent: #4f3bf5;
+  --accent-ink: #ffffff;
   --focus: #b54708;
+  --font-display: 'Bricolage Grotesque Variable', 'Atkinson Hyperlegible', system-ui, sans-serif;
+  --font-text: 'Atkinson Hyperlegible', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   color-scheme: light dark;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #12161f;
-    --fg: #eef1f6;
-    --muted: #b6bfcf;
-    --surface: #1b212d;
-    --border: #3a4356;
-    --accent: #8db3ff;
+    --bg: #13112a;
+    --fg: #f1efff;
+    --muted: #beb8e4;
+    --surface: #1e1b3a;
+    --border: #3a355f;
+    --accent: #a99bff;
+    --accent-ink: #13112a;
     --focus: #ffb86b;
   }
 }
@@ -35,12 +40,7 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--fg);
-  font-family:
-    system-ui,
-    -apple-system,
-    'Segoe UI',
-    Roboto,
-    sans-serif;
+  font-family: var(--font-text);
   font-size: 1.125rem;
   line-height: 1.6;
   min-height: 100vh;
@@ -65,11 +65,15 @@ main:focus {
 h1,
 h2,
 h3 {
-  line-height: 1.25;
+  font-family: var(--font-display);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
 }
 
 h1 {
-  font-size: 2rem;
+  font-size: clamp(2.25rem, 1.6rem + 2.4vw, 3rem);
+  letter-spacing: -0.025em;
   margin-block: 0 1rem;
 }
 
@@ -103,8 +107,14 @@ a {
 }
 
 .site-header {
-  border-bottom: 1px solid var(--border);
-  background: var(--surface);
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+  background: color-mix(in srgb, var(--bg) 86%, transparent);
+  backdrop-filter: saturate(1.4) blur(14px);
+  -webkit-backdrop-filter: saturate(1.4) blur(14px);
+}
+
+.site-header .container {
+  width: min(100% - 2rem, 72rem);
 }
 
 .header-inner {
@@ -117,13 +127,44 @@ a {
 }
 
 .brand {
+  gap: 0.55rem;
+  font-family: var(--font-display);
   font-weight: 700;
-  font-size: 1.25rem;
+  font-size: 1.3rem;
+  letter-spacing: -0.02em;
   color: var(--fg);
   text-decoration: none;
   display: inline-flex;
   align-items: center;
   min-height: 48px;
+}
+
+.brand__mark {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 0.5rem;
+  background:
+    linear-gradient(var(--accent-ink) 0 0) 0.35rem 0.42rem / 0.8rem 0.16rem no-repeat,
+    linear-gradient(var(--accent-ink) 0 0) 0.35rem 0.67rem / 0.55rem 0.16rem no-repeat,
+    linear-gradient(var(--accent-ink) 0 0) 0.35rem 0.92rem / 0.7rem 0.16rem no-repeat,
+    var(--accent);
+}
+
+.header-cta {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding-inline: 1.1rem;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform 140ms var(--ease-out);
+}
+
+.header-cta:active {
+  transform: scale(0.97);
 }
 
 .site-header ul {

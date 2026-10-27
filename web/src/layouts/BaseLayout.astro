@@ -1,13 +1,22 @@
 ---
+import '@fontsource/atkinson-hyperlegible/latin-400.css';
+import '@fontsource/atkinson-hyperlegible/latin-700.css';
+import '@fontsource-variable/bricolage-grotesque';
 import '../styles/global.css';
 import SiteHeader from '../components/SiteHeader.astro';
 
 interface Props {
   title: string;
   description: string;
+  /** Extra class on <body class={bodyClass}>, for pages with their own look (the home page). */
+  bodyClass?: string;
+  /** Pages that end in their own closing section can leave out the shared footer. */
+  hideFooter?: boolean;
+  /** Optional call to action shown in the header. */
+  headerCta?: { href: string; label: string };
 }
 
-const { title, description } = Astro.props;
+const { title, description, bodyClass, hideFooter = false, headerCta } = Astro.props;
 const pageTitle = title === 'plank.to' ? title : `${title} · plank.to`;
 ---
 
@@ -21,32 +30,36 @@ const pageTitle = title === 'plank.to' ? title : `${title} · plank.to`;
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{pageTitle}</title>
   </head>
-  <body>
+  <body class={bodyClass}>
     <a class="skip-link" href="#main">
       Skip to main content
     </a>
-    <SiteHeader currentPath={Astro.url.pathname} />
+    <SiteHeader currentPath={Astro.url.pathname} cta={headerCta} />
     <main id="main" tabindex="-1">
       <slot />
     </main>
-    <footer class="site-footer">
-      <div class="container">
-        <p>plank.to is a planner for people who benefit from clear routines and visual supports.</p>
-        <p>This website does not collect or display planner data.</p>
-        <nav aria-label="Footer">
-          <ul class="footer-links">
-            <li>
-              <a href="/accessibility/">Accessibility</a>
-            </li>
-            <li>
-              <a href="/privacy/">Privacy</a>
-            </li>
-            <li>
-              <a href="/contact/">Contact</a>
-            </li>
-          </ul>
-        </nav>
-      </div>
-    </footer>
+    {!hideFooter && (
+      <footer class="site-footer">
+        <div class="container">
+          <p>
+            plank.to is a planner for people who benefit from clear routines and visual supports.
+          </p>
+          <p>This website does not collect or display planner data.</p>
+          <nav aria-label="Footer">
+            <ul class="footer-links">
+              <li>
+                <a href="/accessibility/">Accessibility</a>
+              </li>
+              <li>
+                <a href="/privacy/">Privacy</a>
+              </li>
+              <li>
+                <a href="/contact/">Contact</a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </footer>
+    )}
   </body>
 </html>
