@@ -25,7 +25,7 @@ Order is a suggestion. "Owner" items need the owner's accounts or decisions.
 
 ## D. Listing
 
-- [ ] Final copy from [store-listing.md](store-listing.md) reviewed (no clinical claims).
+- [ ] Final copy in the [README store listings](../../README.md#store-listings) reviewed against [store-listing.md](store-listing.md) (no clinical claims).
 - [ ] Screenshots captured per [screenshots.md](screenshots.md); feature graphic and icon uploaded.
 - [ ] App Privacy and Data safety forms completed from [privacy-answers.md](privacy-answers.md), re-checked against the traffic capture (4.9).
 - [ ] Content rating questionnaires; target audience; export compliance.
